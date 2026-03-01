@@ -328,16 +328,19 @@ const level4Diagram = `classDiagram
       // Tab switching
       const buttons = document.querySelectorAll('.tab-btn');
       const panels = document.querySelectorAll('.tab-panel');
+      const validTabs = ['level1', 'level2', 'level3', 'level4'];
 
-      buttons.forEach(btn => {
-        btn.addEventListener('click', () => {
-          const target = btn.dataset.tab;
+      function activateTab(target) {
+        if (!validTabs.includes(target)) target = 'level1';
 
-          buttons.forEach(b => b.classList.remove('active'));
-          panels.forEach(p => p.classList.remove('active'));
+        buttons.forEach(b => b.classList.remove('active'));
+        panels.forEach(p => p.classList.remove('active'));
 
-          btn.classList.add('active');
-          const panel = document.getElementById(target);
+        const activeBtn = document.querySelector(`.tab-btn[data-tab="${target}"]`);
+        if (activeBtn) activeBtn.classList.add('active');
+
+        const panel = document.getElementById(target);
+        if (panel) {
           panel.classList.add('active');
 
           // Re-render any diagrams that were not rendered while hidden
@@ -348,8 +351,25 @@ const level4Diagram = `classDiagram
             unrendered.forEach(el => el.removeAttribute('data-processed'));
             mermaid.run({ nodes: unrendered });
           }
+        }
+      }
+
+      buttons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const target = btn.dataset.tab;
+          history.pushState(null, '', '#' + target);
+          activateTab(target);
         });
       });
+
+      // Activate tab from URL hash on load and on back/forward navigation
+      function activateFromHash() {
+        const hash = window.location.hash.slice(1) || 'level1';
+        activateTab(hash);
+      }
+
+      window.addEventListener('hashchange', activateFromHash);
+      activateFromHash();
     </script>
   </body>
 </html>
