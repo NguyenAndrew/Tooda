@@ -24,6 +24,7 @@
 - [Diagram Types](#diagram-types)
   - [C4 Model Diagrams](#c4-model-diagrams)
   - [Class Diagrams](#class-diagrams)
+- [Copilot Coding Agent](#copilot-coding-agent)
 - [Deployment](#deployment)
 - [Contributing](#contributing)
 - [License](#license)
@@ -177,6 +178,29 @@ classDiagram
   }
   AccountsService --> AccountsRepository : uses
 ```
+
+---
+
+## Copilot Coding Agent
+
+This repository is configured to work with [GitHub Copilot coding agent](https://docs.github.com/en/copilot/using-github-copilot/using-copilot-coding-agent). The `.github/workflows/copilot-setup-steps.yml` file pre-installs Node.js and npm dependencies before the agent starts work.
+
+### Disabling the built-in Playwright MCP server
+
+By default, Copilot coding agent starts **two** MCP servers automatically: GitHub and Playwright. To keep only the GitHub MCP server (and remove Playwright), paste the following JSON into **Repository Settings → Copilot → Coding agent → MCP configuration**:
+
+```json
+{
+  "mcpServers": {
+    "github": {
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp/"
+    }
+  }
+}
+```
+
+Specifying only the `github` entry here tells the coding agent exactly which MCP servers to use, which excludes the default Playwright server.
 
 ---
 
