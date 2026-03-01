@@ -13,6 +13,7 @@
     "mermaid": "^11.12.3"
   },
   "devDependencies": {
-    "@playwright/test": "^1.58.2"
+    "@playwright/test": "^1.58.2",
+    "jsdom": "^28.1.0"
   }
 }
