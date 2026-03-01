@@ -89,19 +89,19 @@ const level4Diagram = `classDiagram
     -accountsRepository: AccountsRepository
     -mainframeClient: MainframeClient
     +getBalance(customerId: string) Promise~Account~
-    +getTransactions(customerId: string) Promise~Transaction[]~
+    +getTransactions(customerId: string) Promise~Transaction~
   }
 
   class AccountsRepository {
     -db: DatabaseConnection
     +findByCustomerId(customerId: string) Promise~Account~
-    +findTransactions(accountId: string) Promise~Transaction[]~
+    +findTransactions(accountId: string) Promise~Transaction~
   }
 
   class MainframeClient {
     -baseUrl: string
     +fetchAccount(customerId: string) Promise~Account~
-    +fetchTransactions(accountId: string) Promise~Transaction[]~
+    +fetchTransactions(accountId: string) Promise~Transaction~
   }
 
   class Account {
