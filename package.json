@@ -4,10 +4,11 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "node scripts/copy-mermaid.js && astro build",
     "preview": "astro preview"
   },
   "dependencies": {
-    "astro": "^5.18.0"
+    "astro": "^5.18.0",
+    "mermaid": "^11.12.3"
   }
 }

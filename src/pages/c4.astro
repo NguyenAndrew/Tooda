@@ -1,0 +1,344 @@
+---
+const level1Diagram = `C4Context
+  title System Context – Online Banking System
+
+  Person(customer, "Personal Banking Customer", "A customer of the bank with personal bank accounts.")
+  Person(staff, "Bank Staff", "Bank employees managing accounts and support.")
+
+  System(onlineBanking, "Online Banking System", "Allows customers to view account information and make payments.")
+
+  System_Ext(email, "E-mail System", "The internal Microsoft Exchange e-mail system.")
+  System_Ext(mainframe, "Mainframe Banking System", "Stores all core banking information about customers, accounts, and transactions.")
+
+  Rel(customer, onlineBanking, "Views account balances and makes payments using")
+  Rel(staff, onlineBanking, "Manages customer accounts and support requests using")
+  Rel(onlineBanking, email, "Sends e-mail notifications using")
+  Rel(onlineBanking, mainframe, "Gets account and transaction data from")`;
+
+const level2Diagram = `C4Container
+  title Container – Online Banking System
+
+  Person(customer, "Personal Banking Customer", "A customer of the bank with personal bank accounts.")
+
+  System_Boundary(ob, "Online Banking System") {
+    Container(webApp, "Web Application", "Astro / Node.js", "Delivers the static web front-end to customers via their browser.")
+    Container(spa, "Single-Page App", "JavaScript", "Provides the banking functionality to customers via their browser.")
+    Container(mobileApp, "Mobile App", "React Native", "Provides the banking functionality to customers via their mobile device.")
+    Container(apiApp, "API Application", "Node.js / Express", "Provides banking functionality via a JSON/HTTPS API.")
+    ContainerDb(db, "Database", "PostgreSQL", "Stores customer and account information.")
+  }
+
+  System_Ext(email, "E-mail System", "Microsoft Exchange")
+  System_Ext(mainframe, "Mainframe Banking System", "Core banking records")
+
+  Rel(customer, webApp, "Visits", "HTTPS")
+  Rel(customer, mobileApp, "Uses", "HTTPS")
+  Rel(webApp, spa, "Delivers")
+  Rel(spa, apiApp, "Makes API calls to", "JSON/HTTPS")
+  Rel(mobileApp, apiApp, "Makes API calls to", "JSON/HTTPS")
+  Rel(apiApp, db, "Reads/writes", "SQL")
+  Rel(apiApp, email, "Sends emails using", "SMTP")
+  Rel(apiApp, mainframe, "Reads/writes account data", "XML/HTTPS")`;
+
+const level3Diagram = `C4Component
+  title Component – API Application
+
+  Container_Ext(spa, "Single-Page App", "JavaScript", "Front-end delivered by the web application.")
+  Container_Ext(mobileApp, "Mobile App", "React Native", "Mobile front-end.")
+
+  Container_Boundary(api, "API Application") {
+    Component(authController, "Auth Controller", "Express Router", "Handles sign-in, sign-out, and token refresh.")
+    Component(accountsController, "Accounts Controller", "Express Router", "Provides account balance and transaction history endpoints.")
+    Component(paymentsController, "Payments Controller", "Express Router", "Handles payment initiation and confirmation.")
+    Component(authService, "Auth Service", "Node.js module", "Validates credentials and issues JWT tokens.")
+    Component(accountsService, "Accounts Service", "Node.js module", "Business logic for account data.")
+    Component(paymentsService, "Payments Service", "Node.js module", "Business logic for payments.")
+    Component(emailService, "E-mail Service", "Node.js module", "Sends notification e-mails.")
+  }
+
+  ContainerDb_Ext(db, "Database", "PostgreSQL", "Stores account and customer data.")
+  System_Ext(email, "E-mail System", "Microsoft Exchange")
+  System_Ext(mainframe, "Mainframe Banking System", "Core banking records")
+
+  Rel(spa, authController, "Calls", "JSON/HTTPS")
+  Rel(spa, accountsController, "Calls", "JSON/HTTPS")
+  Rel(spa, paymentsController, "Calls", "JSON/HTTPS")
+  Rel(mobileApp, authController, "Calls", "JSON/HTTPS")
+  Rel(mobileApp, accountsController, "Calls", "JSON/HTTPS")
+  Rel(mobileApp, paymentsController, "Calls", "JSON/HTTPS")
+  Rel(authController, authService, "Uses")
+  Rel(accountsController, accountsService, "Uses")
+  Rel(paymentsController, paymentsService, "Uses")
+  Rel(paymentsService, emailService, "Uses")
+  Rel(accountsService, db, "Reads/writes", "SQL")
+  Rel(paymentsService, db, "Reads/writes", "SQL")
+  Rel(authService, db, "Reads/writes", "SQL")
+  Rel(emailService, email, "Sends e-mail using", "SMTP")
+  Rel(accountsService, mainframe, "Reads account data from", "XML/HTTPS")
+  Rel(paymentsService, mainframe, "Submits payments to", "XML/HTTPS")`;
+
+const level4Diagram = `classDiagram
+  direction TB
+
+  class AccountsController {
+    +getBalance(req, res) void
+    +getTransactions(req, res) void
+  }
+
+  class AccountsService {
+    -accountsRepository: AccountsRepository
+    -mainframeClient: MainframeClient
+    +getBalance(customerId: string) Promise~Account~
+    +getTransactions(customerId: string) Promise~Transaction[]~
+  }
+
+  class AccountsRepository {
+    -db: DatabaseConnection
+    +findByCustomerId(customerId: string) Promise~Account~
+    +findTransactions(accountId: string) Promise~Transaction[]~
+  }
+
+  class MainframeClient {
+    -baseUrl: string
+    +fetchAccount(customerId: string) Promise~Account~
+    +fetchTransactions(accountId: string) Promise~Transaction[]~
+  }
+
+  class Account {
+    +id: string
+    +customerId: string
+    +balance: number
+    +currency: string
+  }
+
+  class Transaction {
+    +id: string
+    +accountId: string
+    +amount: number
+    +description: string
+    +date: Date
+  }
+
+  AccountsController --> AccountsService : uses
+  AccountsService --> AccountsRepository : uses
+  AccountsService --> MainframeClient : uses
+  AccountsRepository --> Account : returns
+  AccountsRepository --> Transaction : returns
+  MainframeClient --> Account : returns
+  MainframeClient --> Transaction : returns`;
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="C4 Diagram Example – All 4 levels of the C4 model" />
+    <title>C4 Diagrams | Tooda</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
+          Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        background-color: #0f172a;
+        color: #f8fafc;
+        min-height: 100dvh;
+      }
+
+      header {
+        text-align: center;
+        padding: 2rem 1rem 1rem;
+      }
+
+      header h1 {
+        font-size: clamp(2rem, 6vw, 3.5rem);
+        font-weight: 800;
+        background: linear-gradient(135deg, #6366f1, #a78bfa, #38bdf8);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 0.5rem;
+      }
+
+      header p {
+        color: #94a3b8;
+        font-size: 1rem;
+      }
+
+      nav.back {
+        text-align: center;
+        padding: 0.5rem 1rem 1.5rem;
+      }
+
+      nav.back a {
+        color: #a78bfa;
+        text-decoration: none;
+        font-size: 0.9rem;
+      }
+
+      nav.back a:hover {
+        text-decoration: underline;
+      }
+
+      .tabs {
+        display: flex;
+        justify-content: center;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        padding: 0 1rem;
+        margin-bottom: 2rem;
+      }
+
+      .tab-btn {
+        background: #1e293b;
+        color: #94a3b8;
+        border: 1px solid #334155;
+        border-radius: 0.5rem;
+        padding: 0.5rem 1.25rem;
+        font-size: 0.95rem;
+        cursor: pointer;
+        transition: background 0.2s, color 0.2s, border-color 0.2s;
+      }
+
+      .tab-btn:hover {
+        background: #334155;
+        color: #f8fafc;
+      }
+
+      .tab-btn.active {
+        background: linear-gradient(135deg, #6366f1, #a78bfa);
+        color: #fff;
+        border-color: transparent;
+      }
+
+      .tab-panel {
+        display: none;
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 0 1rem 3rem;
+      }
+
+      .tab-panel.active {
+        display: block;
+      }
+
+      .tab-panel h2 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #e2e8f0;
+        margin-bottom: 0.5rem;
+      }
+
+      .tab-panel .description {
+        color: #94a3b8;
+        margin-bottom: 1.5rem;
+        line-height: 1.6;
+        font-size: 0.95rem;
+      }
+
+      .diagram-container {
+        background: #fff;
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        overflow-x: auto;
+      }
+
+      .diagram-container .mermaid {
+        display: flex;
+        justify-content: center;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>C4 Diagram Example</h1>
+      <p>An Online Banking System illustrated across all 4 levels of the C4 model</p>
+    </header>
+
+    <nav class="back">
+      <a href="/Tooda/">← Back to Home</a>
+    </nav>
+
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="level1">Level 1 – Context</button>
+      <button class="tab-btn" data-tab="level2">Level 2 – Container</button>
+      <button class="tab-btn" data-tab="level3">Level 3 – Component</button>
+      <button class="tab-btn" data-tab="level4">Level 4 – Code</button>
+    </div>
+
+    <!-- Level 1: System Context -->
+    <section id="level1" class="tab-panel active">
+      <h2>Level 1 – System Context</h2>
+      <p class="description">
+        Shows the Online Banking System in context: who uses it and which
+        external systems it interacts with.
+      </p>
+      <div class="diagram-container">
+        <div class="mermaid" set:text={level1Diagram}></div>
+      </div>
+    </section>
+
+    <!-- Level 2: Container -->
+    <section id="level2" class="tab-panel">
+      <h2>Level 2 – Container</h2>
+      <p class="description">
+        Zooms in on the Online Banking System to show the containers
+        (applications and data stores) that make it up.
+      </p>
+      <div class="diagram-container">
+        <div class="mermaid" set:text={level2Diagram}></div>
+      </div>
+    </section>
+
+    <!-- Level 3: Component -->
+    <section id="level3" class="tab-panel">
+      <h2>Level 3 – Component</h2>
+      <p class="description">
+        Zooms in on the API Application container to show the components
+        (services and controllers) inside it.
+      </p>
+      <div class="diagram-container">
+        <div class="mermaid" set:text={level3Diagram}></div>
+      </div>
+    </section>
+
+    <!-- Level 4: Code -->
+    <section id="level4" class="tab-panel">
+      <h2>Level 4 – Code</h2>
+      <p class="description">
+        Zooms in on the Accounts Service component to show the key classes
+        and interfaces that implement it.
+      </p>
+      <div class="diagram-container">
+        <div class="mermaid" set:text={level4Diagram}></div>
+      </div>
+    </section>
+
+    <script src="/Tooda/mermaid.min.js" is:inline></script>
+    <script is:inline>
+      mermaid.initialize({ startOnLoad: true, theme: 'default' });
+
+      // Tab switching
+      const buttons = document.querySelectorAll('.tab-btn');
+      const panels = document.querySelectorAll('.tab-panel');
+
+      buttons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const target = btn.dataset.tab;
+
+          buttons.forEach(b => b.classList.remove('active'));
+          panels.forEach(p => p.classList.remove('active'));
+
+          btn.classList.add('active');
+          document.getElementById(target).classList.add('active');
+        });
+      });
+    </script>
+  </body>
+</html>
