@@ -83,7 +83,7 @@ npm install
 npm run dev
 ```
 
-Opens a local dev server at `http://localhost:4321` with hot-module replacement. Changes to `.astro` files are reflected instantly in the browser.
+Opens a local dev server at `http://localhost:4321/Tooda` with hot-module replacement. Changes to `.astro` files are reflected instantly in the browser.
 
 ### Production Build
 
