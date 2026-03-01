@@ -322,7 +322,8 @@ const level4Diagram = `classDiagram
 
     <script src="/Tooda/mermaid.min.js" is:inline></script>
     <script is:inline>
-      mermaid.initialize({ startOnLoad: true, theme: 'default' });
+      mermaid.initialize({ startOnLoad: false, theme: 'default' });
+      mermaid.run();
 
       // Tab switching
       const buttons = document.querySelectorAll('.tab-btn');
@@ -336,7 +337,17 @@ const level4Diagram = `classDiagram
           panels.forEach(p => p.classList.remove('active'));
 
           btn.classList.add('active');
-          document.getElementById(target).classList.add('active');
+          const panel = document.getElementById(target);
+          panel.classList.add('active');
+
+          // Re-render any diagrams that were not rendered while hidden
+          const unrendered = Array.from(panel.querySelectorAll('.mermaid')).filter(
+            el => !el.querySelector('svg')
+          );
+          if (unrendered.length > 0) {
+            unrendered.forEach(el => el.removeAttribute('data-processed'));
+            mermaid.run({ nodes: unrendered });
+          }
         });
       });
     </script>
