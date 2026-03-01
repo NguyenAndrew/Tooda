@@ -35,6 +35,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Disable Astro Telemetry
+        run: npx astro telemetry disable
+
       - name: Build with Astro
         run: npm run build
 
