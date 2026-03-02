@@ -454,6 +454,8 @@ const diagrams = {
       }
 
       .example-btn {
+        display: inline-block;
+        text-decoration: none;
         background: #1e293b;
         color: #94a3b8;
         border: 1px solid #334155;
@@ -485,6 +487,8 @@ const diagrams = {
       }
 
       .tab-btn {
+        display: inline-block;
+        text-decoration: none;
         background: #1e293b;
         color: #94a3b8;
         border: 1px solid #334155;
@@ -541,6 +545,8 @@ const diagrams = {
       }
 
       .view-btn {
+        display: inline-block;
+        text-decoration: none;
         background: #1e293b;
         color: #94a3b8;
         border: 1px solid #334155;
@@ -605,21 +611,21 @@ const diagrams = {
     </nav>
 
     <div class="examples">
-      <button class="example-btn active" data-example="banking">Online Banking</button>
-      <button class="example-btn" data-example="ecommerce">E-Commerce</button>
-      <button class="example-btn" data-example="ridesharing">Ride-Sharing</button>
+      <a href="/Tooda/c4?example=banking" class="example-btn active" data-example="banking">Online Banking</a>
+      <a href="/Tooda/c4?example=ecommerce" class="example-btn" data-example="ecommerce">E-Commerce</a>
+      <a href="/Tooda/c4?example=ridesharing" class="example-btn" data-example="ridesharing">Ride-Sharing</a>
     </div>
 
     <div class="tabs">
-      <button class="tab-btn active" data-tab="level1">Level 1 – Context</button>
-      <button class="tab-btn" data-tab="level2">Level 2 – Container</button>
-      <button class="tab-btn" data-tab="level3">Level 3 – Component</button>
-      <button class="tab-btn" data-tab="level4">Level 4 – Code</button>
+      <a href="#level1" class="tab-btn active" data-tab="level1">Level 1 – Context</a>
+      <a href="#level2" class="tab-btn" data-tab="level2">Level 2 – Container</a>
+      <a href="#level3" class="tab-btn" data-tab="level3">Level 3 – Component</a>
+      <a href="#level4" class="tab-btn" data-tab="level4">Level 4 – Code</a>
     </div>
 
     <div class="view-toggle">
-      <button class="view-btn active" data-view="diagram">Diagram</button>
-      <button class="view-btn" data-view="code">Code</button>
+      <a href="?view=diagram" class="view-btn active" data-view="diagram">Diagram</a>
+      <a href="?view=code" class="view-btn" data-view="code">Code</a>
     </div>
 
     <!-- Level 1: System Context -->
@@ -722,7 +728,8 @@ const diagrams = {
       }
 
       buttons.forEach(btn => {
-        btn.addEventListener('click', () => {
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
           const target = btn.dataset.tab;
           history.pushState(null, '', '#' + target);
           activateTab(target);
@@ -770,7 +777,14 @@ const diagrams = {
       }
 
       viewBtns.forEach(btn => {
-        btn.addEventListener('click', () => activateView(btn.dataset.view));
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          const view = btn.dataset.view;
+          const url = new URL(window.location.href);
+          url.searchParams.set('view', view);
+          history.pushState(null, '', url.toString());
+          activateView(view);
+        });
       });
 
       // Example switching
@@ -813,7 +827,8 @@ const diagrams = {
       }
 
       exampleBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
           const key = btn.dataset.example;
           const url = new URL(window.location.href);
           url.searchParams.set('example', key);
@@ -822,11 +837,13 @@ const diagrams = {
         });
       });
 
-      // Activate example from URL query param on load
+      // Activate example and view from URL query params on load
       function activateFromQuery() {
         const params = new URLSearchParams(window.location.search);
         const example = params.get('example') || 'banking';
+        const view = params.get('view') || 'diagram';
         activateExample(example);
+        activateView(view);
       }
 
       window.addEventListener('popstate', () => {
