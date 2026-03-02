@@ -194,13 +194,43 @@ By default, Copilot coding agent starts **two** MCP servers automatically: GitHu
   "mcpServers": {
     "github": {
       "type": "http",
-      "url": "https://api.githubcopilot.com/mcp/"
+      "url": "https://api.githubcopilot.com/mcp/",
+      "tools": [
+        "actions_get",
+        "actions_list",
+        "get_code_scanning_alert",
+        "get_commit",
+        "get_file_contents",
+        "get_job_logs",
+        "get_label",
+        "get_latest_release",
+        "get_me",
+        "get_release_by_tag",
+        "get_secret_scanning_alert",
+        "get_tag",
+        "issue_read",
+        "list_branches",
+        "list_code_scanning_alerts",
+        "list_commits",
+        "list_issue_types",
+        "list_issues",
+        "list_pull_requests",
+        "list_releases",
+        "list_secret_scanning_alerts",
+        "list_tags",
+        "pull_request_read",
+        "search_code",
+        "search_issues",
+        "search_pull_requests",
+        "search_repositories",
+        "search_users"
+      ]
     }
   }
 }
 ```
 
-Specifying only the `github` entry here tells the coding agent exactly which MCP servers to use, which excludes the default Playwright server.
+Specifying only the `github` entry here (with the required `tools` allow-list) tells the coding agent exactly which MCP servers and tools to use, which excludes the default Playwright server.
 
 ---
 
