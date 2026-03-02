@@ -673,8 +673,8 @@ const diagrams = {
       <button class="zoom-btn" id="zoom-in" aria-label="Zoom in" title="Zoom in">+</button>
       <button class="zoom-btn" id="zoom-out" aria-label="Zoom out" title="Zoom out">−</button>
       <button class="zoom-btn" id="zoom-reset" aria-label="Reset zoom" title="Reset zoom">⟳</button>
-      <span class="zoom-hint" id="edit-hint" style="display:none">Drag boxes to reposition · Scroll to zoom</span>
-      <span class="zoom-hint" id="pan-hint">Drag to pan · Scroll to zoom</span>
+      <span class="zoom-hint" aria-live="polite" id="edit-hint" style="display:none">Drag boxes to reposition · Scroll to zoom</span>
+      <span class="zoom-hint" aria-live="polite" id="pan-hint">Drag to pan · Scroll to zoom</span>
     </div>
 
     <!-- Level 1: System Context -->
@@ -922,6 +922,8 @@ const diagrams = {
       const ZOOM_STEP = 0.15;
       // Maximum zoom-in: 10× original size; maximum zoom-out: 10× original size
       const ZOOM_MAX_FACTOR = 10;
+      // SVG-unit tolerance for matching edge endpoints to node boundaries during drag
+      const EDGE_MATCH_TOLERANCE = 3;
       // WeakMap: SVG element → { x, y, w, h, ox, oy, ow, oh }
       const vbState = new WeakMap();
 
@@ -1013,7 +1015,7 @@ const diagrams = {
       // Build list of edge elements (and which endpoint) connected to a C4 node.
       // T is the SVG-unit tolerance for matching edge endpoints to node boundaries.
       function c4Connections(svgEl, bounds) {
-        const T = 3; // pixels in SVG coordinate space
+        const T = EDGE_MATCH_TOLERANCE;
         const conns = [];
         svgEl.querySelectorAll('g > line').forEach(line => {
           const x1 = +line.getAttribute('x1'), y1 = +line.getAttribute('y1');
