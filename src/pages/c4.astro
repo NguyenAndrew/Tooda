@@ -568,11 +568,51 @@ const diagrams = {
         border-color: transparent;
       }
 
+      .zoom-controls {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        padding: 0 1rem;
+        margin-bottom: 1rem;
+      }
+
+      .zoom-btn {
+        background: #1e293b;
+        color: #94a3b8;
+        border: 1px solid #334155;
+        border-radius: 0.5rem;
+        padding: 0.35rem 0.75rem;
+        font-size: 1rem;
+        line-height: 1;
+        cursor: pointer;
+        transition: background 0.2s, color 0.2s;
+      }
+
+      .zoom-btn:hover {
+        background: #334155;
+        color: #f8fafc;
+      }
+
+      .zoom-hint {
+        color: #64748b;
+        font-size: 0.8rem;
+      }
+
       .diagram-container {
         background: #fff;
         border-radius: 0.75rem;
         padding: 1.5rem;
-        overflow-x: auto;
+        overflow: hidden;
+        /* touch-action: none enables our custom pan/pinch-zoom handlers */
+        touch-action: none;
+        user-select: none;
+        cursor: grab;
+      }
+
+      .diagram-container:active {
+        cursor: grabbing;
       }
 
       .diagram-container .mermaid {
@@ -626,6 +666,15 @@ const diagrams = {
     <div class="view-toggle">
       <a href="?view=diagram" class="view-btn active" data-view="diagram">Diagram</a>
       <a href="?view=code" class="view-btn" data-view="code">Code</a>
+      <a href="?view=edit" class="view-btn" data-view="edit">Edit</a>
+    </div>
+
+    <div class="zoom-controls" id="zoom-controls">
+      <button class="zoom-btn" id="zoom-in" aria-label="Zoom in" title="Zoom in">+</button>
+      <button class="zoom-btn" id="zoom-out" aria-label="Zoom out" title="Zoom out">−</button>
+      <button class="zoom-btn" id="zoom-reset" aria-label="Reset zoom" title="Reset zoom">⟳</button>
+      <span class="zoom-hint" aria-live="polite" id="edit-hint" style="display:none">Drag boxes to reposition · Scroll to zoom</span>
+      <span class="zoom-hint" aria-live="polite" id="pan-hint">Drag to pan · Scroll to zoom</span>
     </div>
 
     <!-- Level 1: System Context -->
@@ -695,6 +744,7 @@ const diagrams = {
 
       // View toggle state – declared first so activateTab can reference it
       let currentView = 'diagram';
+      let isEditMode = false;
 
       // Tab switching
       const buttons = document.querySelectorAll('.tab-btn');
@@ -715,7 +765,7 @@ const diagrams = {
           panel.classList.add('active');
 
           // Re-render any diagrams that were not rendered while hidden
-          if (currentView === 'diagram') {
+          if (currentView === 'diagram' || currentView === 'edit') {
             const unrendered = Array.from(panel.querySelectorAll('.mermaid')).filter(
               el => !el.querySelector('svg')
             );
@@ -750,19 +800,34 @@ const diagrams = {
 
       function activateView(view) {
         currentView = view;
+        isEditMode = (view === 'edit');
         viewBtns.forEach(b => b.classList.remove('active'));
         const activeViewBtn = document.querySelector(`.view-btn[data-view="${view}"]`);
         if (activeViewBtn) activeViewBtn.classList.add('active');
 
+        const isDiagramVisible = view === 'diagram' || view === 'edit';
         document.querySelectorAll('.tab-panel').forEach(panel => {
           const diagramContainer = panel.querySelector('.diagram-container');
           const codeContainer = panel.querySelector('.code-container');
-          if (diagramContainer) diagramContainer.style.display = view === 'diagram' ? '' : 'none';
+          if (diagramContainer) diagramContainer.style.display = isDiagramVisible ? '' : 'none';
           if (codeContainer) codeContainer.style.display = view === 'code' ? 'block' : 'none';
         });
 
-        // If switching to diagram view, render any unrendered diagrams in the active panel
-        if (view === 'diagram') {
+        // Show/hide zoom controls and update hints
+        const zoomCtrl = document.getElementById('zoom-controls');
+        if (zoomCtrl) zoomCtrl.style.display = view === 'code' ? 'none' : '';
+        const editHint = document.getElementById('edit-hint');
+        const panHint = document.getElementById('pan-hint');
+        if (editHint) editHint.style.display = isEditMode ? '' : 'none';
+        if (panHint) panHint.style.display = isEditMode ? 'none' : '';
+
+        // Update node cursors for current edit mode
+        document.querySelectorAll('.diagram-container').forEach(c => {
+          updateNodeCursors(c.querySelector('.mermaid svg'), isEditMode);
+        });
+
+        // If switching to diagram or edit view, render any unrendered diagrams in the active panel
+        if (isDiagramVisible) {
           const activePanel = document.querySelector('.tab-panel.active');
           if (activePanel) {
             const unrendered = Array.from(activePanel.querySelectorAll('.mermaid')).filter(
@@ -817,7 +882,7 @@ const diagrams = {
         });
 
         // Re-render only the currently visible panel (diagram view only)
-        if (currentView === 'diagram') {
+        if (currentView === 'diagram' || currentView === 'edit') {
           const activePanel = document.querySelector('.tab-panel.active');
           if (activePanel) {
             const el = activePanel.querySelector('.mermaid');
@@ -851,6 +916,377 @@ const diagrams = {
         activateFromHash();
       });
       activateFromQuery();
+
+      // ===== PAN / ZOOM / NODE DRAG =====
+
+      const ZOOM_STEP = 0.15;
+      // Maximum zoom-in: 10× original size; maximum zoom-out: 10× original size
+      const ZOOM_MAX_FACTOR = 10;
+      // SVG-unit tolerance for matching edge endpoints to node boundaries during drag
+      const EDGE_MATCH_TOLERANCE = 3;
+      // WeakMap: SVG element → { x, y, w, h, ox, oy, ow, oh }
+      const vbState = new WeakMap();
+
+      function initSvg(svgEl) {
+        if (vbState.has(svgEl)) return;
+        const vbAttr = svgEl.getAttribute('viewBox');
+        let ox, oy, ow, oh;
+        if (vbAttr) {
+          const p = vbAttr.trim().split(/[\s,]+/).map(Number);
+          [ox, oy, ow, oh] = p;
+        } else {
+          ox = 0; oy = 0;
+          ow = parseFloat(svgEl.getAttribute('width')) || 800;
+          oh = parseFloat(svgEl.getAttribute('height')) || 600;
+          svgEl.setAttribute('viewBox', `${ox} ${oy} ${ow} ${oh}`);
+        }
+        vbState.set(svgEl, { x: ox, y: oy, w: ow, h: oh, ox, oy, ow, oh });
+        svgEl.style.width = '100%';
+        svgEl.style.height = 'auto';
+        svgEl.style.display = 'block';
+      }
+
+      function applyVB(svgEl) {
+        const s = vbState.get(svgEl);
+        if (s) svgEl.setAttribute('viewBox', `${s.x} ${s.y} ${s.w} ${s.h}`);
+      }
+
+      function zoomAt(svgEl, factor, px, py) {
+        const s = vbState.get(svgEl);
+        if (!s) return;
+        const newW = Math.max(s.ow / ZOOM_MAX_FACTOR, Math.min(s.ow * ZOOM_MAX_FACTOR, s.w * factor));
+        const newH = Math.max(s.oh / ZOOM_MAX_FACTOR, Math.min(s.oh * ZOOM_MAX_FACTOR, s.h * factor));
+        s.x = px - (px - s.x) * (newW / s.w);
+        s.y = py - (py - s.y) * (newH / s.h);
+        s.w = newW;
+        s.h = newH;
+        applyVB(svgEl);
+      }
+
+      function resetZoom(svgEl) {
+        const s = vbState.get(svgEl);
+        if (!s) return;
+        s.x = s.ox; s.y = s.oy; s.w = s.ow; s.h = s.oh;
+        applyVB(svgEl);
+      }
+
+      function screenToSvg(svgEl, cx, cy) {
+        const rect = svgEl.getBoundingClientRect();
+        const s = vbState.get(svgEl);
+        if (!s) return { x: 0, y: 0 };
+        return {
+          x: s.x + (cx - rect.left) * (s.w / rect.width),
+          y: s.y + (cy - rect.top) * (s.h / rect.height)
+        };
+      }
+
+      function getActiveSvg() {
+        const p = document.querySelector('.tab-panel.active');
+        return p ? p.querySelector('.diagram-container .mermaid svg') : null;
+      }
+
+      // Update cursor on draggable nodes based on edit mode.
+      // Mermaid renders all C4 diagram elements (persons, systems, containers)
+      // as <g class="person-man">, and classDiagram classes as <g class="node default">.
+      function updateNodeCursors(svgEl, editMode) {
+        if (!svgEl) return;
+        svgEl.querySelectorAll('g.person-man, g.node.default').forEach(n => {
+          n.style.cursor = editMode ? 'move' : '';
+        });
+      }
+
+      // ---- C4 node helpers (absolute-coord nodes) ----
+      function c4Bounds(nodeG) {
+        const r = nodeG.querySelector('rect');
+        if (!r) return null;
+        const x = +r.getAttribute('x'), y = +r.getAttribute('y');
+        const w = +r.getAttribute('width'), h = +r.getAttribute('height');
+        return { x, y, w, h };
+      }
+
+      function moveC4Node(nodeG, dx, dy) {
+        nodeG.querySelectorAll('rect, text, image').forEach(el => {
+          const x = el.getAttribute('x'), y = el.getAttribute('y');
+          if (x !== null) el.setAttribute('x', +x + dx);
+          if (y !== null) el.setAttribute('y', +y + dy);
+        });
+      }
+
+      // Build list of edge elements (and which endpoint) connected to a C4 node.
+      // T is the SVG-unit tolerance for matching edge endpoints to node boundaries.
+      function c4Connections(svgEl, bounds) {
+        const T = EDGE_MATCH_TOLERANCE;
+        const conns = [];
+        svgEl.querySelectorAll('g > line').forEach(line => {
+          const x1 = +line.getAttribute('x1'), y1 = +line.getAttribute('y1');
+          const x2 = +line.getAttribute('x2'), y2 = +line.getAttribute('y2');
+          if (x1 >= bounds.x - T && x1 <= bounds.x + bounds.w + T &&
+              y1 >= bounds.y - T && y1 <= bounds.y + bounds.h + T)
+            conns.push({ el: line, type: 'line-start', ox: x1, oy: y1 });
+          if (x2 >= bounds.x - T && x2 <= bounds.x + bounds.w + T &&
+              y2 >= bounds.y - T && y2 <= bounds.y + bounds.h + T)
+            conns.push({ el: line, type: 'line-end', ox: x2, oy: y2 });
+        });
+        svgEl.querySelectorAll('g > path[d]').forEach(path => {
+          const d = path.getAttribute('d');
+          if (!d) return;
+          const sm = d.match(/^M\s*([\d.]+)[,\s]+([\d.]+)/);
+          if (sm) {
+            const sx = +sm[1], sy = +sm[2];
+            if (sx >= bounds.x - T && sx <= bounds.x + bounds.w + T &&
+                sy >= bounds.y - T && sy <= bounds.y + bounds.h + T)
+              conns.push({ el: path, type: 'path-start', ox: sx, oy: sy, od: d });
+          }
+          // Quadratic Bézier end segment: "Q controlX,controlY endX,endY"
+          const qm = d.match(/Q\s*([\d.]+)[,\s]+([\d.]+)\s+([\d.]+)[,\s]+([\d.]+)\s*$/);
+          if (qm) {
+            const ex = +qm[3], ey = +qm[4];
+            if (ex >= bounds.x - T && ex <= bounds.x + bounds.w + T &&
+                ey >= bounds.y - T && ey <= bounds.y + bounds.h + T)
+              conns.push({ el: path, type: 'path-q-end', ox: ex, oy: ey, ocx: +qm[1], ocy: +qm[2], od: d });
+          }
+          // L segment end: "L ex,ey" at the end of path
+          const lm = d.match(/L\s*([\d.]+)[,\s]+([\d.]+)\s*$/);
+          if (lm) {
+            const ex = +lm[1], ey = +lm[2];
+            if (ex >= bounds.x - T && ex <= bounds.x + bounds.w + T &&
+                ey >= bounds.y - T && ey <= bounds.y + bounds.h + T)
+              conns.push({ el: path, type: 'path-l-end', ox: ex, oy: ey, od: d });
+          }
+        });
+        return conns;
+      }
+
+      // ---- classDiagram node helpers (transform-based nodes) ----
+      function classPos(nodeG) {
+        const m = (nodeG.getAttribute('transform') || '').match(/translate\(([\d.]+)[,\s]+([\d.]+)\)/);
+        return m ? { x: +m[1], y: +m[2] } : null;
+      }
+
+      function moveClassNode(nodeG, dx, dy) {
+        const pos = classPos(nodeG);
+        if (pos) nodeG.setAttribute('transform', `translate(${pos.x + dx}, ${pos.y + dy})`);
+      }
+
+      // Build edge connections for a classDiagram node using closest-node matching
+      function classConnections(svgEl, nodeG) {
+        const nodePos = Array.from(svgEl.querySelectorAll('.nodes > g.node')).map(n => {
+          const m = (n.getAttribute('transform') || '').match(/translate\(([\d.]+)[,\s]+([\d.]+)\)/);
+          return m ? { id: n.id, x: +m[1], y: +m[2] } : null;
+        }).filter(Boolean);
+
+        const conns = [];
+        svgEl.querySelectorAll('.edgePaths path').forEach(path => {
+          const d = path.getAttribute('d');
+          if (!d) return;
+          const sm = d.match(/^M\s*([\d.]+)[,\s]+([\d.]+)/);
+          const lm = d.match(/L([\d.]+)[,\s]+([\d.]+)\s*$/);
+          if (!sm || !lm) return;
+          const sx = +sm[1], sy = +sm[2];
+          const ex = +lm[1], ey = +lm[2];
+
+          // Find the closest node to each endpoint
+          let minD = Infinity, srcNode = null;
+          nodePos.forEach(np => {
+            const dist = Math.hypot(sx - np.x, sy - np.y);
+            if (dist < minD) { minD = dist; srcNode = np; }
+          });
+          minD = Infinity;
+          let dstNode = null;
+          nodePos.forEach(np => {
+            const dist = Math.hypot(ex - np.x, ey - np.y);
+            if (dist < minD) { minD = dist; dstNode = np; }
+          });
+
+          if (srcNode && srcNode.id === nodeG.id)
+            conns.push({ el: path, type: 'path-start', ox: sx, oy: sy, od: d });
+          if (dstNode && dstNode.id === nodeG.id)
+            conns.push({ el: path, type: 'path-l-end', ox: ex, oy: ey, od: d });
+        });
+        return conns;
+      }
+
+      // Apply (dx, dy) delta to a list of edge connections
+      function applyConnDelta(conns, dx, dy) {
+        conns.forEach(c => {
+          if (c.type === 'line-start') {
+            c.el.setAttribute('x1', c.ox + dx);
+            c.el.setAttribute('y1', c.oy + dy);
+          } else if (c.type === 'line-end') {
+            c.el.setAttribute('x2', c.ox + dx);
+            c.el.setAttribute('y2', c.oy + dy);
+          } else if (c.type === 'path-start') {
+            const newD = c.od.replace(/^M\s*([\d.]+)[,\s]+([\d.]+)/, `M ${c.ox + dx},${c.oy + dy}`);
+            c.el.setAttribute('d', newD);
+          } else if (c.type === 'path-q-end') {
+            const newD = c.od.replace(
+              /Q\s*[\d.]+[,\s]+[\d.]+\s+[\d.]+[,\s]+[\d.]+\s*$/,
+              `Q ${c.ocx},${c.ocy} ${c.ox + dx},${c.oy + dy}`
+            );
+            c.el.setAttribute('d', newD);
+          } else if (c.type === 'path-l-end') {
+            const newD = c.od.replace(/L([\d.]+)[,\s]+([\d.]+)\s*$/, `L${c.ox + dx},${c.oy + dy}`);
+            c.el.setAttribute('d', newD);
+          }
+        });
+      }
+
+      // ---- Pan/zoom gesture state ----
+      let panGesture = null; // { svgEl, startX, startY, startVBX, startVBY, scaleX, scaleY }
+      let nodeDrag = null;   // { nodeG, svgEl, isC4, origPos, edges, startX, startY, scaleX, scaleY }
+
+      // ---- Container setup ----
+      function setupDiagramContainer(container) {
+        if (container.dataset.panZoomSetup) return;
+        container.dataset.panZoomSetup = '1';
+
+        container.addEventListener('mousedown', (e) => {
+          const svgEl = container.querySelector('.mermaid svg');
+          if (!svgEl || !vbState.has(svgEl)) return;
+          const s = vbState.get(svgEl);
+          const rect = svgEl.getBoundingClientRect();
+          const scaleX = s.w / rect.width;
+          const scaleY = s.h / rect.height;
+
+          const c4Node = isEditMode ? e.target.closest('g.person-man') : null;
+          const classNode = isEditMode ? e.target.closest('g.node.default') : null;
+
+          if (c4Node || classNode) {
+            e.preventDefault();
+            e.stopPropagation();
+            const nodeG = c4Node || classNode;
+            const isC4 = !!c4Node;
+            const origPos = isC4 ? c4Bounds(nodeG) : classPos(nodeG);
+            const edges = isC4 ? c4Connections(svgEl, origPos) : classConnections(svgEl, nodeG);
+            nodeDrag = { nodeG, svgEl, isC4, origPos, edges, startX: e.clientX, startY: e.clientY, scaleX, scaleY };
+          } else {
+            e.preventDefault();
+            panGesture = { svgEl, startX: e.clientX, startY: e.clientY, startVBX: s.x, startVBY: s.y, scaleX, scaleY };
+          }
+        });
+
+        container.addEventListener('wheel', (e) => {
+          const svgEl = container.querySelector('.mermaid svg');
+          if (!svgEl || !vbState.has(svgEl)) return;
+          e.preventDefault();
+          const factor = e.deltaY < 0 ? 1 - ZOOM_STEP : 1 + ZOOM_STEP;
+          const pt = screenToSvg(svgEl, e.clientX, e.clientY);
+          zoomAt(svgEl, factor, pt.x, pt.y);
+        }, { passive: false });
+
+        // Touch: single-finger pan, two-finger pinch zoom
+        let touchState = {};
+        let lastPinchDist = null;
+        container.addEventListener('touchstart', (e) => {
+          Array.from(e.changedTouches).forEach(t => {
+            touchState[t.identifier] = { x: t.clientX, y: t.clientY };
+          });
+          if (Object.keys(touchState).length === 2) {
+            const pts = Object.values(touchState);
+            lastPinchDist = Math.hypot(pts[1].x - pts[0].x, pts[1].y - pts[0].y);
+          }
+        }, { passive: true });
+        container.addEventListener('touchmove', (e) => {
+          const svgEl = container.querySelector('.mermaid svg');
+          if (!svgEl) return;
+          e.preventDefault();
+          if (e.touches.length === 2) {
+            const t0 = e.touches[0], t1 = e.touches[1];
+            const dist = Math.hypot(t1.clientX - t0.clientX, t1.clientY - t0.clientY);
+            if (lastPinchDist) {
+              const pt = screenToSvg(svgEl, (t0.clientX + t1.clientX) / 2, (t0.clientY + t1.clientY) / 2);
+              zoomAt(svgEl, lastPinchDist / dist, pt.x, pt.y);
+            }
+            lastPinchDist = dist;
+            touchState[t0.identifier] = { x: t0.clientX, y: t0.clientY };
+            touchState[t1.identifier] = { x: t1.clientX, y: t1.clientY };
+          } else if (e.touches.length === 1) {
+            const t = e.touches[0];
+            const prev = touchState[t.identifier];
+            const s = vbState.get(svgEl);
+            if (prev && s) {
+              const rect = svgEl.getBoundingClientRect();
+              s.x -= (t.clientX - prev.x) * (s.w / rect.width);
+              s.y -= (t.clientY - prev.y) * (s.h / rect.height);
+              applyVB(svgEl);
+            }
+            touchState[t.identifier] = { x: t.clientX, y: t.clientY };
+          }
+        }, { passive: false });
+        container.addEventListener('touchend', (e) => {
+          Array.from(e.changedTouches).forEach(t => delete touchState[t.identifier]);
+          if (Object.keys(touchState).length < 2) lastPinchDist = null;
+        }, { passive: true });
+      }
+
+      // Global mousemove: handle pan and node drag
+      document.addEventListener('mousemove', (e) => {
+        if (nodeDrag) {
+          const { nodeG, svgEl, isC4, origPos, edges, startX, startY, scaleX, scaleY } = nodeDrag;
+          const totalDx = (e.clientX - startX) * scaleX;
+          const totalDy = (e.clientY - startY) * scaleY;
+          if (isC4) {
+            const rect = nodeG.querySelector('rect');
+            if (rect) {
+              const curX = +rect.getAttribute('x'), curY = +rect.getAttribute('y');
+              moveC4Node(nodeG, origPos.x + totalDx - curX, origPos.y + totalDy - curY);
+            }
+          } else {
+            const pos = classPos(nodeG);
+            if (pos) moveClassNode(nodeG, origPos.x + totalDx - pos.x, origPos.y + totalDy - pos.y);
+          }
+          applyConnDelta(edges, totalDx, totalDy);
+        } else if (panGesture) {
+          const { svgEl, startX, startY, startVBX, startVBY, scaleX, scaleY } = panGesture;
+          const s = vbState.get(svgEl);
+          if (s) {
+            s.x = startVBX - (e.clientX - startX) * scaleX;
+            s.y = startVBY - (e.clientY - startY) * scaleY;
+            applyVB(svgEl);
+          }
+        }
+      });
+
+      document.addEventListener('mouseup', () => {
+        nodeDrag = null;
+        panGesture = null;
+      });
+
+      // ---- Zoom control buttons ----
+      document.getElementById('zoom-in')?.addEventListener('click', () => {
+        const svg = getActiveSvg();
+        if (svg && vbState.has(svg)) {
+          const s = vbState.get(svg);
+          zoomAt(svg, 1 - ZOOM_STEP, s.x + s.w / 2, s.y + s.h / 2);
+        }
+      });
+      document.getElementById('zoom-out')?.addEventListener('click', () => {
+        const svg = getActiveSvg();
+        if (svg && vbState.has(svg)) {
+          const s = vbState.get(svg);
+          zoomAt(svg, 1 + ZOOM_STEP, s.x + s.w / 2, s.y + s.h / 2);
+        }
+      });
+      document.getElementById('zoom-reset')?.addEventListener('click', () => {
+        const svg = getActiveSvg();
+        if (svg) resetZoom(svg);
+      });
+
+      // ---- Auto-setup containers via MutationObserver ----
+      // When Mermaid adds/replaces an SVG inside a .mermaid element, initialize it
+      document.querySelectorAll('.mermaid').forEach(mermaidEl => {
+        const container = mermaidEl.closest('.diagram-container');
+        if (!container) return;
+        setupDiagramContainer(container);
+        const observer = new MutationObserver(() => {
+          const svg = mermaidEl.querySelector('svg');
+          if (svg && !vbState.has(svg)) {
+            initSvg(svg);
+            updateNodeCursors(svg, isEditMode);
+          }
+        });
+        observer.observe(mermaidEl, { childList: true });
+      });
     </script>
   </body>
 </html>
