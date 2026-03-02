@@ -259,4 +259,54 @@ test.describe('C4 diagram page', () => {
     await expect(page.locator('#edit-hint')).toBeHidden();
   });
 
+  test('positions container is hidden by default (diagram view)', async ({ page }) => {
+    await page.goto('/Tooda/c4');
+    await expect(page.locator('#level1 .positions-container')).toBeHidden();
+  });
+
+  test('positions container is hidden in code view', async ({ page }) => {
+    await page.goto('/Tooda/c4');
+    await page.getByRole('link', { name: 'Code', exact: true }).click();
+    await expect(page.locator('#level1 .positions-container')).toBeHidden();
+  });
+
+  test('positions container is visible in edit view', async ({ page }) => {
+    await page.goto('/Tooda/c4');
+    await page.getByRole('link', { name: 'Edit', exact: true }).click();
+    await expect(page.locator('#level1 .positions-container')).toBeVisible();
+  });
+
+  test('positions container displays node position JSON in edit view', async ({ page }) => {
+    await page.goto('/Tooda/c4');
+    await page.getByRole('link', { name: 'Edit', exact: true }).click();
+    await page.waitForSelector('#level1 .mermaid svg', { state: 'visible' });
+    await expect(page.locator('#level1 .positions-container code')).toContainText('"x"');
+    await expect(page.locator('#level1 .positions-container code')).toContainText('"y"');
+    // Node names should appear, not type stereotype labels
+    await expect(page.locator('#level1 .positions-container code')).not.toContainText('<<person>>');
+  });
+
+  test('positions container is visible for level 4 class diagram in edit view', async ({ page }) => {
+    await page.goto('/Tooda/c4');
+    await page.getByRole('link', { name: 'Level 4 – Code' }).click();
+    await page.getByRole('link', { name: 'Edit', exact: true }).click();
+    await page.waitForSelector('#level4 .mermaid svg', { state: 'visible' });
+    await expect(page.locator('#level4 .positions-container')).toBeVisible();
+  });
+
+  test('positions container hides when switching from edit to diagram view', async ({ page }) => {
+    await page.goto('/Tooda/c4');
+    await page.getByRole('link', { name: 'Edit', exact: true }).click();
+    await expect(page.locator('#level1 .positions-container')).toBeVisible();
+    await page.getByRole('link', { name: 'Diagram', exact: true }).click();
+    await expect(page.locator('#level1 .positions-container')).toBeHidden();
+  });
+
+  test('positions container is visible when switching between levels in edit view', async ({ page }) => {
+    await page.goto('/Tooda/c4');
+    await page.getByRole('link', { name: 'Edit', exact: true }).click();
+    await page.getByRole('link', { name: 'Level 2 – Container' }).click();
+    await expect(page.locator('#level2 .positions-container')).toBeVisible();
+  });
+
 });
