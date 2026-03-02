@@ -11,10 +11,18 @@ test.describe('Home page', () => {
     await expect(page.getByRole('heading', { name: 'Hello, World!' })).toBeVisible();
   });
 
-  test('has a link to the C4 diagram page', async ({ page }) => {
+  test('has links to each C4 diagram example', async ({ page }) => {
     await page.goto('/Tooda/');
-    const cta = page.getByRole('link', { name: /View C4 Diagram Example/ });
-    await expect(cta).toBeVisible();
-    await expect(cta).toHaveAttribute('href', '/Tooda/c4');
+    const bankingLink = page.getByRole('link', { name: /Online Banking/ });
+    await expect(bankingLink).toBeVisible();
+    await expect(bankingLink).toHaveAttribute('href', '/Tooda/c4?example=banking');
+
+    const ecommerceLink = page.getByRole('link', { name: /E-Commerce/ });
+    await expect(ecommerceLink).toBeVisible();
+    await expect(ecommerceLink).toHaveAttribute('href', '/Tooda/c4?example=ecommerce');
+
+    const ridesharingLink = page.getByRole('link', { name: /Ride-Sharing/ });
+    await expect(ridesharingLink).toBeVisible();
+    await expect(ridesharingLink).toHaveAttribute('href', '/Tooda/c4?example=ridesharing');
   });
 });
