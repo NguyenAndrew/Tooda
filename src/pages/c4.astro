@@ -638,6 +638,26 @@ const diagrams = {
         white-space: pre-wrap;
         word-break: break-word;
       }
+
+      .positions-container {
+        background: #1e293b;
+        border: 1px solid #334155;
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        overflow-x: auto;
+        display: none;
+        margin-top: 1rem;
+      }
+
+      .positions-container pre {
+        color: #e2e8f0;
+        font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo,
+          Consolas, 'DejaVu Sans Mono', monospace;
+        font-size: 0.875rem;
+        line-height: 1.6;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
     </style>
   </head>
   <body>
@@ -690,6 +710,9 @@ const diagrams = {
       <div class="code-container">
         <pre><code>{diagrams.banking.level1}</code></pre>
       </div>
+      <div class="positions-container">
+        <pre><code></code></pre>
+      </div>
     </section>
 
     <!-- Level 2: Container -->
@@ -704,6 +727,9 @@ const diagrams = {
       </div>
       <div class="code-container">
         <pre><code>{diagrams.banking.level2}</code></pre>
+      </div>
+      <div class="positions-container">
+        <pre><code></code></pre>
       </div>
     </section>
 
@@ -720,6 +746,9 @@ const diagrams = {
       <div class="code-container">
         <pre><code>{diagrams.banking.level3}</code></pre>
       </div>
+      <div class="positions-container">
+        <pre><code></code></pre>
+      </div>
     </section>
 
     <!-- Level 4: Code -->
@@ -734,6 +763,9 @@ const diagrams = {
       </div>
       <div class="code-container">
         <pre><code>{diagrams.banking.level4}</code></pre>
+      </div>
+      <div class="positions-container">
+        <pre><code></code></pre>
       </div>
     </section>
 
@@ -809,8 +841,10 @@ const diagrams = {
         document.querySelectorAll('.tab-panel').forEach(panel => {
           const diagramContainer = panel.querySelector('.diagram-container');
           const codeContainer = panel.querySelector('.code-container');
+          const posContainer = panel.querySelector('.positions-container');
           if (diagramContainer) diagramContainer.style.display = isDiagramVisible ? '' : 'none';
           if (codeContainer) codeContainer.style.display = view === 'code' ? 'block' : 'none';
+          if (posContainer) posContainer.style.display = isEditMode ? 'block' : 'none';
         });
 
         // Show/hide zoom controls and update hints
@@ -837,6 +871,7 @@ const diagrams = {
               unrendered.forEach(el => el.removeAttribute('data-processed'));
               mermaid.run({ nodes: unrendered });
             }
+            if (isEditMode) updatePositionsPanel(activePanel);
           }
         }
       }
@@ -918,6 +953,48 @@ const diagrams = {
       activateFromQuery();
 
       // ===== PAN / ZOOM / NODE DRAG =====
+
+      function getPositionsText(svgEl) {
+        if (!svgEl) return '';
+        const positions = {};
+        // C4 stereotype labels rendered by Mermaid use the pattern <<type>>;
+        // skip these to display the human-readable node name instead.
+        const isStereotype = text => text.startsWith('<<') && text.endsWith('>>');
+        // C4 nodes (absolute-coord, g.person-man)
+        svgEl.querySelectorAll('g.person-man').forEach(nodeG => {
+          const r = nodeG.querySelector('rect');
+          if (!r) return;
+          const texts = nodeG.querySelectorAll('text');
+          let label = '';
+          for (const t of texts) {
+            const text = t.textContent.trim();
+            // Skip type stereotype labels like <<person>>, <<system>>, etc.
+            if (text && !isStereotype(text)) { label = text; break; }
+          }
+          positions[label || 'node'] = {
+            x: Math.round(+r.getAttribute('x')),
+            y: Math.round(+r.getAttribute('y'))
+          };
+        });
+        // Class diagram nodes (transform-based, g.node.default).
+        // Mermaid assigns IDs in the format "classId-{ClassName}-{index}" (Mermaid v10+).
+        svgEl.querySelectorAll('.nodes > g.node.default').forEach(nodeG => {
+          const m = (nodeG.getAttribute('transform') || '').match(/translate\(([\d.]+)[,\s]+([\d.]+)\)/);
+          if (!m) return;
+          const idMatch = (nodeG.id || '').match(/classId-(.*?)-\d+$/);
+          const label = idMatch ? idMatch[1] : (nodeG.id || 'node');
+          positions[label] = { x: Math.round(+m[1]), y: Math.round(+m[2]) };
+        });
+        if (Object.keys(positions).length === 0) return '';
+        return JSON.stringify(positions, null, 2);
+      }
+
+      function updatePositionsPanel(panel) {
+        const posEl = panel ? panel.querySelector('.positions-container code') : null;
+        if (!posEl) return;
+        const svgEl = panel.querySelector('.diagram-container .mermaid svg');
+        posEl.textContent = getPositionsText(svgEl);
+      }
 
       const ZOOM_STEP = 0.15;
       // Maximum zoom-in: 10× original size; maximum zoom-out: 10× original size
@@ -1248,6 +1325,10 @@ const diagrams = {
       });
 
       document.addEventListener('mouseup', () => {
+        if (nodeDrag) {
+          const activePanel = document.querySelector('.tab-panel.active');
+          if (activePanel) updatePositionsPanel(activePanel);
+        }
         nodeDrag = null;
         panGesture = null;
       });
@@ -1283,6 +1364,10 @@ const diagrams = {
           if (svg && !vbState.has(svg)) {
             initSvg(svg);
             updateNodeCursors(svg, isEditMode);
+            if (isEditMode) {
+              const panel = mermaidEl.closest('.tab-panel');
+              if (panel) updatePositionsPanel(panel);
+            }
           }
         });
         observer.observe(mermaidEl, { childList: true });
