@@ -323,7 +323,7 @@ const level4Diagram = `classDiagram
     <script src="/Tooda/mermaid.min.js" is:inline></script>
     <script is:inline>
       mermaid.initialize({ startOnLoad: false, theme: 'default' });
-      mermaid.run();
+      mermaid.run({ nodes: document.querySelectorAll('.tab-panel.active .mermaid') });
 
       // Tab switching
       const buttons = document.querySelectorAll('.tab-btn');
