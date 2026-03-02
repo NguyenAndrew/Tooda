@@ -39,6 +39,13 @@ test.describe('C4 diagram page', () => {
     await expect(page.locator('#level4')).toHaveClass(/active/);
   });
 
+  test('Level 4 diagram renders without errors', async ({ page }) => {
+    await page.goto('/Tooda/c4');
+    await page.getByRole('button', { name: 'Level 4 – Code' }).click();
+    await page.waitForSelector('#level4 .mermaid svg', { state: 'visible' });
+    await expect(page.locator('#level4 .mermaid')).not.toContainText('Syntax error');
+  });
+
   test('has a back link to the home page', async ({ page }) => {
     await page.goto('/Tooda/c4');
     const back = page.getByRole('link', { name: /Back to Home/ });
