@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [0.0.1] - 2026-03-02
+## 2026-03-02
 
 - Convert navigation controls to proper `<a>` hyperlinks; add view-state URL tracking — example selector, level tabs, and Diagram/Code toggle are now real links, making every view bookmarkable and shareable ([#19](https://github.com/NguyenAndrew/Tooda/pull/19))
 - Add per-example deep links on the home page, each pointing directly to a specific C4 example via `?example=` query param ([#18](https://github.com/NguyenAndrew/Tooda/pull/18))
@@ -24,4 +24,3 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Add C4 diagram example with all four levels (Context, Container, Component, Code) for an Online Banking System, rendered via Mermaid.js with a tabbed UI ([#2](https://github.com/NguyenAndrew/Tooda/pull/2))
 - Add Astro v5 Hello World static site with GitHub Pages deployment pipeline ([#1](https://github.com/NguyenAndrew/Tooda/pull/1))
 
-[0.0.1]: https://github.com/NguyenAndrew/Tooda/commits/main
