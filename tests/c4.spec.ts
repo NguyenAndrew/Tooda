@@ -52,4 +52,44 @@ test.describe('C4 diagram page', () => {
     await expect(back).toBeVisible();
     await expect(back).toHaveAttribute('href', '/Tooda/');
   });
+
+  test('displays all three example selector buttons', async ({ page }) => {
+    await page.goto('/Tooda/c4');
+    await expect(page.getByRole('button', { name: 'Online Banking' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'E-Commerce' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Ride-Sharing' })).toBeVisible();
+  });
+
+  test('Online Banking example is active by default', async ({ page }) => {
+    await page.goto('/Tooda/c4');
+    await expect(page.getByRole('button', { name: 'Online Banking' })).toHaveClass(/active/);
+  });
+
+  test('clicking E-Commerce example activates its button', async ({ page }) => {
+    await page.goto('/Tooda/c4');
+    await page.getByRole('button', { name: 'E-Commerce' }).click();
+    await expect(page.getByRole('button', { name: 'E-Commerce' })).toHaveClass(/active/);
+    await expect(page.getByRole('button', { name: 'Online Banking' })).not.toHaveClass(/active/);
+  });
+
+  test('clicking Ride-Sharing example activates its button', async ({ page }) => {
+    await page.goto('/Tooda/c4');
+    await page.getByRole('button', { name: 'Ride-Sharing' }).click();
+    await expect(page.getByRole('button', { name: 'Ride-Sharing' })).toHaveClass(/active/);
+    await expect(page.getByRole('button', { name: 'Online Banking' })).not.toHaveClass(/active/);
+  });
+
+  test('switching to E-Commerce example updates the Level 1 diagram', async ({ page }) => {
+    await page.goto('/Tooda/c4');
+    await page.getByRole('button', { name: 'E-Commerce' }).click();
+    await page.waitForSelector('#level1 .mermaid svg', { state: 'visible' });
+    await expect(page.locator('#level1 .mermaid')).not.toContainText('Syntax error');
+  });
+
+  test('switching to Ride-Sharing example updates the Level 1 diagram', async ({ page }) => {
+    await page.goto('/Tooda/c4');
+    await page.getByRole('button', { name: 'Ride-Sharing' }).click();
+    await page.waitForSelector('#level1 .mermaid svg', { state: 'visible' });
+    await expect(page.locator('#level1 .mermaid')).not.toContainText('Syntax error');
+  });
 });
