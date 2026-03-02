@@ -813,8 +813,27 @@ const diagrams = {
       }
 
       exampleBtns.forEach(btn => {
-        btn.addEventListener('click', () => activateExample(btn.dataset.example));
+        btn.addEventListener('click', () => {
+          const key = btn.dataset.example;
+          const url = new URL(window.location.href);
+          url.searchParams.set('example', key);
+          history.pushState(null, '', url.toString());
+          activateExample(key);
+        });
       });
+
+      // Activate example from URL query param on load
+      function activateFromQuery() {
+        const params = new URLSearchParams(window.location.search);
+        const example = params.get('example') || 'banking';
+        activateExample(example);
+      }
+
+      window.addEventListener('popstate', () => {
+        activateFromQuery();
+        activateFromHash();
+      });
+      activateFromQuery();
     </script>
   </body>
 </html>

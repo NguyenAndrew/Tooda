@@ -147,4 +147,22 @@ test.describe('C4 diagram page', () => {
     await expect(page.locator('#level2 .code-container')).toBeVisible();
     await expect(page.locator('#level2 .diagram-container')).toBeHidden();
   });
+
+  test('navigating to ?example=ecommerce activates E-Commerce example', async ({ page }) => {
+    await page.goto('/Tooda/c4?example=ecommerce');
+    await expect(page.getByRole('button', { name: 'E-Commerce' })).toHaveClass(/active/);
+    await expect(page.getByRole('button', { name: 'Online Banking' })).not.toHaveClass(/active/);
+  });
+
+  test('navigating to ?example=ridesharing activates Ride-Sharing example', async ({ page }) => {
+    await page.goto('/Tooda/c4?example=ridesharing');
+    await expect(page.getByRole('button', { name: 'Ride-Sharing' })).toHaveClass(/active/);
+    await expect(page.getByRole('button', { name: 'Online Banking' })).not.toHaveClass(/active/);
+  });
+
+  test('clicking example button updates URL query parameter', async ({ page }) => {
+    await page.goto('/Tooda/c4');
+    await page.getByRole('button', { name: 'E-Commerce' }).click();
+    await expect(page).toHaveURL(/example=ecommerce/);
+  });
 });
