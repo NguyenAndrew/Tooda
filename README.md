@@ -26,6 +26,7 @@
   - [Class Diagrams](#class-diagrams)
 - [Deployment](#deployment)
 - [Contributing](#contributing)
+- [Changelog](#changelog)
 - [License](#license)
 
 ---
@@ -222,6 +223,12 @@ Contributions are welcome! Here's how to get started:
 
 ---
 
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md) for a full history of notable changes.
+
+---
+
 ## License
 
-This project does not currently include a license file. Please open an issue or pull request if you'd like to discuss licensing terms.
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
