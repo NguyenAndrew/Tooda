@@ -178,4 +178,85 @@ test.describe('C4 diagram page', () => {
     await expect(page.locator('#level1 .code-container')).toBeVisible();
   });
 
+  test('displays Edit view toggle link', async ({ page }) => {
+    await page.goto('/Tooda/c4');
+    await expect(page.getByRole('link', { name: 'Edit', exact: true })).toBeVisible();
+  });
+
+  test('clicking Edit link activates Edit view and shows diagram', async ({ page }) => {
+    await page.goto('/Tooda/c4');
+    await page.getByRole('link', { name: 'Edit', exact: true }).click();
+    await expect(page.getByRole('link', { name: 'Edit', exact: true })).toHaveClass(/active/);
+    await expect(page.locator('#level1 .diagram-container')).toBeVisible();
+    await expect(page.locator('#level1 .code-container')).toBeHidden();
+  });
+
+  test('clicking Edit link updates URL query parameter', async ({ page }) => {
+    await page.goto('/Tooda/c4');
+    await page.getByRole('link', { name: 'Edit', exact: true }).click();
+    await expect(page).toHaveURL(/view=edit/);
+  });
+
+  test('navigating to ?view=edit activates Edit view', async ({ page }) => {
+    await page.goto('/Tooda/c4?view=edit');
+    await expect(page.getByRole('link', { name: 'Edit', exact: true })).toHaveClass(/active/);
+    await expect(page.locator('#level1 .diagram-container')).toBeVisible();
+  });
+
+  test('displays zoom control buttons', async ({ page }) => {
+    await page.goto('/Tooda/c4');
+    await expect(page.getByRole('button', { name: 'Zoom in' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Zoom out' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Reset zoom' })).toBeVisible();
+  });
+
+  test('zoom controls are hidden in code view', async ({ page }) => {
+    await page.goto('/Tooda/c4');
+    await page.getByRole('link', { name: 'Code', exact: true }).click();
+    await expect(page.locator('#zoom-controls')).toBeHidden();
+  });
+
+  test('zoom controls are visible in diagram view', async ({ page }) => {
+    await page.goto('/Tooda/c4');
+    await expect(page.locator('#zoom-controls')).toBeVisible();
+  });
+
+  test('zoom controls are visible in edit view', async ({ page }) => {
+    await page.goto('/Tooda/c4');
+    await page.getByRole('link', { name: 'Edit', exact: true }).click();
+    await expect(page.locator('#zoom-controls')).toBeVisible();
+  });
+
+  test('zoom in button changes diagram viewBox', async ({ page }) => {
+    await page.goto('/Tooda/c4');
+    await page.waitForSelector('#level1 .mermaid svg', { state: 'visible' });
+    const origViewBox = await page.locator('#level1 .mermaid svg').getAttribute('viewBox');
+    await page.getByRole('button', { name: 'Zoom in' }).click();
+    const newViewBox = await page.locator('#level1 .mermaid svg').getAttribute('viewBox');
+    expect(newViewBox).not.toBe(origViewBox);
+  });
+
+  test('reset zoom button restores original viewBox', async ({ page }) => {
+    await page.goto('/Tooda/c4');
+    await page.waitForSelector('#level1 .mermaid svg', { state: 'visible' });
+    const origViewBox = await page.locator('#level1 .mermaid svg').getAttribute('viewBox');
+    await page.getByRole('button', { name: 'Zoom in' }).click();
+    await page.getByRole('button', { name: 'Reset zoom' }).click();
+    const restoredViewBox = await page.locator('#level1 .mermaid svg').getAttribute('viewBox');
+    expect(restoredViewBox).toBe(origViewBox);
+  });
+
+  test('edit mode shows drag hint and hides pan hint', async ({ page }) => {
+    await page.goto('/Tooda/c4');
+    await page.getByRole('link', { name: 'Edit', exact: true }).click();
+    await expect(page.locator('#edit-hint')).toBeVisible();
+    await expect(page.locator('#pan-hint')).toBeHidden();
+  });
+
+  test('diagram view shows pan hint and hides drag hint', async ({ page }) => {
+    await page.goto('/Tooda/c4');
+    await expect(page.locator('#pan-hint')).toBeVisible();
+    await expect(page.locator('#edit-hint')).toBeHidden();
+  });
+
 });
