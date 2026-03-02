@@ -92,4 +92,59 @@ test.describe('C4 diagram page', () => {
     await page.waitForSelector('#level1 .mermaid svg', { state: 'visible' });
     await expect(page.locator('#level1 .mermaid')).not.toContainText('Syntax error');
   });
+
+  test('displays Diagram and Code view toggle buttons', async ({ page }) => {
+    await page.goto('/Tooda/c4');
+    await expect(page.getByRole('button', { name: 'Diagram', exact: true })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Code', exact: true })).toBeVisible();
+  });
+
+  test('Diagram view is active by default', async ({ page }) => {
+    await page.goto('/Tooda/c4');
+    await expect(page.getByRole('button', { name: 'Diagram', exact: true })).toHaveClass(/active/);
+    await expect(page.getByRole('button', { name: 'Code', exact: true })).not.toHaveClass(/active/);
+  });
+
+  test('diagram is visible and code is hidden by default', async ({ page }) => {
+    await page.goto('/Tooda/c4');
+    await expect(page.locator('#level1 .diagram-container')).toBeVisible();
+    await expect(page.locator('#level1 .code-container')).toBeHidden();
+  });
+
+  test('clicking Code button shows code and hides diagram', async ({ page }) => {
+    await page.goto('/Tooda/c4');
+    await page.getByRole('button', { name: 'Code', exact: true }).click();
+    await expect(page.getByRole('button', { name: 'Code', exact: true })).toHaveClass(/active/);
+    await expect(page.locator('#level1 .code-container')).toBeVisible();
+    await expect(page.locator('#level1 .diagram-container')).toBeHidden();
+  });
+
+  test('code container displays Mermaid source text', async ({ page }) => {
+    await page.goto('/Tooda/c4');
+    await page.getByRole('button', { name: 'Code', exact: true }).click();
+    await expect(page.locator('#level1 .code-container code')).toContainText('C4Context');
+  });
+
+  test('clicking Diagram button restores diagram and hides code', async ({ page }) => {
+    await page.goto('/Tooda/c4');
+    await page.getByRole('button', { name: 'Code', exact: true }).click();
+    await page.getByRole('button', { name: 'Diagram', exact: true }).click();
+    await expect(page.locator('#level1 .diagram-container')).toBeVisible();
+    await expect(page.locator('#level1 .code-container')).toBeHidden();
+  });
+
+  test('code container updates when switching examples', async ({ page }) => {
+    await page.goto('/Tooda/c4');
+    await page.getByRole('button', { name: 'Code', exact: true }).click();
+    await page.getByRole('button', { name: 'E-Commerce' }).click();
+    await expect(page.locator('#level1 .code-container code')).toContainText('E-Commerce Platform');
+  });
+
+  test('code view persists when switching tabs', async ({ page }) => {
+    await page.goto('/Tooda/c4');
+    await page.getByRole('button', { name: 'Code', exact: true }).click();
+    await page.getByRole('button', { name: 'Level 2 – Container' }).click();
+    await expect(page.locator('#level2 .code-container')).toBeVisible();
+    await expect(page.locator('#level2 .diagram-container')).toBeHidden();
+  });
 });

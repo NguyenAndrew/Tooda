@@ -531,6 +531,37 @@ const diagrams = {
         font-size: 0.95rem;
       }
 
+      .view-toggle {
+        display: flex;
+        justify-content: center;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        padding: 0 1rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .view-btn {
+        background: #1e293b;
+        color: #94a3b8;
+        border: 1px solid #334155;
+        border-radius: 0.5rem;
+        padding: 0.5rem 1.25rem;
+        font-size: 0.95rem;
+        cursor: pointer;
+        transition: background 0.2s, color 0.2s, border-color 0.2s;
+      }
+
+      .view-btn:hover {
+        background: #334155;
+        color: #f8fafc;
+      }
+
+      .view-btn.active {
+        background: linear-gradient(135deg, #38bdf8, #6366f1);
+        color: #fff;
+        border-color: transparent;
+      }
+
       .diagram-container {
         background: #fff;
         border-radius: 0.75rem;
@@ -541,6 +572,25 @@ const diagrams = {
       .diagram-container .mermaid {
         display: flex;
         justify-content: center;
+      }
+
+      .code-container {
+        background: #1e293b;
+        border: 1px solid #334155;
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        overflow-x: auto;
+        display: none;
+      }
+
+      .code-container pre {
+        color: #e2e8f0;
+        font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo,
+          Consolas, 'DejaVu Sans Mono', monospace;
+        font-size: 0.875rem;
+        line-height: 1.6;
+        white-space: pre-wrap;
+        word-break: break-word;
       }
     </style>
   </head>
@@ -567,6 +617,11 @@ const diagrams = {
       <button class="tab-btn" data-tab="level4">Level 4 – Code</button>
     </div>
 
+    <div class="view-toggle">
+      <button class="view-btn active" data-view="diagram">Diagram</button>
+      <button class="view-btn" data-view="code">Code</button>
+    </div>
+
     <!-- Level 1: System Context -->
     <section id="level1" class="tab-panel active">
       <h2>Level 1 – System Context</h2>
@@ -576,6 +631,9 @@ const diagrams = {
       </p>
       <div class="diagram-container">
         <div class="mermaid" set:text={diagrams.banking.level1}></div>
+      </div>
+      <div class="code-container">
+        <pre><code>{diagrams.banking.level1}</code></pre>
       </div>
     </section>
 
@@ -589,6 +647,9 @@ const diagrams = {
       <div class="diagram-container">
         <div class="mermaid" set:text={diagrams.banking.level2}></div>
       </div>
+      <div class="code-container">
+        <pre><code>{diagrams.banking.level2}</code></pre>
+      </div>
     </section>
 
     <!-- Level 3: Component -->
@@ -600,6 +661,9 @@ const diagrams = {
       </p>
       <div class="diagram-container">
         <div class="mermaid" set:text={diagrams.banking.level3}></div>
+      </div>
+      <div class="code-container">
+        <pre><code>{diagrams.banking.level3}</code></pre>
       </div>
     </section>
 
@@ -613,12 +677,18 @@ const diagrams = {
       <div class="diagram-container">
         <div class="mermaid" set:text={diagrams.banking.level4}></div>
       </div>
+      <div class="code-container">
+        <pre><code>{diagrams.banking.level4}</code></pre>
+      </div>
     </section>
 
     <script src="/Tooda/mermaid.min.js" is:inline></script>
     <script define:vars={{ diagrams }} is:inline>
       mermaid.initialize({ startOnLoad: false, theme: 'default' });
       mermaid.run({ nodes: document.querySelectorAll('.tab-panel.active .mermaid') });
+
+      // View toggle state – declared first so activateTab can reference it
+      let currentView = 'diagram';
 
       // Tab switching
       const buttons = document.querySelectorAll('.tab-btn');
@@ -639,12 +709,14 @@ const diagrams = {
           panel.classList.add('active');
 
           // Re-render any diagrams that were not rendered while hidden
-          const unrendered = Array.from(panel.querySelectorAll('.mermaid')).filter(
-            el => !el.querySelector('svg')
-          );
-          if (unrendered.length > 0) {
-            unrendered.forEach(el => el.removeAttribute('data-processed'));
-            mermaid.run({ nodes: unrendered });
+          if (currentView === 'diagram') {
+            const unrendered = Array.from(panel.querySelectorAll('.mermaid')).filter(
+              el => !el.querySelector('svg')
+            );
+            if (unrendered.length > 0) {
+              unrendered.forEach(el => el.removeAttribute('data-processed'));
+              mermaid.run({ nodes: unrendered });
+            }
           }
         }
       }
@@ -666,6 +738,41 @@ const diagrams = {
       window.addEventListener('hashchange', activateFromHash);
       activateFromHash();
 
+      // View toggle (Diagram / Code)
+      const viewBtns = document.querySelectorAll('.view-btn');
+
+      function activateView(view) {
+        currentView = view;
+        viewBtns.forEach(b => b.classList.remove('active'));
+        const activeViewBtn = document.querySelector(`.view-btn[data-view="${view}"]`);
+        if (activeViewBtn) activeViewBtn.classList.add('active');
+
+        document.querySelectorAll('.tab-panel').forEach(panel => {
+          const diagramContainer = panel.querySelector('.diagram-container');
+          const codeContainer = panel.querySelector('.code-container');
+          if (diagramContainer) diagramContainer.style.display = view === 'diagram' ? '' : 'none';
+          if (codeContainer) codeContainer.style.display = view === 'code' ? 'block' : 'none';
+        });
+
+        // If switching to diagram view, render any unrendered diagrams in the active panel
+        if (view === 'diagram') {
+          const activePanel = document.querySelector('.tab-panel.active');
+          if (activePanel) {
+            const unrendered = Array.from(activePanel.querySelectorAll('.mermaid')).filter(
+              el => !el.querySelector('svg')
+            );
+            if (unrendered.length > 0) {
+              unrendered.forEach(el => el.removeAttribute('data-processed'));
+              mermaid.run({ nodes: unrendered });
+            }
+          }
+        }
+      }
+
+      viewBtns.forEach(btn => {
+        btn.addEventListener('click', () => activateView(btn.dataset.view));
+      });
+
       // Example switching
       let currentExample = 'banking';
       const exampleBtns = document.querySelectorAll('.example-btn');
@@ -679,24 +786,29 @@ const diagrams = {
         const activeBtn = document.querySelector(`.example-btn[data-example="${key}"]`);
         if (activeBtn) activeBtn.classList.add('active');
 
-        // Update all mermaid elements with new diagram source
+        // Update all mermaid elements and code containers with new diagram source
         const levels = ['level1', 'level2', 'level3', 'level4'];
         levels.forEach(level => {
           const panel = document.getElementById(level);
           if (!panel) return;
-          const el = panel.querySelector('.mermaid');
-          if (!el) return;
-          // Remove rendered SVG so mermaid re-renders
-          el.innerHTML = '';
-          el.removeAttribute('data-processed');
-          el.textContent = example[level];
+          const mermaidEl = panel.querySelector('.mermaid');
+          if (mermaidEl) {
+            // Remove rendered SVG so mermaid re-renders
+            mermaidEl.innerHTML = '';
+            mermaidEl.removeAttribute('data-processed');
+            mermaidEl.textContent = example[level];
+          }
+          const codeEl = panel.querySelector('.code-container code');
+          if (codeEl) codeEl.textContent = example[level];
         });
 
-        // Re-render only the currently visible panel
-        const activePanel = document.querySelector('.tab-panel.active');
-        if (activePanel) {
-          const el = activePanel.querySelector('.mermaid');
-          if (el) mermaid.run({ nodes: [el] });
+        // Re-render only the currently visible panel (diagram view only)
+        if (currentView === 'diagram') {
+          const activePanel = document.querySelector('.tab-panel.active');
+          if (activePanel) {
+            const el = activePanel.querySelector('.mermaid');
+            if (el) mermaid.run({ nodes: [el] });
+          }
         }
       }
 
