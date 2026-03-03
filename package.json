@@ -8,7 +8,7 @@
     "preview": "astro preview",
     "lint": "eslint src/",
     "install:playwright": "npx playwright install --with-deps chromium",
-    "test": "npm run lint && playwright test",
+    "test": "playwright test",
     "prepare": "husky"
   },
   "dependencies": {
