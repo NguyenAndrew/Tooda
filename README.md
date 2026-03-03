@@ -218,8 +218,9 @@ Contributions are welcome! Here's how to get started:
    ```
 2. Make your changes. New diagram pages go in `src/pages/`.
 3. Run `npm run dev` and verify your changes in the browser.
-4. Run `npm run build` to ensure the production build succeeds.
-5. Open a **Pull Request** against `main` with a clear description of what you've added or changed.
+4. Run `npm run lint` to check for linting errors.
+5. Run `npm run build` to ensure the production build succeeds.
+6. Open a **Pull Request** against `main` with a clear description of what you've added or changed.
 
 ---
 
