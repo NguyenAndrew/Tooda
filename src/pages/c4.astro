@@ -888,13 +888,11 @@ const diagrams = {
       });
 
       // Example switching
-      let currentExample = 'banking';
       const exampleBtns = document.querySelectorAll('.example-btn');
 
       function activateExample(key) {
         const example = diagrams[key];
         if (!example) return;
-        currentExample = key;
 
         exampleBtns.forEach(b => b.classList.remove('active'));
         const activeBtn = document.querySelector(`.example-btn[data-example="${key}"]`);
@@ -1252,7 +1250,7 @@ const diagrams = {
         }, { passive: false });
 
         // Touch: single-finger pan, two-finger pinch zoom
-        let touchState = {};
+        const touchState = {};
         let lastPinchDist = null;
         container.addEventListener('touchstart', (e) => {
           Array.from(e.changedTouches).forEach(t => {
@@ -1299,7 +1297,7 @@ const diagrams = {
       // Global mousemove: handle pan and node drag
       document.addEventListener('mousemove', (e) => {
         if (nodeDrag) {
-          const { nodeG, svgEl, isC4, origPos, edges, startX, startY, scaleX, scaleY } = nodeDrag;
+          const { nodeG, isC4, origPos, edges, startX, startY, scaleX, scaleY } = nodeDrag;
           const totalDx = (e.clientX - startX) * scaleX;
           const totalDy = (e.clientY - startY) * scaleY;
           if (isC4) {

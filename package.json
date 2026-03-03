@@ -6,8 +6,11 @@
     "dev": "node scripts/copy-mermaid.js && astro dev",
     "build": "node scripts/copy-mermaid.js && astro build",
     "preview": "astro preview",
+    "lint": "eslint src/",
     "install:playwright": "npx playwright install --with-deps chromium",
-    "test": "playwright test"
+    "test": "npm run lint && playwright test",
+    "test:ci": "playwright test",
+    "prepare": "husky"
   },
   "dependencies": {
     "@astrojs/react": "^4.4.2",
@@ -18,6 +21,14 @@
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
-    "@playwright/test": "^1.58.2"
+    "@playwright/test": "^1.58.2",
+    "@typescript-eslint/eslint-plugin": "^8.56.1",
+    "@typescript-eslint/parser": "^8.56.1",
+    "eslint": "^9.39.3",
+    "eslint-plugin-astro": "^1.6.0",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "husky": "^9.1.7",
+    "typescript-eslint": "^8.56.1"
   }
 }
