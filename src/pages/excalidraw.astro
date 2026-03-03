@@ -211,6 +211,10 @@ const level2Elements: any[] = [
   ...makeArrow('l2-a6', 580, 130, 60,   80, 'SQL'),
   ...makeArrow('l2-a7', 580, 250, 60,    0, 'SQL'),
   ...makeArrow('l2-a8', 580, 370, 60,    0, 'AMQP'),
+  ...makeArrow('l2-a9',  140, 200, 60,   50, 'HTTPS'),
+  ...makeArrow('l2-a10', 140, 320, 60, -190, 'HTTPS'),
+  ...makeArrow('l2-a11', 360, 360, 60, -230, 'JSON/HTTPS'),
+  ...makeArrow('l2-a12', 360, 380, 60, -130, 'JSON/HTTPS'),
 ];
 
 // --- Level 3: Component – EMR Service ---
@@ -242,7 +246,7 @@ const level3Elements: any[] = [
   ...makeArrow('l3-a4', 260, 280, 0,    60, 'uses'),
   ...makeArrow('l3-a5', 360, 250, 60,    0, 'logs'),
   ...makeArrow('l3-a6', 360, 370, 60,    0, 'caches'),
-  ...makeArrow('l3-a7', 580, 370, 80,  -90, 'SQL'),
+  ...makeArrow('l3-a7', 360, 370, 300, -140, 'SQL'),
 ];
 
 // --- Level 4: Code – Record Service classes ---
@@ -273,6 +277,7 @@ const level4Elements: any[] = [
   ...makeArrow('l4-a2', 520, 130, 40,    0, 'uses'),
   ...makeArrow('l4-a3', 410, 200, 0,    80, 'returns'),
   ...makeArrow('l4-a4', 670, 200, 0,    80, 'uses'),
+  ...makeArrow('l4-a5', 670, 200, -260, 80, 'returns'),
 ];
 ---
 <!doctype html>
