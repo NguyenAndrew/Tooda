@@ -1,0 +1,499 @@
+---
+import ExcalidrawViewer from '../components/ExcalidrawViewer';
+
+// Helper to create a labeled rectangle element pair
+function makeBox(id: string, x: number, y: number, w: number, h: number, text: string, bg: string) {
+  return [
+    {
+      id,
+      type: 'rectangle' as const,
+      x, y, width: w, height: h,
+      angle: 0,
+      strokeColor: '#1e1e1e',
+      backgroundColor: bg,
+      fillStyle: 'solid' as const,
+      strokeWidth: 2,
+      strokeStyle: 'solid' as const,
+      roughness: 1,
+      opacity: 100,
+      groupIds: [],
+      frameId: null,
+      roundness: { type: 3 as const },
+      seed: 1,
+      version: 1,
+      versionNonce: 1,
+      isDeleted: false,
+      boundElements: [{ type: 'text' as const, id: id + '-label' }],
+      updated: 1,
+      link: null,
+      locked: false,
+    },
+    {
+      id: id + '-label',
+      type: 'text' as const,
+      x: x + w / 2,
+      y: y + h / 2,
+      width: w,
+      height: 20,
+      angle: 0,
+      strokeColor: '#1e1e1e',
+      backgroundColor: 'transparent' as const,
+      fillStyle: 'solid' as const,
+      strokeWidth: 1,
+      strokeStyle: 'solid' as const,
+      roughness: 1,
+      opacity: 100,
+      groupIds: [],
+      frameId: null,
+      roundness: null,
+      seed: 2,
+      version: 1,
+      versionNonce: 1,
+      isDeleted: false,
+      boundElements: null,
+      updated: 1,
+      link: null,
+      locked: false,
+      text,
+      fontSize: 16,
+      fontFamily: 1 as const,
+      textAlign: 'center' as const,
+      verticalAlign: 'middle' as const,
+      containerId: id,
+      originalText: text,
+      autoResize: true,
+      lineHeight: 1.25 as const,
+    },
+  ];
+}
+
+function makeArrow(id: string, x: number, y: number, dx: number, dy: number, label?: string) {
+  const elements: any[] = [
+    {
+      id,
+      type: 'arrow' as const,
+      x, y,
+      width: Math.abs(dx),
+      height: Math.abs(dy),
+      angle: 0,
+      strokeColor: '#1e1e1e',
+      backgroundColor: 'transparent' as const,
+      fillStyle: 'solid' as const,
+      strokeWidth: 2,
+      strokeStyle: 'solid' as const,
+      roughness: 1,
+      opacity: 100,
+      groupIds: [],
+      frameId: null,
+      roundness: { type: 2 as const },
+      seed: 3,
+      version: 1,
+      versionNonce: 1,
+      isDeleted: false,
+      boundElements: label ? [{ type: 'text' as const, id: id + '-label' }] : null,
+      updated: 1,
+      link: null,
+      locked: false,
+      points: [[0, 0], [dx, dy]],
+      lastCommittedPoint: null,
+      startBinding: null,
+      endBinding: null,
+      startArrowhead: null,
+      endArrowhead: 'arrow' as const,
+      elbowed: false,
+    },
+  ];
+  if (label) {
+    elements.push({
+      id: id + '-label',
+      type: 'text' as const,
+      x: x + dx / 2 - 60,
+      y: y + dy / 2 - 12,
+      width: 120,
+      height: 20,
+      angle: 0,
+      strokeColor: '#1e1e1e',
+      backgroundColor: 'transparent' as const,
+      fillStyle: 'solid' as const,
+      strokeWidth: 1,
+      strokeStyle: 'solid' as const,
+      roughness: 1,
+      opacity: 100,
+      groupIds: [],
+      frameId: null,
+      roundness: null,
+      seed: 4,
+      version: 1,
+      versionNonce: 1,
+      isDeleted: false,
+      boundElements: null,
+      updated: 1,
+      link: null,
+      locked: false,
+      text: label,
+      fontSize: 12,
+      fontFamily: 1 as const,
+      textAlign: 'center' as const,
+      verticalAlign: 'middle' as const,
+      containerId: id,
+      originalText: label,
+      autoResize: true,
+      lineHeight: 1.25 as const,
+    });
+  }
+  return elements;
+}
+
+// --- Level 1: System Context – Healthcare Platform ---
+const level1Elements: any[] = [
+  // Title
+  {
+    id: 'l1-title', type: 'text', x: 250, y: 20, width: 400, height: 30,
+    angle: 0, strokeColor: '#1e1e1e', backgroundColor: 'transparent', fillStyle: 'solid',
+    strokeWidth: 1, strokeStyle: 'solid', roughness: 1, opacity: 100,
+    groupIds: [], frameId: null, roundness: null, seed: 10, version: 1, versionNonce: 1,
+    isDeleted: false, boundElements: null, updated: 1, link: null, locked: false,
+    text: 'System Context – Healthcare Platform',
+    fontSize: 20, fontFamily: 1, textAlign: 'center', verticalAlign: 'middle',
+    containerId: null, originalText: 'System Context – Healthcare Platform',
+    autoResize: true, lineHeight: 1.25,
+  },
+  // Actors
+  ...makeBox('l1-patient',   50,  120, 140, 60, 'Patient',          '#bfdbfe'),
+  ...makeBox('l1-doctor',    50,  240, 140, 60, 'Doctor',           '#bfdbfe'),
+  ...makeBox('l1-admin',     50,  360, 140, 60, 'Admin',            '#bfdbfe'),
+  // Main system
+  ...makeBox('l1-platform',  280, 200, 200, 100, 'Healthcare\nPlatform', '#bbf7d0'),
+  // External systems
+  ...makeBox('l1-pharmacy',  570, 120, 160, 60, 'Pharmacy\nSystem',  '#fef9c3'),
+  ...makeBox('l1-insurance', 570, 240, 160, 60, 'Insurance\nSystem', '#fef9c3'),
+  ...makeBox('l1-lab',       570, 360, 160, 60, 'Laboratory\nSystem','#fef9c3'),
+  // Arrows: actors → platform
+  ...makeArrow('l1-a1', 190, 150, 90, 80,  'Schedules\nappointments'),
+  ...makeArrow('l1-a2', 190, 270, 90, 0,   'Views patient\nrecords'),
+  ...makeArrow('l1-a3', 190, 390, 90, -80, 'Manages\nusers'),
+  // Arrows: platform → external
+  ...makeArrow('l1-a4', 480, 230, 90, -60, 'Sends\nprescriptions'),
+  ...makeArrow('l1-a5', 480, 250, 90,   0, 'Verifies\ncoverage'),
+  ...makeArrow('l1-a6', 480, 270, 90,  60, 'Orders\ntests'),
+];
+
+// --- Level 2: Container – Healthcare Platform ---
+const level2Elements: any[] = [
+  {
+    id: 'l2-title', type: 'text', x: 200, y: 20, width: 480, height: 30,
+    angle: 0, strokeColor: '#1e1e1e', backgroundColor: 'transparent', fillStyle: 'solid',
+    strokeWidth: 1, strokeStyle: 'solid', roughness: 1, opacity: 100,
+    groupIds: [], frameId: null, roundness: null, seed: 10, version: 1, versionNonce: 1,
+    isDeleted: false, boundElements: null, updated: 1, link: null, locked: false,
+    text: 'Container – Healthcare Platform', fontSize: 20, fontFamily: 1,
+    textAlign: 'center', verticalAlign: 'middle', containerId: null,
+    originalText: 'Container – Healthcare Platform', autoResize: true, lineHeight: 1.25,
+  },
+  // Users
+  ...makeBox('l2-patient', 20, 160, 120, 60, 'Patient',     '#bfdbfe'),
+  ...makeBox('l2-doctor',  20, 300, 120, 60, 'Doctor',      '#bfdbfe'),
+  // Containers inside the platform
+  ...makeBox('l2-webapp',  200, 100, 160, 60, 'Web App\n(Astro)',        '#bbf7d0'),
+  ...makeBox('l2-mobile',  200, 220, 160, 60, 'Mobile App\n(React Native)', '#bbf7d0'),
+  ...makeBox('l2-api',     200, 340, 160, 60, 'API Gateway\n(Node.js)',  '#bbf7d0'),
+  ...makeBox('l2-emr',     420, 100, 160, 60, 'EMR Service\n(Node.js)', '#bbf7d0'),
+  ...makeBox('l2-appt',    420, 220, 160, 60, 'Appointment\nService',   '#bbf7d0'),
+  ...makeBox('l2-billing', 420, 340, 160, 60, 'Billing\nService',       '#bbf7d0'),
+  ...makeBox('l2-db',      640, 200, 140, 60, 'Database\n(PostgreSQL)', '#fde68a'),
+  ...makeBox('l2-queue',   640, 340, 140, 60, 'Message Queue\n(RabbitMQ)', '#fde68a'),
+  // Arrows
+  ...makeArrow('l2-a1', 140, 190, 60,  -60, 'HTTPS'),
+  ...makeArrow('l2-a2', 140, 330, 60,   30, 'HTTPS'),
+  ...makeArrow('l2-a3', 360, 130, 60,    0, 'JSON/HTTPS'),
+  ...makeArrow('l2-a4', 360, 250, 60,    0, 'JSON/HTTPS'),
+  ...makeArrow('l2-a5', 360, 370, 60,    0, 'JSON/HTTPS'),
+  ...makeArrow('l2-a6', 580, 130, 60,   80, 'SQL'),
+  ...makeArrow('l2-a7', 580, 250, 60,    0, 'SQL'),
+  ...makeArrow('l2-a8', 580, 370, 60,    0, 'AMQP'),
+];
+
+// --- Level 3: Component – EMR Service ---
+const level3Elements: any[] = [
+  {
+    id: 'l3-title', type: 'text', x: 170, y: 20, width: 480, height: 30,
+    angle: 0, strokeColor: '#1e1e1e', backgroundColor: 'transparent', fillStyle: 'solid',
+    strokeWidth: 1, strokeStyle: 'solid', roughness: 1, opacity: 100,
+    groupIds: [], frameId: null, roundness: null, seed: 10, version: 1, versionNonce: 1,
+    isDeleted: false, boundElements: null, updated: 1, link: null, locked: false,
+    text: 'Component – EMR Service', fontSize: 20, fontFamily: 1,
+    textAlign: 'center', verticalAlign: 'middle', containerId: null,
+    originalText: 'Component – EMR Service', autoResize: true, lineHeight: 1.25,
+  },
+  // External
+  ...makeBox('l3-gateway', 20,  200, 140, 60, 'API Gateway',       '#bfdbfe'),
+  ...makeBox('l3-db',     660,  200, 140, 60, 'Database\n(PostgreSQL)', '#fde68a'),
+  // Components inside EMR Service
+  ...makeBox('l3-ctrl',   200,  100, 160, 60, 'Record\nController',    '#bbf7d0'),
+  ...makeBox('l3-svc',    200,  220, 160, 60, 'Record\nService',       '#bbf7d0'),
+  ...makeBox('l3-repo',   200,  340, 160, 60, 'Record\nRepository',    '#bbf7d0'),
+  ...makeBox('l3-auth',   420,  100, 160, 60, 'Auth\nMiddleware',      '#bbf7d0'),
+  ...makeBox('l3-audit',  420,  220, 160, 60, 'Audit\nLogger',         '#bbf7d0'),
+  ...makeBox('l3-cache',  420,  340, 160, 60, 'Cache\nManager (Redis)','#bbf7d0'),
+  // Arrows
+  ...makeArrow('l3-a1', 160, 230, 40,  -80, 'JSON/HTTPS'),
+  ...makeArrow('l3-a2', 360, 130, 60,    0, 'validates'),
+  ...makeArrow('l3-a3', 260, 160, 0,    60, 'uses'),
+  ...makeArrow('l3-a4', 260, 280, 0,    60, 'uses'),
+  ...makeArrow('l3-a5', 360, 250, 60,    0, 'logs'),
+  ...makeArrow('l3-a6', 360, 370, 60,    0, 'caches'),
+  ...makeArrow('l3-a7', 580, 370, 80,  -90, 'SQL'),
+];
+
+// --- Level 4: Code – Record Service classes ---
+const level4Elements: any[] = [
+  {
+    id: 'l4-title', type: 'text', x: 160, y: 20, width: 480, height: 30,
+    angle: 0, strokeColor: '#1e1e1e', backgroundColor: 'transparent', fillStyle: 'solid',
+    strokeWidth: 1, strokeStyle: 'solid', roughness: 1, opacity: 100,
+    groupIds: [], frameId: null, roundness: null, seed: 10, version: 1, versionNonce: 1,
+    isDeleted: false, boundElements: null, updated: 1, link: null, locked: false,
+    text: 'Code – Record Service Classes', fontSize: 20, fontFamily: 1,
+    textAlign: 'center', verticalAlign: 'middle', containerId: null,
+    originalText: 'Code – Record Service Classes', autoResize: true, lineHeight: 1.25,
+  },
+  // Classes
+  ...makeBox('l4-ctrl',   40,  80, 220, 120,
+    'RecordController\n─────────────────\n+getRecord(req,res)\n+createRecord(req,res)', '#bfdbfe'),
+  ...makeBox('l4-svc',   300,  80, 220, 120,
+    'RecordService\n─────────────────\n+getRecord(id)\n+createRecord(data)', '#bbf7d0'),
+  ...makeBox('l4-repo',  560,  80, 220, 120,
+    'RecordRepository\n─────────────────\n+findById(id)\n+save(record)', '#fde68a'),
+  ...makeBox('l4-model', 300, 280, 220, 100,
+    'MedicalRecord\n─────────────────\n+id: string\n+patientId: string\n+diagnosis: string', '#f3e8ff'),
+  ...makeBox('l4-cache', 560, 280, 220, 100,
+    'CacheClient\n─────────────────\n+get(key)\n+set(key, value)', '#fce7f3'),
+  // Arrows
+  ...makeArrow('l4-a1', 260, 130, 40,    0, 'uses'),
+  ...makeArrow('l4-a2', 520, 130, 40,    0, 'uses'),
+  ...makeArrow('l4-a3', 410, 200, 0,    80, 'returns'),
+  ...makeArrow('l4-a4', 670, 200, 0,    80, 'uses'),
+];
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Healthcare Platform – illustrated using Excalidraw across all 4 levels of the C4 model" />
+    <title>Excalidraw Example | Tooda</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
+          Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        background-color: #0f172a;
+        color: #f8fafc;
+        min-height: 100dvh;
+      }
+
+      header {
+        text-align: center;
+        padding: 2rem 1rem 1rem;
+      }
+
+      header h1 {
+        font-size: clamp(2rem, 6vw, 3.5rem);
+        font-weight: 800;
+        background: linear-gradient(135deg, #6366f1, #a78bfa, #38bdf8);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 0.5rem;
+      }
+
+      header p {
+        color: #94a3b8;
+        font-size: 1rem;
+      }
+
+      nav.back {
+        text-align: center;
+        padding: 0.5rem 1rem 1.5rem;
+      }
+
+      nav.back a {
+        color: #a78bfa;
+        text-decoration: none;
+        font-size: 0.9rem;
+      }
+
+      nav.back a:hover {
+        text-decoration: underline;
+      }
+
+      .tabs {
+        display: flex;
+        justify-content: center;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        padding: 0 1rem;
+        margin-bottom: 2rem;
+      }
+
+      .tab-btn {
+        display: inline-block;
+        text-decoration: none;
+        background: #1e293b;
+        color: #94a3b8;
+        border: 1px solid #334155;
+        border-radius: 0.5rem;
+        padding: 0.5rem 1.25rem;
+        font-size: 0.95rem;
+        cursor: pointer;
+        transition: background 0.2s, color 0.2s, border-color 0.2s;
+      }
+
+      .tab-btn:hover {
+        background: #334155;
+        color: #f8fafc;
+      }
+
+      .tab-btn.active {
+        background: linear-gradient(135deg, #6366f1, #a78bfa);
+        color: #fff;
+        border-color: transparent;
+      }
+
+      .tab-panel {
+        display: none;
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 0 1rem 3rem;
+      }
+
+      .tab-panel.active {
+        display: block;
+      }
+
+      .tab-panel h2 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #e2e8f0;
+        margin-bottom: 0.5rem;
+      }
+
+      .tab-panel .description {
+        color: #94a3b8;
+        margin-bottom: 1.5rem;
+        line-height: 1.6;
+        font-size: 0.95rem;
+      }
+
+      .diagram-wrapper {
+        background: #fff;
+        border-radius: 0.75rem;
+        overflow: hidden;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Healthcare Platform</h1>
+      <p>An architecture example illustrated using Excalidraw across all 4 levels of the C4 model</p>
+    </header>
+
+    <nav class="back">
+      <a href="/Tooda/">← Back to Home</a>
+    </nav>
+
+    <div class="tabs">
+      <a href="#level1" class="tab-btn active" data-tab="level1">Level 1 – Context</a>
+      <a href="#level2" class="tab-btn" data-tab="level2">Level 2 – Container</a>
+      <a href="#level3" class="tab-btn" data-tab="level3">Level 3 – Component</a>
+      <a href="#level4" class="tab-btn" data-tab="level4">Level 4 – Code</a>
+    </div>
+
+    <!-- Level 1: System Context -->
+    <section id="level1" class="tab-panel active">
+      <h2>Level 1 – System Context</h2>
+      <p class="description">
+        Shows the Healthcare Platform in context: who uses it and which external systems it
+        interacts with.
+      </p>
+      <div class="diagram-wrapper">
+        <ExcalidrawViewer client:only="react" elements={level1Elements} />
+      </div>
+    </section>
+
+    <!-- Level 2: Container -->
+    <section id="level2" class="tab-panel">
+      <h2>Level 2 – Container</h2>
+      <p class="description">
+        Zooms in on the Healthcare Platform to show the containers (applications and data
+        stores) that make it up.
+      </p>
+      <div class="diagram-wrapper">
+        <ExcalidrawViewer client:only="react" elements={level2Elements} />
+      </div>
+    </section>
+
+    <!-- Level 3: Component -->
+    <section id="level3" class="tab-panel">
+      <h2>Level 3 – Component</h2>
+      <p class="description">
+        Zooms in on the EMR Service to show the components (controllers, services, and
+        repositories) inside it.
+      </p>
+      <div class="diagram-wrapper">
+        <ExcalidrawViewer client:only="react" elements={level3Elements} />
+      </div>
+    </section>
+
+    <!-- Level 4: Code -->
+    <section id="level4" class="tab-panel">
+      <h2>Level 4 – Code</h2>
+      <p class="description">
+        Zooms in on the Record Service to show the classes and interfaces that implement it.
+      </p>
+      <div class="diagram-wrapper">
+        <ExcalidrawViewer client:only="react" elements={level4Elements} />
+      </div>
+    </section>
+
+    <script is:inline>
+      const buttons = document.querySelectorAll('.tab-btn');
+      const panels = document.querySelectorAll('.tab-panel');
+      const validTabs = ['level1', 'level2', 'level3', 'level4'];
+
+      function activateTab(target) {
+        if (!validTabs.includes(target)) target = 'level1';
+        buttons.forEach(b => b.classList.remove('active'));
+        panels.forEach(p => p.classList.remove('active'));
+        const activeBtn = document.querySelector(`.tab-btn[data-tab="${target}"]`);
+        if (activeBtn) activeBtn.classList.add('active');
+        const panel = document.getElementById(target);
+        if (panel) panel.classList.add('active');
+      }
+
+      buttons.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          const target = btn.dataset.tab;
+          history.pushState(null, '', '#' + target);
+          activateTab(target);
+        });
+      });
+
+      function activateFromHash() {
+        const hash = window.location.hash.slice(1) || 'level1';
+        activateTab(hash);
+      }
+
+      window.addEventListener('hashchange', activateFromHash);
+      activateFromHash();
+    </script>
+  </body>
+</html>

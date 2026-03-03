@@ -24,5 +24,9 @@ test.describe('Home page', () => {
     const ridesharingLink = page.getByRole('link', { name: /Ride-Sharing/ });
     await expect(ridesharingLink).toBeVisible();
     await expect(ridesharingLink).toHaveAttribute('href', '/Tooda/c4?example=ridesharing');
+
+    const healthcareLink = page.getByRole('link', { name: /Healthcare/ });
+    await expect(healthcareLink).toBeVisible();
+    await expect(healthcareLink).toHaveAttribute('href', '/Tooda/excalidraw');
   });
 });
