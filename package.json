@@ -9,6 +9,7 @@
     "lint": "eslint src/",
     "install:playwright": "npx playwright install --with-deps chromium",
     "test": "npm run lint && playwright test",
+    "test:ci": "playwright test",
     "prepare": "husky"
   },
   "dependencies": {
