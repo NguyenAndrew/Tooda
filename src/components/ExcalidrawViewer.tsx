@@ -9,16 +9,35 @@ interface Props {
 
 export default function ExcalidrawViewer({ elements }: Props) {
   const apiRef = useRef<ExcalidrawImperativeAPI | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const raf = requestAnimationFrame(() => {
-      apiRef.current?.scrollToContent(elements, { fitToViewport: true, viewportZoomFactor: 0.9 });
+    const el = containerRef.current;
+    if (!el) return;
+
+    let rafId: number | null = null;
+
+    const observer = new ResizeObserver(() => {
+      if (el.offsetWidth > 0) {
+        if (rafId !== null) cancelAnimationFrame(rafId);
+        rafId = requestAnimationFrame(() => {
+          apiRef.current?.updateScene({ elements });
+          apiRef.current?.scrollToContent(elements, { fitToViewport: true, viewportZoomFactor: 0.9 });
+          rafId = null;
+        });
+      }
     });
-    return () => cancelAnimationFrame(raf);
+
+    observer.observe(el);
+
+    return () => {
+      observer.disconnect();
+      if (rafId !== null) cancelAnimationFrame(rafId);
+    };
   }, [elements]);
 
   return (
-    <div style={{ height: '500px', width: '100%' }}>
+    <div ref={containerRef} style={{ height: '500px', width: '100%' }}>
       <Excalidraw
         excalidrawAPI={(api: ExcalidrawImperativeAPI) => {
           apiRef.current = api;
