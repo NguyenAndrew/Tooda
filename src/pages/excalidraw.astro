@@ -107,13 +107,16 @@ function makeArrow(id: string, x: number, y: number, dx: number, dy: number, lab
     },
   ];
   if (label) {
+    const fontSize = 12;
+    const lineHeight = 1.25;
+    const labelHeight = Math.ceil(label.split('\n').length * fontSize * lineHeight);
     elements.push({
       id: id + '-label',
       type: 'text' as const,
       x: x + dx / 2 - 60,
-      y: y + dy / 2 - 12,
+      y: y + dy / 2 - labelHeight / 2,
       width: 120,
-      height: 20,
+      height: labelHeight,
       angle: 0,
       strokeColor: '#1e1e1e',
       backgroundColor: 'transparent' as const,
@@ -134,14 +137,14 @@ function makeArrow(id: string, x: number, y: number, dx: number, dy: number, lab
       link: null,
       locked: false,
       text: label,
-      fontSize: 12,
+      fontSize,
       fontFamily: 1 as const,
       textAlign: 'center' as const,
       verticalAlign: 'middle' as const,
       containerId: null,
       originalText: label,
       autoResize: true,
-      lineHeight: 1.25 as const,
+      lineHeight: lineHeight as const,
     });
   }
   return elements;
