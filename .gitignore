@@ -4,3 +4,4 @@ dist/
 public/mermaid.min.js
 playwright-report/
 test-results/
+dev-detach.log
