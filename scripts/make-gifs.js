@@ -62,7 +62,8 @@ async function captureFrame(page) {
 }
 
 /**
- * Waits for the page to settle, then pushes `count` identical frames onto
+ * Waits for the page to settle, scrolls the active tab panel into view so the
+ * diagram fills the viewport, then pushes `count` identical frames onto
  * `frames` (repeating the same frame produces a "hold" in the GIF).
  * @param {import('@playwright/test').Page} page
  * @param {Array<object>} frames
@@ -70,6 +71,10 @@ async function captureFrame(page) {
  */
 async function addHoldFrames(page, frames, count = HOLD_FRAMES) {
   await sleep(SETTLE_MS);
+  await page.evaluate(() => {
+    const panel = document.querySelector('.tab-panel.active');
+    if (panel) panel.scrollIntoView({ behavior: 'instant', block: 'start' });
+  });
   const frame = await captureFrame(page);
   for (let i = 0; i < count; i++) frames.push(frame);
 }
