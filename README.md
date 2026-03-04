@@ -84,7 +84,13 @@ npm install
 npm run dev
 ```
 
-Opens a local dev server at `http://localhost:4321/Tooda` with hot-module replacement. Changes to `.astro` files are reflected instantly in the browser.
+Starts a local dev server at `http://localhost:4321/Tooda` in the background (detached). Logs are written to `dev-detach.log`. Changes to `.astro` files are reflected instantly in the browser.
+
+To run the dev server in the foreground instead, use:
+
+```bash
+npm run dev:attach
+```
 
 ### Production Build
 
