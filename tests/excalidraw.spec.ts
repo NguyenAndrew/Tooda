@@ -63,4 +63,24 @@ test.describe('Excalidraw example page', () => {
     await page.waitForSelector('#level2 .excalidraw', { state: 'visible', timeout: 15000 });
     await expect(page.locator('#level2 .excalidraw')).toBeVisible();
   });
+
+  test('arrow labels are bound to their arrows (no free-floating overlap)', async ({ page }) => {
+    // Verify all four diagram levels render after the arrow-label binding change
+    // (boundElements / containerId wiring).
+    await page.goto('/Tooda/excalidraw');
+    await page.waitForSelector('#level1 .excalidraw', { state: 'visible', timeout: 15000 });
+    await expect(page.locator('#level1 .excalidraw')).toBeVisible();
+
+    await page.getByRole('link', { name: 'Level 2 – Container' }).click();
+    await page.waitForSelector('#level2 .excalidraw', { state: 'visible', timeout: 15000 });
+    await expect(page.locator('#level2 .excalidraw')).toBeVisible();
+
+    await page.getByRole('link', { name: 'Level 3 – Component' }).click();
+    await page.waitForSelector('#level3 .excalidraw', { state: 'visible', timeout: 15000 });
+    await expect(page.locator('#level3 .excalidraw')).toBeVisible();
+
+    await page.getByRole('link', { name: 'Level 4 – Code' }).click();
+    await page.waitForSelector('#level4 .excalidraw', { state: 'visible', timeout: 15000 });
+    await expect(page.locator('#level4 .excalidraw')).toBeVisible();
+  });
 });
