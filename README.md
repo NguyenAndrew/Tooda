@@ -1,6 +1,6 @@
 # Tooda
 
-> **Too**l for **d**i**a**grams — a lightweight, browser-based tool for creating and maintaining architecture and design diagrams using the [C4 model](https://c4model.com/) and [Mermaid](https://mermaid.js.org/).
+> **Too**l for **d**i**a**grams — a lightweight, browser-based tool for creating and maintaining architecture and design diagrams using the [C4 model](https://c4model.com/), [Mermaid](https://mermaid.js.org/), and [Excalidraw](https://excalidraw.com/).
 
 [![Deploy to GitHub Pages](https://github.com/NguyenAndrew/Tooda/actions/workflows/deploy.yml/badge.svg)](https://github.com/NguyenAndrew/Tooda/actions/workflows/deploy.yml)
 
@@ -23,8 +23,9 @@
 - [Project Structure](#project-structure)
 - [Pages & Routes](#pages--routes)
 - [Diagram Types](#diagram-types)
-  - [C4 Model Diagrams](#c4-model-diagrams)
+  - [C4 Model Diagrams (Mermaid)](#c4-model-diagrams-mermaid)
   - [Class Diagrams](#class-diagrams)
+  - [Excalidraw Diagrams](#excalidraw-diagrams)
 - [Deployment](#deployment)
 - [Contributing](#contributing)
 - [Changelog](#changelog)
@@ -46,17 +47,21 @@
 
 ## Overview
 
-Tooda makes it easy to **visualize software architecture** directly in the browser — no desktop app or proprietary format required. Diagrams are written as plain text using Mermaid's diagram syntax and rendered on the fly, so they live alongside your code and can be version-controlled like any other file.
+Tooda makes it easy to **visualize software architecture** directly in the browser — no desktop app or proprietary format required. Diagrams are written as plain text using Mermaid's diagram syntax and rendered on the fly, so they live alongside your code and can be version-controlled like any other file. Freehand-style diagrams are also supported via [Excalidraw](https://excalidraw.com/).
 
-The current showcase is a complete **Online Banking System** illustrated across all four levels of the [C4 model](https://c4model.com/), giving you a ready-to-adapt template for your own projects.
+The current showcase includes three complete C4 model walkthroughs — **Online Banking**, **E-Commerce**, and **Ride-Sharing** systems — each illustrated across all four levels of the [C4 model](https://c4model.com/), plus a **Healthcare Platform** example rendered with Excalidraw. All of these are ready-to-adapt templates for your own projects.
 
 ---
 
 ## Features
 
 - 📐 **C4 model support** — Context, Container, Component, and Code (class) diagrams out of the box
-- 🧜 **Mermaid rendering** — diagrams are defined as text and rendered in the browser; no image assets to manage
+- 🎨 **Excalidraw support** — freehand-style diagrams rendered with Excalidraw for a more visual, whiteboard feel
+- 🧜 **Mermaid rendering** — C4 diagrams are defined as text and rendered in the browser; no image assets to manage
 - 🗂️ **Tabbed diagram viewer** — switch between C4 levels with a single click; the active tab is bookmarkable via URL hash
+- 🔗 **URL-driven navigation** — example selection and active level are encoded in the URL (`?example=banking#level1`), making every view bookmarkable, shareable, and supporting browser back/forward
+- 💻 **Diagram / Code toggle** — inspect the raw Mermaid source behind any rendered C4 diagram with a single click
+- 🌍 **Multiple built-in examples** — Online Banking, E-Commerce, Ride-Sharing (C4/Mermaid) and Healthcare Platform (Excalidraw) ship out of the box
 - 🌑 **Dark-themed UI** — comfortable for long design sessions
 - ⚡ **Static site** — built with [Astro](https://astro.build/), meaning zero client-side JavaScript framework overhead; extremely fast to load and easy to host
 - 🚀 **Automatic deployment** — GitHub Actions pipeline builds and deploys to GitHub Pages on every push to `main`
@@ -68,7 +73,10 @@ The current showcase is a complete **Online Banking System** illustrated across 
 | Layer | Technology |
 |---|---|
 | Site framework | [Astro](https://astro.build/) v5 |
-| Diagram engine | [Mermaid](https://mermaid.js.org/) v11 |
+| Diagram engine (C4) | [Mermaid](https://mermaid.js.org/) v11 |
+| Diagram engine (freehand) | [Excalidraw](https://excalidraw.com/) |
+| UI components | [React](https://react.dev/) v18 |
+| Styling | [Tailwind CSS](https://tailwindcss.com/) v3 |
 | Language | TypeScript (strict) |
 | Package manager | npm |
 | Hosting | GitHub Pages |
@@ -134,12 +142,23 @@ Tooda/
 │   └── workflows/
 │       └── deploy.yml          # GitHub Actions: build & deploy to GitHub Pages
 ├── scripts/
-│   └── copy-mermaid.js         # Pre-build helper: copies Mermaid bundle to public/
+│   ├── copy-mermaid.js         # Pre-build helper: copies Mermaid bundle to public/
+│   └── dev-detach.js           # Starts the dev server detached in the background
 ├── src/
-│   └── pages/
-│       ├── index.astro          # Landing page
-│       └── c4.astro             # C4 diagram viewer (all 4 levels)
-├── astro.config.mjs             # Astro configuration (site URL, base path)
+│   ├── components/
+│   │   └── ExcalidrawViewer.tsx # React component that renders an Excalidraw canvas
+│   ├── pages/
+│   │   ├── index.astro          # Landing page with links to all examples
+│   │   ├── c4.astro             # C4 diagram viewer (all 4 levels, multiple examples)
+│   │   └── excalidraw.astro     # Excalidraw freehand diagram viewer
+│   └── utils/
+│       └── logger.ts            # Structured browser/Node console logger
+├── tests/
+│   ├── index.spec.ts            # Playwright tests for the landing page
+│   ├── c4.spec.ts               # Playwright tests for the C4 viewer
+│   ├── excalidraw.spec.ts       # Playwright tests for the Excalidraw viewer
+│   └── performance.spec.ts      # Playwright performance tests
+├── astro.config.mjs             # Astro configuration (site URL, base path, integrations)
 ├── package.json
 ├── package-lock.json
 └── tsconfig.json                # TypeScript config (extends astro/tsconfigs/strict)
@@ -151,8 +170,9 @@ Tooda/
 
 | Route | File | Description |
 |---|---|---|
-| `/Tooda/` | `src/pages/index.astro` | Landing page with a brief intro and link to the diagram viewer |
-| `/Tooda/c4` | `src/pages/c4.astro` | Interactive C4 diagram viewer with tabbed navigation |
+| `/Tooda/` | `src/pages/index.astro` | Landing page with links to all diagram examples |
+| `/Tooda/c4` | `src/pages/c4.astro` | Interactive C4 diagram viewer with tabbed navigation and multiple examples (`?example=banking`, `?example=ecommerce`, `?example=ridesharing`) |
+| `/Tooda/excalidraw` | `src/pages/excalidraw.astro` | Excalidraw freehand diagram viewer (Healthcare Platform, all four C4 levels) |
 
 > **Note:** The `/Tooda` base path is set in `astro.config.mjs` to match the GitHub Pages repository sub-path.
 
@@ -160,9 +180,9 @@ Tooda/
 
 ## Diagram Types
 
-### C4 Model Diagrams
+### C4 Model Diagrams (Mermaid)
 
-The C4 model provides a hierarchical way to describe software architecture using four levels of abstraction:
+The C4 model provides a hierarchical way to describe software architecture using four levels of abstraction. Three complete examples ship with Tooda — **Online Banking**, **E-Commerce**, and **Ride-Sharing** — each available at `/Tooda/c4?example=banking|ecommerce|ridesharing`.
 
 | Level | Mermaid Keyword | What it shows |
 |---|---|---|
@@ -197,6 +217,14 @@ classDiagram
   }
   AccountsService --> AccountsRepository : uses
 ```
+
+### Excalidraw Diagrams
+
+The Excalidraw viewer (`/Tooda/excalidraw`) renders freehand-style diagrams using [Excalidraw](https://excalidraw.com/). The built-in example is a **Healthcare Platform** illustrated across all four C4 levels. Diagram elements are defined as structured data in `excalidraw.astro` and passed to the `ExcalidrawViewer` React component.
+
+Each panel includes:
+- **Edit / View toggle** — switch between read-only and full interactive editing
+- **Export JSON** — download the current diagram as an Excalidraw-compatible JSON file
 
 ---
 
