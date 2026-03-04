@@ -13,9 +13,9 @@ const child = spawn(cmd, ['dev'], {
 closeSync(logFile);
 
 child.on('error', (err) => {
-  console.error(`Failed to start dev server: ${err.message}`);
+  console.error(`[${new Date().toISOString()}] [ERROR] [dev-detach] Failed to start dev server: ${err.message}`);
   process.exit(1);
 });
 child.unref();
 
-console.log(`Dev server started in background (PID: ${child.pid}). Logs: dev-detach.log`);
+console.log(`[${new Date().toISOString()}] [INFO] [dev-detach] Dev server started in background (PID: ${child.pid}). Logs: dev-detach.log`);

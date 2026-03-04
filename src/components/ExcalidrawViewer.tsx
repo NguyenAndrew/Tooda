@@ -2,6 +2,9 @@ import { Excalidraw, type ExcalidrawImperativeAPI } from '@excalidraw/excalidraw
 import '@excalidraw/excalidraw/index.css';
 import type { ExcalidrawElement } from '@excalidraw/excalidraw/types/element/types';
 import { useEffect, useRef, useState } from 'react';
+import { createLogger } from '../utils/logger';
+
+const logger = createLogger('ExcalidrawViewer');
 
 interface Props {
   elements: readonly ExcalidrawElement[];
@@ -13,6 +16,7 @@ export default function ExcalidrawViewer({ elements }: Props) {
   const [editMode, setEditMode] = useState(false);
 
   useEffect(() => {
+    logger.info(`Mounted with ${elements.length} element(s)`);
     const el = containerRef.current;
     if (!el) return;
 
@@ -22,6 +26,7 @@ export default function ExcalidrawViewer({ elements }: Props) {
       if (el.offsetWidth > 0) {
         if (rafId !== null) cancelAnimationFrame(rafId);
         rafId = requestAnimationFrame(() => {
+          logger.debug('Scene updated on resize');
           apiRef.current?.updateScene({ elements });
           apiRef.current?.scrollToContent(elements, { fitToViewport: true, viewportZoomFactor: 0.9 });
           rafId = null;
@@ -32,6 +37,7 @@ export default function ExcalidrawViewer({ elements }: Props) {
     observer.observe(el);
 
     return () => {
+      logger.info('ExcalidrawViewer unmounted');
       observer.disconnect();
       if (rafId !== null) cancelAnimationFrame(rafId);
     };
@@ -41,6 +47,7 @@ export default function ExcalidrawViewer({ elements }: Props) {
     const api = apiRef.current;
     if (!api) return;
     const currentElements = api.getSceneElements();
+    logger.info(`Exporting ${currentElements.length} element(s) to JSON`);
     const json = JSON.stringify(currentElements, null, 2);
     const blob = new Blob([json], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
@@ -58,7 +65,11 @@ export default function ExcalidrawViewer({ elements }: Props) {
     <div>
       <div className="flex justify-end gap-2 bg-slate-100 p-2">
         <button
-          onClick={() => setEditMode(m => !m)}
+          onClick={() => setEditMode(m => {
+            const next = !m;
+            logger.info(`Edit mode toggled to: ${next}`);
+            return next;
+          })}
           className={`cursor-pointer rounded-[0.4rem] border border-slate-400 px-[0.9rem] py-[0.35rem] text-sm ${editMode ? 'bg-indigo-500 text-white' : 'bg-white text-slate-800'}`}
         >
           {editMode ? 'View' : 'Edit'}
