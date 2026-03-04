@@ -5,11 +5,42 @@ import astro from 'eslint-plugin-astro';
 import react from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
 import jsxA11y from 'eslint-plugin-jsx-a11y';
+import tailwind from 'eslint-plugin-tailwindcss';
 
 export default [
   js.configs.recommended,
   ...tseslint.configs.recommended,
   ...astro.configs.recommended,
+  ...tailwind.configs['flat/recommended'],
+  {
+    settings: {
+      tailwindcss: {
+        // Allow intentional component class names managed by JavaScript
+        whitelist: [
+          'active',
+          'back',
+          'back-link',
+          'code-container',
+          'cta',
+          'description',
+          'diagram-container',
+          'diagram-wrapper',
+          'example-btn',
+          'examples',
+          'mermaid',
+          'positions-container',
+          'tab-btn',
+          'tab-panel',
+          'tabs',
+          'view-btn',
+          'view-toggle',
+          'zoom-btn',
+          'zoom-controls',
+          'zoom-hint',
+        ],
+      },
+    },
+  },
   {
     files: ['**/*.{ts,tsx}'],
     plugins: {

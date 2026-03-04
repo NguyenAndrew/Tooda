@@ -402,258 +402,136 @@ const diagrams = {
       }
 
       body {
-        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
-          Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-        background-color: #0f172a;
-        color: #f8fafc;
-        min-height: 100dvh;
+        @apply min-h-dvh bg-slate-900 font-sans text-slate-50;
       }
 
       header {
-        text-align: center;
-        padding: 2rem 1rem 1rem;
+        @apply px-4 pb-4 pt-8 text-center;
       }
 
       header h1 {
-        font-size: clamp(2rem, 6vw, 3.5rem);
-        font-weight: 800;
-        background: linear-gradient(135deg, #6366f1, #a78bfa, #38bdf8);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        margin-bottom: 0.5rem;
+        @apply mb-2 bg-gradient-to-br from-indigo-500 via-violet-400 to-sky-400 bg-clip-text text-[clamp(2rem,6vw,3.5rem)] font-extrabold text-transparent;
       }
 
       header p {
-        color: #94a3b8;
-        font-size: 1rem;
-        margin-bottom: 0.75rem;
+        @apply mb-3 text-base text-slate-400;
       }
 
       header .back-link {
-        display: inline-block;
-        color: #a78bfa;
-        text-decoration: none;
-        font-size: 0.9rem;
+        @apply inline-block text-[0.9rem] text-violet-400 no-underline;
       }
 
       header .back-link:hover {
-        text-decoration: underline;
+        @apply underline;
       }
 
       .examples {
-        display: flex;
-        justify-content: center;
-        gap: 0.5rem;
-        flex-wrap: wrap;
-        padding: 0 1rem;
-        margin-bottom: 1.5rem;
+        @apply mb-6 flex flex-wrap justify-center gap-2 px-4;
       }
 
       .example-btn {
-        display: inline-block;
-        text-decoration: none;
-        background: #1e293b;
-        color: #94a3b8;
-        border: 1px solid #334155;
-        border-radius: 0.5rem;
-        padding: 0.5rem 1.25rem;
-        font-size: 0.95rem;
-        cursor: pointer;
-        transition: background 0.2s, color 0.2s, border-color 0.2s;
+        @apply inline-block cursor-pointer rounded-lg border border-slate-700 bg-slate-800 px-5 py-2 text-[0.95rem] text-slate-400 no-underline transition-all duration-200;
       }
 
       .example-btn:hover {
-        background: #334155;
-        color: #f8fafc;
+        @apply bg-slate-700 text-slate-50;
       }
 
       .example-btn.active {
-        background: linear-gradient(135deg, #38bdf8, #6366f1);
-        color: #fff;
-        border-color: transparent;
+        @apply border-transparent bg-gradient-to-br from-sky-400 to-indigo-500 text-white;
       }
 
       .tabs {
-        display: flex;
-        justify-content: center;
-        gap: 0.5rem;
-        flex-wrap: wrap;
-        padding: 0 1rem;
-        margin-bottom: 2rem;
+        @apply mb-8 flex flex-wrap justify-center gap-2 px-4;
       }
 
       .tab-btn {
-        display: inline-block;
-        text-decoration: none;
-        background: #1e293b;
-        color: #94a3b8;
-        border: 1px solid #334155;
-        border-radius: 0.5rem;
-        padding: 0.5rem 1.25rem;
-        font-size: 0.95rem;
-        cursor: pointer;
-        transition: background 0.2s, color 0.2s, border-color 0.2s;
+        @apply inline-block cursor-pointer rounded-lg border border-slate-700 bg-slate-800 px-5 py-2 text-[0.95rem] text-slate-400 no-underline transition-all duration-200;
       }
 
       .tab-btn:hover {
-        background: #334155;
-        color: #f8fafc;
+        @apply bg-slate-700 text-slate-50;
       }
 
       .tab-btn.active {
-        background: linear-gradient(135deg, #6366f1, #a78bfa);
-        color: #fff;
-        border-color: transparent;
+        @apply border-transparent bg-gradient-to-br from-indigo-500 to-violet-400 text-white;
       }
 
       .tab-panel {
-        display: none;
-        max-width: 900px;
-        margin: 0 auto;
-        padding: 0 1rem 3rem;
+        @apply mx-auto hidden max-w-[900px] px-4 pb-12;
       }
 
       .tab-panel.active {
-        display: block;
+        @apply block;
       }
 
       .tab-panel h2 {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: #e2e8f0;
-        margin-bottom: 0.5rem;
+        @apply mb-2 text-2xl font-bold text-slate-200;
       }
 
       .tab-panel .description {
-        color: #94a3b8;
-        margin-bottom: 1.5rem;
-        line-height: 1.6;
-        font-size: 0.95rem;
+        @apply mb-6 text-[0.95rem] leading-relaxed text-slate-400;
       }
 
       .view-toggle {
-        display: flex;
-        justify-content: center;
-        gap: 0.5rem;
-        flex-wrap: wrap;
-        padding: 0 1rem;
-        margin-bottom: 1.5rem;
+        @apply mb-6 flex flex-wrap justify-center gap-2 px-4;
       }
 
       .view-btn {
-        display: inline-block;
-        text-decoration: none;
-        background: #1e293b;
-        color: #94a3b8;
-        border: 1px solid #334155;
-        border-radius: 0.5rem;
-        padding: 0.5rem 1.25rem;
-        font-size: 0.95rem;
-        cursor: pointer;
-        transition: background 0.2s, color 0.2s, border-color 0.2s;
+        @apply inline-block cursor-pointer rounded-lg border border-slate-700 bg-slate-800 px-5 py-2 text-[0.95rem] text-slate-400 no-underline transition-all duration-200;
       }
 
       .view-btn:hover {
-        background: #334155;
-        color: #f8fafc;
+        @apply bg-slate-700 text-slate-50;
       }
 
       .view-btn.active {
-        background: linear-gradient(135deg, #38bdf8, #6366f1);
-        color: #fff;
-        border-color: transparent;
+        @apply border-transparent bg-gradient-to-br from-sky-400 to-indigo-500 text-white;
       }
 
       .zoom-controls {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 0.5rem;
-        flex-wrap: wrap;
-        padding: 0 1rem;
-        margin-bottom: 1rem;
+        @apply mb-4 flex flex-wrap items-center justify-center gap-2 px-4;
       }
 
       .zoom-btn {
-        background: #1e293b;
-        color: #94a3b8;
-        border: 1px solid #334155;
-        border-radius: 0.5rem;
-        padding: 0.35rem 0.75rem;
-        font-size: 1rem;
-        line-height: 1;
-        cursor: pointer;
-        transition: background 0.2s, color 0.2s;
+        @apply cursor-pointer rounded-lg border border-slate-700 bg-slate-800 px-3 py-[0.35rem] text-base leading-none text-slate-400 transition-all duration-200;
       }
 
       .zoom-btn:hover {
-        background: #334155;
-        color: #f8fafc;
+        @apply bg-slate-700 text-slate-50;
       }
 
       .zoom-hint {
-        color: #64748b;
-        font-size: 0.8rem;
+        @apply text-[0.8rem] text-slate-500;
       }
 
       .diagram-container {
-        background: #fff;
-        border-radius: 0.75rem;
-        padding: 1.5rem;
-        overflow: hidden;
         /* touch-action: none enables our custom pan/pinch-zoom handlers */
-        touch-action: none;
-        user-select: none;
-        cursor: grab;
+        @apply cursor-grab overflow-hidden rounded-xl bg-white p-6 touch-none select-none;
       }
 
       .diagram-container:active {
-        cursor: grabbing;
+        @apply cursor-grabbing;
       }
 
       .diagram-container .mermaid {
-        display: flex;
-        justify-content: center;
+        @apply flex justify-center;
       }
 
       .code-container {
-        background: #1e293b;
-        border: 1px solid #334155;
-        border-radius: 0.75rem;
-        padding: 1.5rem;
-        overflow-x: auto;
-        display: none;
+        @apply hidden overflow-x-auto rounded-xl border border-slate-700 bg-slate-800 p-6;
       }
 
       .code-container pre {
-        color: #e2e8f0;
-        font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo,
-          Consolas, 'DejaVu Sans Mono', monospace;
-        font-size: 0.875rem;
-        line-height: 1.6;
-        white-space: pre-wrap;
-        word-break: break-word;
+        @apply break-words whitespace-pre-wrap font-mono text-sm leading-relaxed text-slate-200;
       }
 
       .positions-container {
-        background: #1e293b;
-        border: 1px solid #334155;
-        border-radius: 0.75rem;
-        padding: 1.5rem;
-        overflow-x: auto;
-        display: none;
-        margin-top: 1rem;
+        @apply mt-4 hidden overflow-x-auto rounded-xl border border-slate-700 bg-slate-800 p-6;
       }
 
       .positions-container pre {
-        color: #e2e8f0;
-        font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo,
-          Consolas, 'DejaVu Sans Mono', monospace;
-        font-size: 0.875rem;
-        line-height: 1.6;
-        white-space: pre-wrap;
-        word-break: break-word;
+        @apply break-words whitespace-pre-wrap font-mono text-sm leading-relaxed text-slate-200;
       }
     </style>
   </head>

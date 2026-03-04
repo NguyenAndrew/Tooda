@@ -1,7 +1,7 @@
 import { Excalidraw, type ExcalidrawImperativeAPI } from '@excalidraw/excalidraw';
 import '@excalidraw/excalidraw/index.css';
 import type { ExcalidrawElement } from '@excalidraw/excalidraw/types/element/types';
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 interface Props {
   elements: readonly ExcalidrawElement[];
@@ -37,16 +37,6 @@ export default function ExcalidrawViewer({ elements }: Props) {
     };
   }, [elements]);
 
-  const btnStyle: React.CSSProperties = {
-    padding: '0.35rem 0.9rem',
-    borderRadius: '0.4rem',
-    border: '1px solid #94a3b8',
-    background: '#fff',
-    color: '#1e293b',
-    cursor: 'pointer',
-    fontSize: '0.875rem',
-  };
-
   function handleExport() {
     const api = apiRef.current;
     if (!api) return;
@@ -66,22 +56,22 @@ export default function ExcalidrawViewer({ elements }: Props) {
 
   return (
     <div>
-      <div style={{ display: 'flex', gap: '0.5rem', padding: '0.5rem', justifyContent: 'flex-end', background: '#f1f5f9' }}>
+      <div className="flex justify-end gap-2 bg-slate-100 p-2">
         <button
           onClick={() => setEditMode(m => !m)}
-          style={{ ...btnStyle, background: editMode ? '#6366f1' : '#fff', color: editMode ? '#fff' : '#1e293b' }}
+          className={`cursor-pointer rounded-[0.4rem] border border-slate-400 px-[0.9rem] py-[0.35rem] text-sm ${editMode ? 'bg-indigo-500 text-white' : 'bg-white text-slate-800'}`}
         >
           {editMode ? 'View' : 'Edit'}
         </button>
         <button
           onClick={handleExport}
           data-testid="export-json-btn"
-          style={btnStyle}
+          className="cursor-pointer rounded-[0.4rem] border border-slate-400 bg-white px-[0.9rem] py-[0.35rem] text-sm text-slate-800"
         >
           Export JSON
         </button>
       </div>
-      <div ref={containerRef} style={{ height: '500px', width: '100%', position: 'relative' }}>
+      <div ref={containerRef} className="relative h-[500px] w-full">
         <Excalidraw
           excalidrawAPI={(api: ExcalidrawImperativeAPI) => {
             apiRef.current = api;

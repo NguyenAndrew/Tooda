@@ -8,77 +8,20 @@
     <meta name="description" content="Tooda – Tool to help make and maintain diagrams for architecture and design" />
     <title>Tooda</title>
     <style>
-      *,
-      *::before,
-      *::after {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
-
-      body {
-        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
-          Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-        background-color: #0f172a;
-        color: #f8fafc;
-        min-height: 100dvh;
-        display: grid;
-        place-items: center;
-      }
-
-      main {
-        text-align: center;
-        padding: 2rem;
-      }
-
-      h1 {
-        font-size: clamp(2.5rem, 8vw, 5rem);
-        font-weight: 800;
-        background: linear-gradient(135deg, #6366f1, #a78bfa, #38bdf8);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        margin-bottom: 1rem;
-      }
-
-      p {
-        font-size: clamp(1rem, 2.5vw, 1.25rem);
-        color: #94a3b8;
-        max-width: 55ch;
-        line-height: 1.6;
-      }
-
-      .cta-group {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 1rem;
-        margin-top: 2rem;
-      }
-
       .cta {
-        display: inline-block;
-        padding: 0.75rem 1.75rem;
-        min-width: 12rem;
-        background: linear-gradient(135deg, #6366f1, #a78bfa);
-        color: #fff;
-        border-radius: 0.5rem;
-        text-decoration: none;
-        font-size: 1rem;
-        font-weight: 600;
-        transition: opacity 0.2s;
+        @apply inline-block min-w-48 rounded-lg bg-gradient-to-br from-indigo-500 to-violet-400 px-7 py-3 text-base font-semibold text-white no-underline transition-opacity duration-200;
       }
 
       .cta:hover {
-        opacity: 0.85;
+        @apply opacity-85;
       }
     </style>
   </head>
-  <body>
-    <main>
-      <h1>Tooda</h1>
-      <p>Welcome to Tooda — your tool for architecture and design diagrams.</p>
-      <div class="cta-group">
+  <body class="grid min-h-dvh place-items-center bg-slate-900 font-sans text-slate-50">
+    <main class="p-8 text-center">
+      <h1 class="mb-4 bg-gradient-to-br from-indigo-500 via-violet-400 to-sky-400 bg-clip-text text-[clamp(2.5rem,8vw,5rem)] font-extrabold text-transparent">Tooda</h1>
+      <p class="max-w-[55ch] text-[clamp(1rem,2.5vw,1.25rem)] leading-relaxed text-slate-400">Welcome to Tooda — your tool for architecture and design diagrams.</p>
+      <div class="mt-8 flex flex-wrap justify-center gap-4">
         <a href="/Tooda/c4?example=banking" class="cta">Online Banking →</a>
         <a href="/Tooda/c4?example=ecommerce" class="cta">E-Commerce →</a>
         <a href="/Tooda/c4?example=ridesharing" class="cta">Ride-Sharing →</a>

@@ -4507,110 +4507,67 @@ const level4Elements = [
       }
 
       body {
-        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
-          Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-        background-color: #0f172a;
-        color: #f8fafc;
-        min-height: 100dvh;
+        @apply min-h-dvh bg-slate-900 font-sans text-slate-50;
       }
 
       header {
-        text-align: center;
-        padding: 2rem 1rem 1rem;
+        @apply px-4 pb-4 pt-8 text-center;
       }
 
       header h1 {
-        font-size: clamp(2rem, 6vw, 3.5rem);
-        font-weight: 800;
-        background: linear-gradient(135deg, #6366f1, #a78bfa, #38bdf8);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        margin-bottom: 0.5rem;
+        @apply mb-2 bg-gradient-to-br from-indigo-500 via-violet-400 to-sky-400 bg-clip-text text-[clamp(2rem,6vw,3.5rem)] font-extrabold text-transparent;
       }
 
       header p {
-        color: #94a3b8;
-        font-size: 1rem;
+        @apply text-base text-slate-400;
       }
 
       nav.back {
-        text-align: center;
-        padding: 0.5rem 1rem 1.5rem;
+        @apply px-4 pb-6 pt-2 text-center;
       }
 
       nav.back a {
-        color: #a78bfa;
-        text-decoration: none;
-        font-size: 0.9rem;
+        @apply text-[0.9rem] text-violet-400 no-underline;
       }
 
       nav.back a:hover {
-        text-decoration: underline;
+        @apply underline;
       }
 
       .tabs {
-        display: flex;
-        justify-content: center;
-        gap: 0.5rem;
-        flex-wrap: wrap;
-        padding: 0 1rem;
-        margin-bottom: 2rem;
+        @apply mb-8 flex flex-wrap justify-center gap-2 px-4;
       }
 
       .tab-btn {
-        display: inline-block;
-        text-decoration: none;
-        background: #1e293b;
-        color: #94a3b8;
-        border: 1px solid #334155;
-        border-radius: 0.5rem;
-        padding: 0.5rem 1.25rem;
-        font-size: 0.95rem;
-        cursor: pointer;
-        transition: background 0.2s, color 0.2s, border-color 0.2s;
+        @apply inline-block cursor-pointer rounded-lg border border-slate-700 bg-slate-800 px-5 py-2 text-[0.95rem] text-slate-400 no-underline transition-all duration-200;
       }
 
       .tab-btn:hover {
-        background: #334155;
-        color: #f8fafc;
+        @apply bg-slate-700 text-slate-50;
       }
 
       .tab-btn.active {
-        background: linear-gradient(135deg, #6366f1, #a78bfa);
-        color: #fff;
-        border-color: transparent;
+        @apply border-transparent bg-gradient-to-br from-indigo-500 to-violet-400 text-white;
       }
 
       .tab-panel {
-        display: none;
-        max-width: 960px;
-        margin: 0 auto;
-        padding: 0 1rem 3rem;
+        @apply mx-auto hidden max-w-[960px] px-4 pb-12;
       }
 
       .tab-panel.active {
-        display: block;
+        @apply block;
       }
 
       .tab-panel h2 {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: #e2e8f0;
-        margin-bottom: 0.5rem;
+        @apply mb-2 text-2xl font-bold text-slate-200;
       }
 
       .tab-panel .description {
-        color: #94a3b8;
-        margin-bottom: 1.5rem;
-        line-height: 1.6;
-        font-size: 0.95rem;
+        @apply mb-6 text-[0.95rem] leading-relaxed text-slate-400;
       }
 
       .diagram-wrapper {
-        background: #fff;
-        border-radius: 0.75rem;
-        overflow: hidden;
+        @apply overflow-hidden rounded-xl bg-white;
       }
     </style>
   </head>
