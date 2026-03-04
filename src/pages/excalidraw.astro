@@ -107,15 +107,15 @@ function makeArrow(id: string, x: number, y: number, dx: number, dy: number, lab
     },
   ];
   if (label) {
-    const fontSize = 12;
+    const fontSize = 10;
     const lineHeight = 1.25;
     const labelHeight = Math.ceil(label.split('\n').length * fontSize * lineHeight);
     elements.push({
       id: id + '-label',
       type: 'text' as const,
-      x: x + dx / 2 - 60,
+      x: x + dx / 2 - 35,
       y: y + dy / 2 - labelHeight / 2,
-      width: 120,
+      width: 70,
       height: labelHeight,
       angle: 0,
       strokeColor: '#1e1e1e',
@@ -243,20 +243,20 @@ const level3Elements = [
   ...makeBox('l3-gateway', 20,  200, 140, 60, 'API Gateway',       '#bfdbfe'),
   ...makeBox('l3-db',     660,  200, 140, 60, 'Database\n(PostgreSQL)', '#fde68a'),
   // Components inside EMR Service
-  ...makeBox('l3-ctrl',   200,  100, 160, 60, 'Record\nController',    '#bbf7d0'),
-  ...makeBox('l3-svc',    200,  220, 160, 60, 'Record\nService',       '#bbf7d0'),
-  ...makeBox('l3-repo',   200,  340, 160, 60, 'Record\nRepository',    '#bbf7d0'),
-  ...makeBox('l3-auth',   420,  100, 160, 60, 'Auth\nMiddleware',      '#bbf7d0'),
-  ...makeBox('l3-audit',  420,  220, 160, 60, 'Audit\nLogger',         '#bbf7d0'),
-  ...makeBox('l3-cache',  420,  340, 160, 60, 'Cache\nManager (Redis)','#bbf7d0'),
+  ...makeBox('l3-ctrl',   250,  100, 160, 60, 'Record\nController',    '#bbf7d0'),
+  ...makeBox('l3-svc',    250,  220, 160, 60, 'Record\nService',       '#bbf7d0'),
+  ...makeBox('l3-repo',   250,  340, 160, 60, 'Record\nRepository',    '#bbf7d0'),
+  ...makeBox('l3-auth',   490,  100, 160, 60, 'Auth\nMiddleware',      '#bbf7d0'),
+  ...makeBox('l3-audit',  490,  220, 160, 60, 'Audit\nLogger',         '#bbf7d0'),
+  ...makeBox('l3-cache',  490,  340, 160, 60, 'Cache\nManager (Redis)','#bbf7d0'),
   // Arrows
-  ...makeArrow('l3-a1', 160, 230, 40,  -80, 'JSON/HTTPS'),
-  ...makeArrow('l3-a2', 360, 130, 60,    0, 'validates'),
-  ...makeArrow('l3-a3', 260, 160, 0,    60, 'uses'),
-  ...makeArrow('l3-a4', 260, 280, 0,    60, 'uses'),
-  ...makeArrow('l3-a5', 360, 250, 60,    0, 'logs'),
-  ...makeArrow('l3-a6', 360, 370, 60,    0, 'caches'),
-  ...makeArrow('l3-a7', 360, 370, 300, -140, 'SQL'),
+  ...makeArrow('l3-a1', 160, 230, 90,  -80, 'JSON/HTTPS'),
+  ...makeArrow('l3-a2', 410, 130, 80,    0, 'validates'),
+  ...makeArrow('l3-a3', 330, 160, 0,    60, 'uses'),
+  ...makeArrow('l3-a4', 330, 280, 0,    60, 'uses'),
+  ...makeArrow('l3-a5', 410, 250, 80,    0, 'logs'),
+  ...makeArrow('l3-a6', 410, 370, 80,    0, 'caches'),
+  ...makeArrow('l3-a7', 410, 370, 250, -140, 'SQL'),
 ];
 
 // --- Level 4: Code – Record Service classes ---
