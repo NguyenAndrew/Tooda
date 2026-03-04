@@ -19,6 +19,6 @@ export default defineConfig({
   webServer: {
     command: 'npm run dev:attach',
     url: 'http://localhost:4321/Tooda',
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: !process.env.PLAYWRIGHT_NO_REUSE_SERVER,
   },
 });
