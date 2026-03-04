@@ -3,12 +3,12 @@ import { test, expect } from '@playwright/test';
 test.describe('Home page', () => {
   test('has correct title', async ({ page }) => {
     await page.goto('/Tooda/');
-    await expect(page).toHaveTitle('Hello World | Tooda');
+    await expect(page).toHaveTitle('Tooda');
   });
 
   test('displays the main heading', async ({ page }) => {
     await page.goto('/Tooda/');
-    await expect(page.getByRole('heading', { name: 'Hello, World!' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Tooda' })).toBeVisible();
   });
 
   test('has links to each C4 diagram example', async ({ page }) => {
