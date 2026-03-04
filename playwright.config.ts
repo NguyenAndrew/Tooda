@@ -17,8 +17,8 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: 'npm run dev',
+    command: 'npm run dev:attach',
     url: 'http://localhost:4321/Tooda',
-    reuseExistingServer: true,
+    reuseExistingServer: !process.env.CI,
   },
 });
