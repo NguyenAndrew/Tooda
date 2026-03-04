@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## 2026-03-04
+
+- Add `scripts/make-gifs.js` — a Playwright-driven script that builds the project, starts a temporary preview server, captures browser screenshots, and encodes them into animated GIFs saved to `docs/gifs/` (`c4-tabs.gif`, `c4-examples.gif`, `c4-toggle.gif`); add `npm run make-gifs` script; document usage in README
+
 ## 2026-03-02
 
 - Convert navigation controls to proper `<a>` hyperlinks; add view-state URL tracking — example selector, level tabs, and Diagram/Code toggle are now real links, making every view bookmarkable and shareable ([#19](https://github.com/NguyenAndrew/Tooda/pull/19))
