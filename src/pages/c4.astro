@@ -639,7 +639,20 @@ const diagrams = {
 
     <script src="/Tooda/mermaid.min.js" is:inline></script>
     <script define:vars={{ diagrams }} is:inline>
+      const logger = (() => {
+        const prefix = 'C4';
+        const fmt = (level, msg) => `[${new Date().toISOString()}] [${level}] [${prefix}] ${msg}`;
+        return {
+          debug: (msg, ...args) => console.debug(fmt('DEBUG', msg), ...args),
+          info:  (msg, ...args) => console.info(fmt('INFO',  msg), ...args),
+          warn:  (msg, ...args) => console.warn(fmt('WARN',  msg), ...args),
+          error: (msg, ...args) => console.error(fmt('ERROR', msg), ...args),
+        };
+      })();
+
+      logger.info('Initializing Mermaid');
       mermaid.initialize({ startOnLoad: false, theme: 'default' });
+      logger.info('Rendering initial diagrams');
       mermaid.run({ nodes: document.querySelectorAll('.tab-panel.active .mermaid') });
 
       // View toggle state – declared first so activateTab can reference it
@@ -653,6 +666,7 @@ const diagrams = {
 
       function activateTab(target) {
         if (!validTabs.includes(target)) target = 'level1';
+        logger.info(`Tab switched to: ${target}`);
 
         buttons.forEach(b => b.classList.remove('active'));
         panels.forEach(p => p.classList.remove('active'));
@@ -699,6 +713,7 @@ const diagrams = {
       const viewBtns = document.querySelectorAll('.view-btn');
 
       function activateView(view) {
+        logger.info(`View changed to: ${view}`);
         currentView = view;
         isEditMode = (view === 'edit');
         viewBtns.forEach(b => b.classList.remove('active'));
@@ -760,7 +775,11 @@ const diagrams = {
 
       function activateExample(key) {
         const example = diagrams[key];
-        if (!example) return;
+        if (!example) {
+          logger.warn(`Unknown example key: ${key}`);
+          return;
+        }
+        logger.info(`Example changed to: ${key}`);
 
         exampleBtns.forEach(b => b.classList.remove('active'));
         const activeBtn = document.querySelector(`.example-btn[data-example="${key}"]`);
@@ -872,6 +891,7 @@ const diagrams = {
 
       function initSvg(svgEl) {
         if (vbState.has(svgEl)) return;
+        logger.debug('SVG initialized');
         const vbAttr = svgEl.getAttribute('viewBox');
         let ox, oy, ow, oh;
         if (vbAttr) {
@@ -1201,6 +1221,7 @@ const diagrams = {
 
       // ---- Zoom control buttons ----
       document.getElementById('zoom-in')?.addEventListener('click', () => {
+        logger.info('Zoom in');
         const svg = getActiveSvg();
         if (svg && vbState.has(svg)) {
           const s = vbState.get(svg);
@@ -1208,6 +1229,7 @@ const diagrams = {
         }
       });
       document.getElementById('zoom-out')?.addEventListener('click', () => {
+        logger.info('Zoom out');
         const svg = getActiveSvg();
         if (svg && vbState.has(svg)) {
           const s = vbState.get(svg);
@@ -1215,6 +1237,7 @@ const diagrams = {
         }
       });
       document.getElementById('zoom-reset')?.addEventListener('click', () => {
+        logger.info('Zoom reset');
         const svg = getActiveSvg();
         if (svg) resetZoom(svg);
       });
