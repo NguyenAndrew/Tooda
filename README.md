@@ -36,15 +36,11 @@
 
 **Landing page** — jump straight into any example system:
 
-![Landing page](https://github.com/user-attachments/assets/71ac9198-d9b9-45a9-b48f-8e4ad9f489d3)
-
-**C4 diagram viewer** — interactive tabbed view across all four C4 levels (Mermaid-rendered):
-
-![C4 diagram viewer – Online Banking System Context](https://github.com/user-attachments/assets/3877dfec-45bb-4697-ad9c-997864229c9c)
+![Landing page](https://github.com/user-attachments/assets/f14f4d8f-3598-4a2c-ab34-06641b314546)
 
 **Excalidraw viewer** — freehand-style diagrams rendered with Excalidraw:
 
-![Excalidraw viewer – Healthcare Platform Context](https://github.com/user-attachments/assets/855ac2b7-3663-4cb7-9c66-960b1e918cd5)
+![Excalidraw viewer – Healthcare Platform Context](https://github.com/user-attachments/assets/bc2f227b-37cd-4c30-8f77-e60dacb7c61d)
 
 ---
 
