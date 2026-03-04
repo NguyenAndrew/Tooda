@@ -8,6 +8,7 @@
     "build": "node scripts/copy-mermaid.js && astro build",
     "preview": "astro preview",
     "lint": "eslint src/",
+    "postinstall": "npm run install:playwright",
     "install:playwright": "npx playwright install --with-deps chromium",
     "test": "npm run lint && playwright test",
     "test:ci": "playwright test"
