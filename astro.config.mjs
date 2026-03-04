@@ -8,4 +8,8 @@ export default defineConfig({
   site: 'https://nguyenandrew.github.io',
   base: '/Tooda',
   integrations: [react(), tailwind()],
+  prefetch: {
+    prefetchAll: true,
+    defaultStrategy: 'viewport',
+  },
 });

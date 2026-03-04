@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
 
 const PAGES = [
   { name: 'Home', path: '/Tooda/' },
@@ -16,15 +16,48 @@ const VIEWPORTS = [
 // Google Core Web Vitals (LCP ≤ 2 500 ms) plus a small buffer for test variance.
 const LOAD_TIME_THRESHOLD_MS = 3000;
 
+// Navigation links on the Home page and the page they lead to.
+const HOME_NAV_LINKS = [
+  { name: 'Online Banking', label: /Online Banking/, destination: 'C4 Diagrams' },
+  { name: 'E-Commerce', label: /E-Commerce/, destination: 'C4 Diagrams' },
+  { name: 'Ride-Sharing', label: /Ride-Sharing/, destination: 'C4 Diagrams' },
+  { name: 'Healthcare', label: /Healthcare/, destination: 'Excalidraw' },
+];
+
+async function getNavigationLoadTime(page: Page): Promise<number | null> {
+  return page.evaluate(() => {
+    const [entry] = performance.getEntriesByType('navigation') as PerformanceNavigationTiming[];
+    return entry ? entry.loadEventEnd - entry.startTime : null;
+  });
+}
+
 test.describe('Performance – page load times', () => {
   for (const { name, path } of PAGES) {
     test(`${name} page loads within ${LOAD_TIME_THRESHOLD_MS} ms`, async ({ page }) => {
       await page.goto(path, { waitUntil: 'load' });
 
-      const navigationTiming = await page.evaluate(() => {
-        const [entry] = performance.getEntriesByType('navigation') as PerformanceNavigationTiming[];
-        return entry ? entry.loadEventEnd - entry.startTime : null;
-      });
+      const navigationTiming = await getNavigationLoadTime(page);
+
+      expect(navigationTiming).not.toBeNull();
+      expect(navigationTiming!).toBeLessThan(LOAD_TIME_THRESHOLD_MS);
+    });
+  }
+});
+
+test.describe('Performance – navigation from Home', () => {
+  for (const { name, label, destination } of HOME_NAV_LINKS) {
+    test(`navigating from Home via "${name}" link to ${destination} page loads within ${LOAD_TIME_THRESHOLD_MS} ms`, async ({ page }) => {
+      await page.goto('/Tooda/', { waitUntil: 'load' });
+
+      // Wait for the network to settle so viewport-based prefetch can complete.
+      await page.waitForLoadState('networkidle');
+
+      await Promise.all([
+        page.waitForLoadState('load'),
+        page.getByRole('link', { name: label }).click(),
+      ]);
+
+      const navigationTiming = await getNavigationLoadTime(page);
 
       expect(navigationTiming).not.toBeNull();
       expect(navigationTiming!).toBeLessThan(LOAD_TIME_THRESHOLD_MS);
