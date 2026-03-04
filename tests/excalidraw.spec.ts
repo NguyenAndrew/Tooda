@@ -63,4 +63,43 @@ test.describe('Excalidraw example page', () => {
     await page.waitForSelector('#level2 .excalidraw', { state: 'visible', timeout: 15000 });
     await expect(page.locator('#level2 .excalidraw')).toBeVisible();
   });
+
+  test('Edit button is visible in Level 1 panel', async ({ page }) => {
+    await page.goto('/Tooda/excalidraw');
+    await page.waitForSelector('#level1 .excalidraw', { state: 'visible', timeout: 15000 });
+    await expect(page.locator('#level1').getByRole('button', { name: 'Edit' })).toBeVisible();
+  });
+
+  test('Export JSON button is visible in Level 1 panel', async ({ page }) => {
+    await page.goto('/Tooda/excalidraw');
+    await page.waitForSelector('#level1 .excalidraw', { state: 'visible', timeout: 15000 });
+    await expect(page.locator('#level1').getByRole('button', { name: 'Export JSON' })).toBeVisible();
+  });
+
+  test('clicking Edit button toggles to View button', async ({ page }) => {
+    await page.goto('/Tooda/excalidraw');
+    await page.waitForSelector('#level1 .excalidraw', { state: 'visible', timeout: 15000 });
+    const editBtn = page.locator('#level1').getByRole('button', { name: 'Edit' });
+    await editBtn.click();
+    await expect(page.locator('#level1').getByRole('button', { name: 'View' })).toBeVisible();
+    await expect(page.locator('#level1').getByRole('button', { name: 'Edit' })).not.toBeVisible();
+  });
+
+  test('clicking View button (after Edit) toggles back to Edit button', async ({ page }) => {
+    await page.goto('/Tooda/excalidraw');
+    await page.waitForSelector('#level1 .excalidraw', { state: 'visible', timeout: 15000 });
+    await page.locator('#level1').getByRole('button', { name: 'Edit' }).click();
+    await page.locator('#level1').getByRole('button', { name: 'View' }).click();
+    await expect(page.locator('#level1').getByRole('button', { name: 'Edit' })).toBeVisible();
+  });
+
+  test('Export JSON button triggers file download', async ({ page }) => {
+    await page.goto('/Tooda/excalidraw');
+    await page.waitForSelector('#level1 .excalidraw', { state: 'visible', timeout: 15000 });
+    const [download] = await Promise.all([
+      page.waitForEvent('download'),
+      page.locator('#level1').getByTestId('export-json-btn').click(),
+    ]);
+    expect(download.suggestedFilename()).toMatch(/^diagram-.*\.json$/);
+  });
 });
