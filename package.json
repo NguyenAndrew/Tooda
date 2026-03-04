@@ -9,8 +9,7 @@
     "lint": "eslint src/",
     "install:playwright": "npx playwright install --with-deps chromium",
     "test": "npm run lint && playwright test",
-    "test:ci": "playwright test",
-    "prepare": "husky"
+    "test:ci": "playwright test"
   },
   "dependencies": {
     "@astrojs/react": "^4.4.2",
@@ -28,7 +27,6 @@
     "eslint-plugin-astro": "^1.6.0",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.0.1",
-    "husky": "^9.1.7",
     "typescript-eslint": "^8.56.1"
   }
 }
