@@ -80,6 +80,50 @@ async function addHoldFrames(page, frames, count = HOLD_FRAMES) {
 }
 
 /**
+ * Shows a visual click indicator at the centre of `locator`, captures one
+ * frame so the indicator is visible in the GIF, then removes the indicator
+ * and performs the click.
+ * @param {import('@playwright/test').Page} page
+ * @param {Array<object>} frames
+ * @param {import('@playwright/test').Locator} locator
+ */
+async function clickWithIndicator(page, frames, locator) {
+  const box = await locator.boundingBox();
+  if (!box) throw new Error(`clickWithIndicator: element not visible or not in DOM`);
+  const cx = box.x + box.width / 2;
+  const cy = box.y + box.height / 2;
+
+  await page.evaluate(({ cx, cy }) => {
+    const el = document.createElement('div');
+    el.id = '__click-indicator__';
+    el.style.cssText = [
+      'position:fixed',
+      `left:${cx - 18}px`,
+      `top:${cy - 18}px`,
+      'width:36px',
+      'height:36px',
+      'border-radius:50%',
+      'background:rgba(255,80,80,0.45)',
+      'border:3px solid rgba(220,0,0,0.85)',
+      'box-sizing:border-box',
+      'z-index:2147483647',
+      'pointer-events:none',
+    ].join(';');
+    document.body.appendChild(el);
+  }, { cx, cy });
+
+  const indicatorFrame = await captureFrame(page);
+  frames.push(indicatorFrame);
+
+  await page.evaluate(() => {
+    const el = document.getElementById('__click-indicator__');
+    if (el) el.remove();
+  });
+
+  await locator.click();
+}
+
+/**
  * Encodes an array of frames into an animated GIF and saves it to OUT_DIR.
  * @param {Array<{width: number, height: number, data: Uint8ClampedArray}>} frames
  * @param {string} filename
@@ -126,7 +170,7 @@ async function makeC4TabsGif(page) {
     { name: 'Level 3 \u2013 Component', selector: '#level3 .mermaid svg' },
     { name: 'Level 4 \u2013 Code',      selector: '#level4 .mermaid svg' },
   ]) {
-    await page.getByRole('link', { name, exact: true }).click();
+    await clickWithIndicator(page, frames, page.getByRole('link', { name, exact: true }));
     await page.waitForSelector(selector, { state: 'visible' });
     await addHoldFrames(page, frames);
   }
@@ -145,7 +189,7 @@ async function makeC4ExamplesGif(page) {
   await addHoldFrames(page, frames);
 
   for (const name of ['E-Commerce', 'Ride-Sharing', 'Online Banking']) {
-    await page.getByRole('link', { name, exact: true }).click();
+    await clickWithIndicator(page, frames, page.getByRole('link', { name, exact: true }));
     await page.waitForSelector('#level1 .mermaid svg', { state: 'visible' });
     await addHoldFrames(page, frames);
   }
@@ -163,10 +207,10 @@ async function makeC4ToggleGif(page) {
   await page.waitForSelector('#level1 .mermaid svg', { state: 'visible' });
   await addHoldFrames(page, frames);
 
-  await page.getByRole('link', { name: 'Code', exact: true }).click();
+  await clickWithIndicator(page, frames, page.getByRole('link', { name: 'Code', exact: true }));
   await addHoldFrames(page, frames);
 
-  await page.getByRole('link', { name: 'Diagram', exact: true }).click();
+  await clickWithIndicator(page, frames, page.getByRole('link', { name: 'Diagram', exact: true }));
   await page.waitForSelector('#level1 .mermaid svg', { state: 'visible' });
   await addHoldFrames(page, frames);
 
