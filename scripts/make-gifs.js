@@ -40,6 +40,15 @@ const HOLD_FRAMES = 5;
 /** Milliseconds to wait after an interaction before capturing frames. */
 const SETTLE_MS = 300;
 
+/** Number of frames to capture while the smooth-scroll animation is running. */
+const SCROLL_FRAMES = 10;
+
+/** Milliseconds between each scroll-animation frame capture. */
+const SCROLL_INTERVAL_MS = 50;
+
+/** Milliseconds each scroll-animation frame is shown in the GIF. */
+const SCROLL_FRAME_DELAY_MS = 60;
+
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
@@ -81,6 +90,35 @@ async function addHoldFrames(page, frames, count = HOLD_FRAMES) {
   });
   const frame = await captureFrame(page);
   for (let i = 0; i < count; i++) frames.push(frame);
+}
+
+/**
+ * Initiates a smooth scroll to the active tab panel's diagram, capturing
+ * frames during the animation so the scroll is visible in the GIF, then
+ * appends `count` hold frames at the final position.
+ * @param {import('@playwright/test').Page} page
+ * @param {Array<object>} frames
+ * @param {number} count
+ */
+async function addScrollAndHoldFrames(page, frames, count = HOLD_FRAMES) {
+  await sleep(SETTLE_MS);
+  await page.evaluate(() => {
+    const panel = document.querySelector('.tab-panel.active');
+    if (panel) {
+      const diagram = panel.querySelector('.diagram-container') || panel;
+      diagram.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  });
+  // Brief pause so the browser has started the scroll animation before the
+  // first frame is captured.
+  await sleep(30);
+  for (let i = 0; i < SCROLL_FRAMES; i++) {
+    await sleep(SCROLL_INTERVAL_MS);
+    const frame = await captureFrame(page);
+    frames.push({ ...frame, delay: SCROLL_FRAME_DELAY_MS });
+  }
+  const holdFrame = await captureFrame(page);
+  for (let i = 0; i < count; i++) frames.push(holdFrame);
 }
 
 /**
@@ -152,10 +190,12 @@ function saveGif(frames, filename, frameDelay = FRAME_DELAY_MS) {
     const out = createWriteStream(outputPath);
     encoder.createReadStream().pipe(out);
     encoder.start();
-    encoder.setDelay(frameDelay);
     encoder.setRepeat(0);
     encoder.setQuality(10);
-    for (const frame of frames) encoder.addFrame(frame.data);
+    for (const frame of frames) {
+      encoder.setDelay(frame.delay ?? frameDelay);
+      encoder.addFrame(frame.data);
+    }
     encoder.finish();
     out.on('finish', () => {
       console.log(`  ✓ ${outputPath}`);
@@ -177,7 +217,7 @@ async function makeC4TabsGif(page) {
   const frames = [];
   await page.goto(`${BASE_URL}${BASE_PATH}/c4`, { waitUntil: 'networkidle' });
   await page.waitForSelector('#level1 .mermaid svg', { state: 'visible' });
-  await addHoldFrames(page, frames);
+  await addScrollAndHoldFrames(page, frames);
 
   for (const { name, selector } of [
     { name: 'Level 2 \u2013 Container', selector: '#level2 .mermaid svg' },
@@ -186,7 +226,7 @@ async function makeC4TabsGif(page) {
   ]) {
     await clickWithIndicator(page, frames, page.getByRole('link', { name, exact: true }));
     await page.waitForSelector(selector, { state: 'visible' });
-    await addHoldFrames(page, frames);
+    await addScrollAndHoldFrames(page, frames);
   }
 
   await saveGif(frames, 'c4-tabs.gif');
@@ -200,12 +240,12 @@ async function makeC4ExamplesGif(page) {
   const frames = [];
   await page.goto(`${BASE_URL}${BASE_PATH}/c4`, { waitUntil: 'networkidle' });
   await page.waitForSelector('#level1 .mermaid svg', { state: 'visible' });
-  await addHoldFrames(page, frames);
+  await addScrollAndHoldFrames(page, frames);
 
   for (const name of ['E-Commerce', 'Ride-Sharing', 'Online Banking']) {
     await clickWithIndicator(page, frames, page.getByRole('link', { name, exact: true }));
     await page.waitForSelector('#level1 .mermaid svg', { state: 'visible' });
-    await addHoldFrames(page, frames);
+    await addScrollAndHoldFrames(page, frames);
   }
 
   await saveGif(frames, 'c4-examples.gif');
