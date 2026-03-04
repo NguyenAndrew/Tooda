@@ -427,20 +427,17 @@ const diagrams = {
       header p {
         color: #94a3b8;
         font-size: 1rem;
+        margin-bottom: 0.75rem;
       }
 
-      nav.back {
-        text-align: center;
-        padding: 0.5rem 1rem 1.5rem;
-      }
-
-      nav.back a {
+      header .back-link {
+        display: inline-block;
         color: #a78bfa;
         text-decoration: none;
         font-size: 0.9rem;
       }
 
-      nav.back a:hover {
+      header .back-link:hover {
         text-decoration: underline;
       }
 
@@ -664,11 +661,8 @@ const diagrams = {
     <header>
       <h1>C4 Diagram Examples</h1>
       <p>Three systems illustrated across all 4 levels of the C4 model</p>
+      <a href="/Tooda/" class="back-link">← Back to Home</a>
     </header>
-
-    <nav class="back">
-      <a href="/Tooda/">← Back to Home</a>
-    </nav>
 
     <div class="examples">
       <a href="/Tooda/c4?example=banking" class="example-btn active" data-example="banking">Online Banking</a>
@@ -699,7 +693,6 @@ const diagrams = {
 
     <!-- Level 1: System Context -->
     <section id="level1" class="tab-panel active">
-      <h2>Level 1 – System Context</h2>
       <p class="description">
         Shows the system in context: who uses it and which external systems it
         interacts with.
@@ -717,7 +710,6 @@ const diagrams = {
 
     <!-- Level 2: Container -->
     <section id="level2" class="tab-panel">
-      <h2>Level 2 – Container</h2>
       <p class="description">
         Zooms in on the system to show the containers (applications and data
         stores) that make it up.
@@ -735,7 +727,6 @@ const diagrams = {
 
     <!-- Level 3: Component -->
     <section id="level3" class="tab-panel">
-      <h2>Level 3 – Component</h2>
       <p class="description">
         Zooms in on a key container to show the components (services and
         controllers) inside it.
@@ -753,7 +744,6 @@ const diagrams = {
 
     <!-- Level 4: Code -->
     <section id="level4" class="tab-panel">
-      <h2>Level 4 – Code</h2>
       <p class="description">
         Zooms in on a key component to show the classes and interfaces that
         implement it.
