@@ -4,6 +4,7 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "node scripts/copy-mermaid.js && astro dev",
+    "dev:detach": "node scripts/dev-detach.js",
     "build": "node scripts/copy-mermaid.js && astro build",
     "preview": "astro preview",
     "lint": "eslint src/",
