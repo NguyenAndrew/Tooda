@@ -62,9 +62,10 @@ async function captureFrame(page) {
 }
 
 /**
- * Waits for the page to settle, scrolls the active tab panel into view so the
- * diagram fills the viewport, then pushes `count` identical frames onto
- * `frames` (repeating the same frame produces a "hold" in the GIF).
+ * Waits for the page to settle, scrolls the diagram inside the active tab
+ * panel into view so the diagram fills the viewport, then pushes `count`
+ * identical frames onto `frames` (repeating the same frame produces a "hold"
+ * in the GIF).
  * @param {import('@playwright/test').Page} page
  * @param {Array<object>} frames
  * @param {number} count
@@ -73,7 +74,10 @@ async function addHoldFrames(page, frames, count = HOLD_FRAMES) {
   await sleep(SETTLE_MS);
   await page.evaluate(() => {
     const panel = document.querySelector('.tab-panel.active');
-    if (panel) panel.scrollIntoView({ behavior: 'instant', block: 'start' });
+    if (panel) {
+      const diagram = panel.querySelector('.diagram-container') || panel;
+      diagram.scrollIntoView({ behavior: 'instant', block: 'center' });
+    }
   });
   const frame = await captureFrame(page);
   for (let i = 0; i < count; i++) frames.push(frame);
@@ -88,6 +92,16 @@ async function addHoldFrames(page, frames, count = HOLD_FRAMES) {
  * @param {import('@playwright/test').Locator} locator
  */
 async function clickWithIndicator(page, frames, locator) {
+  // Scroll the target element into view (instant, no animation) so that the
+  // indicator overlay lands inside the visible viewport area.
+  const handle = await locator.elementHandle();
+  if (handle) {
+    await page.evaluate(
+      (el) => el.scrollIntoView({ behavior: 'instant', block: 'nearest' }),
+      handle,
+    );
+  }
+
   const box = await locator.boundingBox();
   if (!box) throw new Error(`clickWithIndicator: element not visible or not in DOM`);
   const cx = box.x + box.width / 2;
