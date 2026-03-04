@@ -81,7 +81,7 @@ export default function ExcalidrawViewer({ elements }: Props) {
           Export JSON
         </button>
       </div>
-      <div ref={containerRef} style={{ height: '500px', width: '100%' }}>
+      <div ref={containerRef} style={{ height: '500px', width: '100%', position: 'relative' }}>
         <Excalidraw
           excalidrawAPI={(api: ExcalidrawImperativeAPI) => {
             apiRef.current = api;
