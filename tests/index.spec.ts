@@ -29,4 +29,11 @@ test.describe('Home page', () => {
     await expect(healthcareLink).toBeVisible();
     await expect(healthcareLink).toHaveAttribute('href', '/Tooda/excalidraw');
   });
+
+  test('has a link to the GitHub repository', async ({ page }) => {
+    await page.goto('/Tooda/');
+    const githubLink = page.getByRole('link', { name: /View on GitHub/ });
+    await expect(githubLink).toBeVisible();
+    await expect(githubLink).toHaveAttribute('href', 'https://github.com/NguyenAndrew/Tooda');
+  });
 });
