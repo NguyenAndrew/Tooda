@@ -41,7 +41,7 @@ const HOLD_FRAMES = 5;
 const SETTLE_MS = 300;
 
 /** Number of frames to capture while the smooth-scroll animation is running. */
-const SCROLL_FRAMES = 10;
+const SCROLL_FRAMES = 20;
 
 /** Milliseconds between each scroll-animation frame capture. */
 const SCROLL_INTERVAL_MS = 50;
