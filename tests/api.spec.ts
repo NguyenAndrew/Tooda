@@ -1,41 +1,18 @@
 import { test, expect } from '@playwright/test';
 
+const excalidrawLevels = ['level1', 'level2', 'level3', 'level4'];
+
 test.describe('Static JSON API – Excalidraw endpoints', () => {
-  test('GET /Tooda/api/excalidraw/level1.json returns a JSON array', async ({ request }) => {
-    const response = await request.get('/Tooda/api/excalidraw/level1.json');
-    expect(response.ok()).toBe(true);
-    expect(response.headers()['content-type']).toContain('application/json');
-    const data = await response.json();
-    expect(Array.isArray(data)).toBe(true);
-    expect(data.length).toBeGreaterThan(0);
-  });
-
-  test('GET /Tooda/api/excalidraw/level2.json returns a JSON array', async ({ request }) => {
-    const response = await request.get('/Tooda/api/excalidraw/level2.json');
-    expect(response.ok()).toBe(true);
-    expect(response.headers()['content-type']).toContain('application/json');
-    const data = await response.json();
-    expect(Array.isArray(data)).toBe(true);
-    expect(data.length).toBeGreaterThan(0);
-  });
-
-  test('GET /Tooda/api/excalidraw/level3.json returns a JSON array', async ({ request }) => {
-    const response = await request.get('/Tooda/api/excalidraw/level3.json');
-    expect(response.ok()).toBe(true);
-    expect(response.headers()['content-type']).toContain('application/json');
-    const data = await response.json();
-    expect(Array.isArray(data)).toBe(true);
-    expect(data.length).toBeGreaterThan(0);
-  });
-
-  test('GET /Tooda/api/excalidraw/level4.json returns a JSON array', async ({ request }) => {
-    const response = await request.get('/Tooda/api/excalidraw/level4.json');
-    expect(response.ok()).toBe(true);
-    expect(response.headers()['content-type']).toContain('application/json');
-    const data = await response.json();
-    expect(Array.isArray(data)).toBe(true);
-    expect(data.length).toBeGreaterThan(0);
-  });
+  for (const level of excalidrawLevels) {
+    test(`GET /Tooda/api/excalidraw/${level}.json returns a JSON array`, async ({ request }) => {
+      const response = await request.get(`/Tooda/api/excalidraw/${level}.json`);
+      expect(response.ok()).toBe(true);
+      expect(response.headers()['content-type']).toContain('application/json');
+      const data = await response.json();
+      expect(Array.isArray(data)).toBe(true);
+      expect(data.length).toBeGreaterThan(0);
+    });
+  }
 });
 
 test.describe('Static JSON API – C4 endpoints', () => {
