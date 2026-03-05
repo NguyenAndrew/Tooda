@@ -123,6 +123,18 @@
       .open-btn:hover {
         @apply bg-slate-700 text-violet-300 underline;
       }
+
+      .spec-banner {
+        @apply mx-auto mb-8 max-w-3xl rounded-xl border border-indigo-700 bg-slate-800 px-5 py-4 text-sm text-slate-300;
+      }
+
+      .spec-banner a {
+        @apply font-semibold text-violet-400 no-underline;
+      }
+
+      .spec-banner a:hover {
+        @apply underline;
+      }
     </style>
   </head>
   <body>
@@ -134,6 +146,10 @@
     <nav class="back">
       <a href="/Tooda/">← Back to Home</a>
     </nav>
+
+    <div class="spec-banner" role="note" aria-label="OpenAPI specification">
+      📄 Machine-readable spec: <a href="/Tooda/api/openapi.json">OpenAPI 3.0 — /api/openapi.json</a>
+    </div>
 
     <main>
       <!-- C4 Diagram Endpoints -->

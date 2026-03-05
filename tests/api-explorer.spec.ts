@@ -21,6 +21,15 @@ test.describe('API Explorer page', () => {
     await expect(back).toHaveAttribute('href', '/Tooda/');
   });
 
+  test('displays the OpenAPI spec banner with a link', async ({ page }) => {
+    await page.goto('/Tooda/api');
+    const banner = page.getByRole('note', { name: 'OpenAPI specification' });
+    await expect(banner).toBeVisible();
+    const specLink = banner.getByRole('link');
+    await expect(specLink).toBeVisible();
+    await expect(specLink).toHaveAttribute('href', '/Tooda/api/openapi.json');
+  });
+
   test('displays C4 diagram endpoints section', async ({ page }) => {
     await page.goto('/Tooda/api');
     await expect(page.getByRole('region', { name: 'C4 diagram endpoints' })).toBeVisible();
