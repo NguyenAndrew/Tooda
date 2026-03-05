@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## 2026-03-05
+
+- Increase GIF framerate — raise scroll-animation capture rate from ~17 fps to ~30 fps (`SCROLL_FRAME_DELAY_MS` 60 → 33 ms, `SCROLL_INTERVAL_MS` 50 → 33 ms, `SCROLL_FRAMES` 20 → 30); regenerate `docs/gifs/c4-tabs.gif`, `docs/gifs/c4-examples.gif`, and `docs/gifs/c4-toggle.gif`
+
 ## 2026-03-04
 
 - Add `scripts/make-gifs.js` — a Playwright-driven script that builds the project, starts a temporary preview server, captures browser screenshots, and encodes them into animated GIFs saved to `docs/gifs/` (`c4-tabs.gif`, `c4-examples.gif`, `c4-toggle.gif`); add `npm run make-gifs` script; document usage in README
