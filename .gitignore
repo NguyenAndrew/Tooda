@@ -2,6 +2,9 @@ node_modules/
 dist/
 .astro/
 public/mermaid.min.js
+public/swagger-ui.css
+public/swagger-ui-bundle.js
+public/swagger-ui-standalone-preset.js
 playwright-report/
 test-results/
 dev-detach.log
