@@ -103,6 +103,9 @@ async function addHoldFrames(page, frames, count = HOLD_FRAMES) {
 async function addScrollAndHoldFrames(page, frames, count = HOLD_FRAMES) {
   await sleep(SETTLE_MS);
   await page.evaluate(() => {
+    // Reset to the top of the page so the smooth scroll to the diagram always
+    // produces visible downward movement, regardless of the previous position.
+    window.scrollTo({ top: 0, behavior: 'instant' });
     const panel = document.querySelector('.tab-panel.active');
     if (panel) {
       const diagram = panel.querySelector('.diagram-container') || panel;
