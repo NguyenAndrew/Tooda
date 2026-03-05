@@ -20,7 +20,8 @@
     "astro": "^5.18.0",
     "mermaid": "^11.12.3",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "swagger-ui-dist": "^5.32.0"
   },
   "devDependencies": {
     "@astrojs/tailwind": "^6.0.2",
