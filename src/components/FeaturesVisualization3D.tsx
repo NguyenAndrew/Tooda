@@ -4,6 +4,19 @@ import { createLogger } from '../utils/logger';
 
 const logger = createLogger('FeaturesVisualization3D');
 
+/** Pixels the label floats above the sphere's screen-space centre */
+const LABEL_VERTICAL_OFFSET = 68;
+
+/** Shared styles for always-visible node labels */
+const LABEL_ICON_STYLE: React.CSSProperties = { fontSize: '1.1rem', lineHeight: 1 };
+const LABEL_TEXT_STYLE: React.CSSProperties = {
+  fontSize: '0.65rem',
+  color: '#cbd5e1',
+  fontWeight: 600,
+  whiteSpace: 'nowrap',
+  marginTop: '2px',
+};
+
 interface FeatureNode {
   label: string;
   icon: string;
@@ -46,6 +59,7 @@ const FEATURE_NODES: FeatureNode[] = [
 export default function FeaturesVisualization3D() {
   const mountRef = useRef<HTMLDivElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
+  const labelRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   useEffect(() => {
     const container = mountRef.current;
@@ -219,6 +233,23 @@ export default function FeaturesVisualization3D() {
         rings[i].rotation.z = elapsed * 0.4 + i;
       });
 
+      // Update always-visible node labels
+      const labelRect = renderer.domElement.getBoundingClientRect();
+      FEATURE_NODES.forEach((_, i) => {
+        const labelEl = labelRefs.current[i];
+        if (!labelEl) return;
+        const vec = meshes[i].position.clone().project(camera);
+        if (vec.z > 1) {
+          labelEl.style.visibility = 'hidden';
+        } else {
+          const lx = ((vec.x + 1) / 2) * labelRect.width;
+          const ly = ((-vec.y + 1) / 2) * labelRect.height;
+          labelEl.style.visibility = 'visible';
+          labelEl.style.left = `${lx}px`;
+          labelEl.style.top = `${Math.max(0, ly - LABEL_VERTICAL_OFFSET)}px`;
+        }
+      });
+
       // Rebuild connecting lines each frame
       scene.children
         .filter(c => c instanceof THREE.Line)
@@ -299,12 +330,29 @@ export default function FeaturesVisualization3D() {
   }, []);
 
   return (
-    <div className="relative w-full" style={{ height: '500px' }}>
+    <div className="relative w-full" style={{ height: 'clamp(280px, 55vh, 500px)' }}>
       <div
         ref={mountRef}
         data-testid="three-canvas-container"
         className="size-full"
       />
+      {/* Always-visible node labels */}
+      {FEATURE_NODES.map((node, i) => (
+        <div
+          key={node.label}
+          ref={(el) => { labelRefs.current[i] = el; }}
+          style={{
+            position: 'absolute',
+            transform: 'translateX(-50%)',
+            pointerEvents: 'none',
+            textAlign: 'center',
+            visibility: 'hidden',
+          }}
+        >
+          <div style={LABEL_ICON_STYLE}>{node.icon}</div>
+          <div style={LABEL_TEXT_STYLE}>{node.label}</div>
+        </div>
+      ))}
       {/* Tooltip */}
       <div
         ref={tooltipRef}
