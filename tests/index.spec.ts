@@ -38,6 +38,69 @@ test.describe('Home page', () => {
   });
 });
 
+test.describe('Home page – button active (pressed) animation', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/Tooda/');
+  });
+
+  test('cta-primary buttons have active scale-down CSS', async ({ page }) => {
+    const hasActiveScale = await page.evaluate(() => {
+      const sheets = Array.from(document.styleSheets);
+      for (const sheet of sheets) {
+        try {
+          const rules = Array.from(sheet.cssRules || []);
+          for (const rule of rules) {
+            const text = rule.cssText || '';
+            if (text.includes('cta-primary') && text.includes(':active') && text.includes('scale')) {
+              return true;
+            }
+          }
+        } catch { /* cross-origin sheet */ }
+      }
+      return false;
+    });
+    expect(hasActiveScale).toBe(true);
+  });
+
+  test('cta-primary buttons have fast active transition', async ({ page }) => {
+    const hasFastTransition = await page.evaluate(() => {
+      const sheets = Array.from(document.styleSheets);
+      for (const sheet of sheets) {
+        try {
+          const rules = Array.from(sheet.cssRules || []);
+          for (const rule of rules) {
+            const text = rule.cssText || '';
+            if (text.includes('cta-primary') && text.includes(':active') && text.includes('75ms')) {
+              return true;
+            }
+          }
+        } catch { /* cross-origin sheet */ }
+      }
+      return false;
+    });
+    expect(hasFastTransition).toBe(true);
+  });
+
+  test('github-link button has active scale-down CSS', async ({ page }) => {
+    const hasGithubActiveScale = await page.evaluate(() => {
+      const sheets = Array.from(document.styleSheets);
+      for (const sheet of sheets) {
+        try {
+          const rules = Array.from(sheet.cssRules || []);
+          for (const rule of rules) {
+            const text = rule.cssText || '';
+            if (text.includes('github-link') && text.includes(':active') && text.includes('scale')) {
+              return true;
+            }
+          }
+        } catch { /* cross-origin sheet */ }
+      }
+      return false;
+    });
+    expect(hasGithubActiveScale).toBe(true);
+  });
+});
+
 test.describe('Home page – mobile viewport button functionality', () => {
   test.use({ hasTouch: true });
   test.beforeEach(async ({ page }) => {
