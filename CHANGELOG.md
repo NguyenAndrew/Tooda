@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## 2026-03-06
+
+- Add Tooda C4 Mermaid diagram example — a complete four-level C4 walkthrough of Tooda itself (Context, Container, Component, and Code), available at `/Tooda/c4?example=tooda`; update page subtitle from "Three systems" to "Four systems"; add Tooda link to the landing page C4 card; add Playwright tests covering the new example
+
 ## 2026-03-05
 
 - Increase GIF framerate — raise scroll-animation capture rate from ~17 fps to ~30 fps (`SCROLL_FRAME_DELAY_MS` 60 → 33 ms, `SCROLL_INTERVAL_MS` 50 → 33 ms, `SCROLL_FRAMES` 20 → 30); regenerate `docs/gifs/c4-tabs.gif`, `docs/gifs/c4-examples.gif`, and `docs/gifs/c4-toggle.gif`

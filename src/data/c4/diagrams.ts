@@ -382,4 +382,108 @@ export const diagrams = {
   TripRepository --> Trip : returns
   Trip --> Location : uses`,
   },
+  tooda: {
+    title: 'Tooda',
+    description: 'Tooda – a browser-based architecture diagramming tool – illustrated across all 4 levels of the C4 model.',
+    level1: `C4Context
+  title System Context – Tooda
+
+  Person(developer, "Developer / Architect", "Creates and maintains software architecture diagrams.")
+
+  System(tooda, "Tooda", "A browser-based tool for visualizing software architecture using C4/Mermaid and Excalidraw.")
+
+  System_Ext(githubPages, "GitHub Pages", "Hosts and serves the Tooda static site.")
+  System_Ext(mermaid, "Mermaid", "Renders C4 and class diagrams from plain-text definitions in the browser.")
+  System_Ext(excalidraw, "Excalidraw", "Renders freehand-style architecture diagrams in the browser.")
+
+  Rel(developer, tooda, "Browses and creates diagrams using")
+  Rel(tooda, githubPages, "Is hosted and served by")
+  Rel(tooda, mermaid, "Renders C4 diagrams with")
+  Rel(tooda, excalidraw, "Renders freehand diagrams with")`,
+    level2: `C4Container
+  title Container – Tooda
+
+  Person(developer, "Developer / Architect", "Creates and maintains architecture diagrams.")
+
+  System_Boundary(t, "Tooda") {
+    Container(webApp, "Static Web App", "Astro / Node.js", "Builds and serves the static site to users via their browser.")
+    Container(c4Page, "C4 Viewer", "Astro Page + Mermaid.js", "Provides tabbed C4 diagram navigation for multiple example systems.")
+    Container(excalidrawPage, "Excalidraw Viewer", "Astro Page + React", "Renders freehand-style diagrams using the Excalidraw component.")
+    Container(apiPage, "API Explorer", "Astro Page", "Allows users to inspect and test API endpoints interactively.")
+  }
+
+  System_Ext(githubPages, "GitHub Pages", "Hosts and serves the built static site.")
+  System_Ext(mermaidLib, "Mermaid Library", "Renders C4 and class diagrams as SVG in the browser.")
+  System_Ext(excalidrawLib, "Excalidraw Library", "Renders interactive freehand diagrams in the browser.")
+
+  Rel(developer, webApp, "Visits", "HTTPS")
+  Rel(githubPages, webApp, "Hosts and serves")
+  Rel(webApp, c4Page, "Routes /c4 to")
+  Rel(webApp, excalidrawPage, "Routes /excalidraw to")
+  Rel(webApp, apiPage, "Routes /api to")
+  Rel(c4Page, mermaidLib, "Renders diagrams with")
+  Rel(excalidrawPage, excalidrawLib, "Renders diagrams with")`,
+    level3: `C4Component
+  title Component – C4 Viewer
+
+  Person_Ext(developer, "Developer / Architect", "Interacts with the C4 Viewer.")
+
+  Container_Boundary(c4, "C4 Viewer") {
+    Component(diagramData, "Diagram Data", "TypeScript module", "Holds Mermaid diagram definitions for all examples and all four C4 levels.")
+    Component(tabController, "Tab Controller", "Vanilla JS", "Handles switching between Level 1–4 diagram tabs and URL hash routing.")
+    Component(exampleSwitcher, "Example Switcher", "Vanilla JS", "Switches the active example and updates all level diagrams from Diagram Data.")
+    Component(viewToggle, "View Toggle", "Vanilla JS", "Toggles between Diagram, Code, and Edit views and updates URL query params.")
+    Component(mermaidRenderer, "Mermaid Renderer", "Mermaid.js", "Renders Mermaid source text as SVG diagrams on demand.")
+    Component(panZoomController, "Pan/Zoom Controller", "Vanilla JS", "Handles mouse/touch pan and scroll-to-zoom interactions on diagram SVGs.")
+    Component(nodeDragController, "Node Drag Controller", "Vanilla JS", "Allows repositioning diagram nodes in Edit mode and exports coordinates.")
+  }
+
+  System_Ext(mermaidLib, "Mermaid Library", "Renders SVG from Mermaid source text.")
+
+  Rel(developer, tabController, "Clicks level tabs")
+  Rel(developer, exampleSwitcher, "Selects example")
+  Rel(developer, viewToggle, "Toggles view")
+  Rel(developer, panZoomController, "Pans and zooms diagram")
+  Rel(developer, nodeDragController, "Drags nodes in Edit mode")
+  Rel(tabController, mermaidRenderer, "Triggers re-render on tab switch")
+  Rel(exampleSwitcher, diagramData, "Reads diagram source from")
+  Rel(exampleSwitcher, mermaidRenderer, "Triggers re-render on example switch")
+  Rel(viewToggle, mermaidRenderer, "Triggers re-render when switching to Diagram view")
+  Rel(mermaidRenderer, mermaidLib, "Delegates SVG rendering to")
+  Rel(nodeDragController, panZoomController, "Coordinates transform with")`,
+    level4: `classDiagram
+  direction TB
+
+  class DiagramEntry {
+    +title: string
+    +description: string
+    +level1: string
+    +level2: string
+    +level3: string
+    +level4: string
+  }
+
+  class DiagramCollection {
+    +banking: DiagramEntry
+    +ecommerce: DiagramEntry
+    +ridesharing: DiagramEntry
+    +tooda: DiagramEntry
+  }
+
+  class Logger {
+    -prefix: string
+    +debug(msg: string) void
+    +info(msg: string) void
+    +warn(msg: string) void
+    +error(msg: string) void
+  }
+
+  class MermaidConfig {
+    +startOnLoad: boolean
+    +theme: string
+  }
+
+  DiagramCollection --> DiagramEntry : contains
+  Logger ..> MermaidConfig : used alongside`,
+  },
 };

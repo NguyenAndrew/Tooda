@@ -71,7 +71,7 @@ three GIFs to `docs/gifs/`:
 
 Tooda makes it easy to **visualize software architecture** directly in the browser — no desktop app or proprietary format required. Diagrams are written as plain text using Mermaid's diagram syntax and rendered on the fly, so they live alongside your code and can be version-controlled like any other file. Freehand-style diagrams are also supported via [Excalidraw](https://excalidraw.com/).
 
-The current showcase includes three complete C4 model walkthroughs — **Online Banking**, **E-Commerce**, and **Ride-Sharing** systems — each illustrated across all four levels of the [C4 model](https://c4model.com/), plus a **Healthcare Platform** example rendered with Excalidraw. All of these are ready-to-adapt templates for your own projects.
+The current showcase includes four complete C4 model walkthroughs — **Online Banking**, **E-Commerce**, **Ride-Sharing**, and **Tooda** (the tool itself) — each illustrated across all four levels of the [C4 model](https://c4model.com/), plus a **Healthcare Platform** example rendered with Excalidraw. All of these are ready-to-adapt templates for your own projects.
 
 ---
 
@@ -83,7 +83,7 @@ The current showcase includes three complete C4 model walkthroughs — **Online 
 - 🗂️ **Tabbed diagram viewer** — switch between C4 levels with a single click; the active tab is bookmarkable via URL hash
 - 🔗 **URL-driven navigation** — example selection and active level are encoded in the URL (`?example=banking#level1`), making every view bookmarkable, shareable, and supporting browser back/forward
 - 💻 **Diagram / Code toggle** — inspect the raw Mermaid source behind any rendered C4 diagram with a single click
-- 🌍 **Multiple built-in examples** — Online Banking, E-Commerce, Ride-Sharing (C4/Mermaid) and Healthcare Platform (Excalidraw) ship out of the box
+- 🌍 **Multiple built-in examples** — Online Banking, E-Commerce, Ride-Sharing, Tooda (C4/Mermaid) and Healthcare Platform (Excalidraw) ship out of the box
 - 🌑 **Dark-themed UI** — comfortable for long design sessions
 - ⚡ **Static site** — built with [Astro](https://astro.build/), meaning zero client-side JavaScript framework overhead; extremely fast to load and easy to host
 - 🚀 **Automatic deployment** — GitHub Actions pipeline builds and deploys to GitHub Pages on every push to `main`
@@ -217,7 +217,7 @@ Tooda/
 | Route | File | Description |
 |---|---|---|
 | `/Tooda/` | `src/pages/index.astro` | Landing page with links to all diagram examples |
-| `/Tooda/c4` | `src/pages/c4.astro` | Interactive C4 diagram viewer with tabbed navigation and multiple examples (`?example=banking`, `?example=ecommerce`, `?example=ridesharing`) |
+| `/Tooda/c4` | `src/pages/c4.astro` | Interactive C4 diagram viewer with tabbed navigation and multiple examples (`?example=banking`, `?example=ecommerce`, `?example=ridesharing`, `?example=tooda`) |
 | `/Tooda/excalidraw` | `src/pages/excalidraw.astro` | Excalidraw freehand diagram viewer (Healthcare Platform, all four C4 levels) |
 
 > **Note:** The `/Tooda` base path is set in `astro.config.mjs` to match the GitHub Pages repository sub-path.
@@ -228,7 +228,7 @@ Tooda/
 
 ### C4 Model Diagrams (Mermaid)
 
-The C4 model provides a hierarchical way to describe software architecture using four levels of abstraction. Three complete examples ship with Tooda — **Online Banking**, **E-Commerce**, and **Ride-Sharing** — each available at `/Tooda/c4?example=banking|ecommerce|ridesharing`.
+The C4 model provides a hierarchical way to describe software architecture using four levels of abstraction. Four complete examples ship with Tooda — **Online Banking**, **E-Commerce**, **Ride-Sharing**, and **Tooda** (the tool itself) — each available at `/Tooda/c4?example=banking|ecommerce|ridesharing|tooda`.
 
 | Level | Mermaid Keyword | What it shows |
 |---|---|---|
