@@ -8,29 +8,158 @@
     <meta name="description" content="Tooda – Tool to help make and maintain diagrams for architecture and design" />
     <title>Tooda</title>
     <style>
-      .cta {
-        @apply inline-block min-w-48 rounded-lg bg-gradient-to-br from-indigo-500 to-violet-400 px-7 py-3 text-base font-semibold text-white no-underline transition-opacity duration-200;
+      /* Animated gradient background */
+      body {
+        background-color: #0f172a;
+        background-image:
+          radial-gradient(ellipse 80% 60% at 50% -10%, rgba(99,102,241,0.25) 0%, transparent 70%),
+          radial-gradient(ellipse 50% 40% at 90% 80%, rgba(139,92,246,0.15) 0%, transparent 60%),
+          radial-gradient(ellipse 40% 40% at 10% 90%, rgba(56,189,248,0.12) 0%, transparent 60%);
       }
 
-      .cta:hover {
-        @apply opacity-85;
+      /* Subtle animated grid */
+      body::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        background-image:
+          linear-gradient(rgba(99,102,241,0.06) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(99,102,241,0.06) 1px, transparent 1px);
+        background-size: 60px 60px;
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      main {
+        position: relative;
+        z-index: 1;
+      }
+
+      /* Glowing title animation */
+      @keyframes glow-pulse {
+        0%, 100% { filter: drop-shadow(0 0 16px rgba(139,92,246,0.5)); }
+        50%       { filter: drop-shadow(0 0 36px rgba(99,102,241,0.8)); }
+      }
+
+      .title-glow {
+        animation: glow-pulse 3s ease-in-out infinite;
+      }
+
+      /* Floating badge animation */
+      @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50%       { transform: translateY(-6px); }
+      }
+
+      .badge-float {
+        animation: float 4s ease-in-out infinite;
+      }
+
+      /* CTA card styles */
+      .feature-card {
+        @apply relative overflow-hidden rounded-2xl border border-slate-700/60 bg-slate-800/60 p-6 text-left backdrop-blur-sm transition-all duration-300;
+      }
+
+      .feature-card:hover {
+        @apply -translate-y-1 border-indigo-500/50 shadow-lg shadow-indigo-500/10;
+      }
+
+      .feature-card::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg, rgba(99,102,241,0.07) 0%, transparent 60%);
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+
+      .feature-card:hover::before {
+        opacity: 1;
+      }
+
+      /* Primary CTA button */
+      .cta-primary {
+        @apply inline-flex items-center gap-2 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-500 px-6 py-3 text-sm font-semibold text-white no-underline shadow-lg shadow-indigo-500/25 transition-all duration-200;
+      }
+
+      .cta-primary:hover {
+        @apply -translate-y-0.5 shadow-xl shadow-indigo-500/35;
+      }
+
+      /* GitHub link */
+      .github-link {
+        @apply inline-flex items-center gap-2 rounded-lg border border-slate-700 px-4 py-2 text-sm text-slate-400 no-underline transition-all duration-200 hover:border-slate-500 hover:text-slate-200;
       }
     </style>
   </head>
-  <body class="grid min-h-dvh place-items-center bg-slate-900 font-sans text-slate-50">
-    <main class="p-8 text-center">
-      <h1 class="mb-4 bg-gradient-to-br from-indigo-500 via-violet-400 to-sky-400 bg-clip-text text-[clamp(2.5rem,8vw,5rem)] font-extrabold text-transparent">Tooda</h1>
-      <p class="max-w-[55ch] text-[clamp(1rem,2.5vw,1.25rem)] leading-relaxed text-slate-400">Welcome to Tooda — your tool for architecture and design diagrams.</p>
-      <div class="mt-8 flex flex-wrap justify-center gap-4">
-        <a href="/Tooda/c4?example=banking" class="cta">Online Banking →</a>
-        <a href="/Tooda/c4?example=ecommerce" class="cta">E-Commerce →</a>
-        <a href="/Tooda/c4?example=ridesharing" class="cta">Ride-Sharing →</a>
-        <a href="/Tooda/excalidraw" class="cta">Healthcare (Excalidraw) →</a>
-        <a href="/Tooda/api" class="cta">API Explorer →</a>
+  <body class="min-h-dvh font-sans text-slate-50">
+    <main class="mx-auto max-w-5xl px-6 py-20 text-center">
+
+      <!-- Badge -->
+      <div class="mb-8 flex justify-center">
+        <span class="badge-float inline-flex items-center gap-2 rounded-full border border-indigo-500/40 bg-indigo-500/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-indigo-300">
+          ✦ Architecture &amp; Design Diagrams
+        </span>
       </div>
-      <p class="mt-6 text-sm text-slate-500">
-        <a href="https://github.com/NguyenAndrew/Tooda" class="text-violet-400 no-underline hover:underline" target="_blank" rel="noopener noreferrer">View on GitHub</a>
+
+      <!-- Hero heading -->
+      <h1 class="title-glow mb-6 bg-gradient-to-br from-indigo-400 via-violet-400 to-sky-400 bg-clip-text text-[clamp(3.5rem,10vw,7rem)] font-extrabold leading-none tracking-tight text-transparent">
+        Tooda
+      </h1>
+
+      <!-- Tagline -->
+      <p class="mx-auto mb-4 max-w-[52ch] text-[clamp(1.1rem,2.5vw,1.35rem)] leading-relaxed text-slate-300">
+        Visualize, explore, and share your system architecture — all in the browser, no install required.
       </p>
+      <p class="mx-auto mb-14 max-w-[44ch] text-base text-slate-500">
+        Powered by Mermaid C4 and Excalidraw. Open-source and free forever.
+      </p>
+
+      <!-- Feature cards grid -->
+      <div class="mb-12 grid gap-4 text-left sm:grid-cols-2 lg:grid-cols-3">
+
+        <!-- C4 Diagrams card -->
+        <div class="feature-card sm:col-span-2 lg:col-span-1">
+          <div class="mb-3 text-3xl">🏗️</div>
+          <h2 class="mb-1 text-lg font-bold text-slate-100">C4 Diagrams</h2>
+          <p class="mb-4 text-sm leading-relaxed text-slate-400">Interactive C4 architecture diagrams powered by Mermaid. Explore real-world system designs.</p>
+          <div class="flex flex-wrap gap-2">
+            <a href="/Tooda/c4?example=banking" class="cta-primary">🏦 Online Banking →</a>
+          </div>
+          <div class="mt-2 flex flex-wrap gap-2">
+            <a href="/Tooda/c4?example=ecommerce" class="cta-primary">🛒 E-Commerce →</a>
+            <a href="/Tooda/c4?example=ridesharing" class="cta-primary">🚗 Ride-Sharing →</a>
+          </div>
+        </div>
+
+        <!-- Excalidraw card -->
+        <div class="feature-card">
+          <div class="mb-3 text-3xl">✏️</div>
+          <h2 class="mb-1 text-lg font-bold text-slate-100">Freehand Diagrams</h2>
+          <p class="mb-4 text-sm leading-relaxed text-slate-400">Sketch and annotate architecture freely with Excalidraw's hand-drawn aesthetic.</p>
+          <a href="/Tooda/excalidraw" class="cta-primary">🏥 Healthcare (Excalidraw) →</a>
+        </div>
+
+        <!-- API Explorer card -->
+        <div class="feature-card">
+          <div class="mb-3 text-3xl">🔌</div>
+          <h2 class="mb-1 text-lg font-bold text-slate-100">API Explorer</h2>
+          <p class="mb-4 text-sm leading-relaxed text-slate-400">Inspect and test API endpoints interactively, right from the browser.</p>
+          <a href="/Tooda/api" class="cta-primary">⚡ API Explorer →</a>
+        </div>
+
+      </div>
+
+      <!-- Footer links -->
+      <div class="flex flex-wrap items-center justify-center gap-4">
+        <a href="https://github.com/NguyenAndrew/Tooda" class="github-link" target="_blank" rel="noopener noreferrer">
+          <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.942.359.31.678.921.678 1.856 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd"/>
+          </svg>
+          View on GitHub
+        </a>
+      </div>
+
     </main>
   </body>
 </html>
