@@ -39,6 +39,7 @@ test.describe('Home page', () => {
 });
 
 test.describe('Home page – mobile viewport button functionality', () => {
+  test.use({ hasTouch: true });
   test.beforeEach(async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 667 });
     await page.goto('/Tooda/');
@@ -49,7 +50,7 @@ test.describe('Home page – mobile viewport button functionality', () => {
     await expect(link).toBeVisible();
     await Promise.all([
       page.waitForURL(/\/Tooda\/c4/),
-      link.click(),
+      link.tap(),
     ]);
   });
 
@@ -58,7 +59,7 @@ test.describe('Home page – mobile viewport button functionality', () => {
     await expect(link).toBeVisible();
     await Promise.all([
       page.waitForURL(/\/Tooda\/c4/),
-      link.click(),
+      link.tap(),
     ]);
   });
 
@@ -67,7 +68,7 @@ test.describe('Home page – mobile viewport button functionality', () => {
     await expect(link).toBeVisible();
     await Promise.all([
       page.waitForURL(/\/Tooda\/c4/),
-      link.click(),
+      link.tap(),
     ]);
   });
 
@@ -76,7 +77,7 @@ test.describe('Home page – mobile viewport button functionality', () => {
     await expect(link).toBeVisible();
     await Promise.all([
       page.waitForURL(/\/Tooda\/excalidraw/),
-      link.click(),
+      link.tap(),
     ]);
   });
 
@@ -85,7 +86,7 @@ test.describe('Home page – mobile viewport button functionality', () => {
     await expect(link).toBeVisible();
     await Promise.all([
       page.waitForURL(/\/Tooda\/api/),
-      link.click(),
+      link.tap(),
     ]);
   });
 });
