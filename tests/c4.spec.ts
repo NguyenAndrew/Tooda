@@ -53,11 +53,12 @@ test.describe('C4 diagram page', () => {
     await expect(back).toHaveAttribute('href', '/Tooda/');
   });
 
-  test('displays all three example selector links', async ({ page }) => {
+  test('displays all four example selector links', async ({ page }) => {
     await page.goto('/Tooda/c4');
     await expect(page.getByRole('link', { name: 'Online Banking' })).toBeVisible();
     await expect(page.getByRole('link', { name: 'E-Commerce' })).toBeVisible();
     await expect(page.getByRole('link', { name: 'Ride-Sharing' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Tooda' })).toBeVisible();
   });
 
   test('Online Banking example is active by default', async ({ page }) => {
@@ -307,6 +308,31 @@ test.describe('C4 diagram page', () => {
     await page.getByRole('link', { name: 'Edit', exact: true }).click();
     await page.getByRole('link', { name: 'Level 2 – Container' }).click();
     await expect(page.locator('#level2 .positions-container')).toBeVisible();
+  });
+
+  test('clicking Tooda example activates its link', async ({ page }) => {
+    await page.goto('/Tooda/c4');
+    await page.getByRole('link', { name: 'Tooda' }).click();
+    await expect(page.getByRole('link', { name: 'Tooda' })).toHaveClass(/active/);
+    await expect(page.getByRole('link', { name: 'Online Banking' })).not.toHaveClass(/active/);
+  });
+
+  test('switching to Tooda example updates the Level 1 diagram', async ({ page }) => {
+    await page.goto('/Tooda/c4');
+    await page.getByRole('link', { name: 'Tooda' }).click();
+    await page.waitForSelector('#level1 .mermaid svg', { state: 'visible' });
+    await expect(page.locator('#level1 .mermaid')).not.toContainText('Syntax error');
+  });
+
+  test('navigating to ?example=tooda activates Tooda example', async ({ page }) => {
+    await page.goto('/Tooda/c4?example=tooda');
+    await expect(page.getByRole('link', { name: 'Tooda' })).toHaveClass(/active/);
+    await expect(page.getByRole('link', { name: 'Online Banking' })).not.toHaveClass(/active/);
+  });
+
+  test('Tooda example code view displays C4Context', async ({ page }) => {
+    await page.goto('/Tooda/c4?example=tooda&view=code');
+    await expect(page.locator('#level1 .code-container code')).toContainText('C4Context');
   });
 
 });
