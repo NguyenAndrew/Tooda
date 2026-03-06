@@ -6,6 +6,10 @@ export const openapiSpec = {
       'REST API for retrieving architecture and design diagram data used by Tooda. ' +
       'All endpoints return static JSON and are read-only (GET only).',
     version: '1.0.0',
+    contact: {
+      name: 'Tooda',
+      url: 'https://github.com/NguyenAndrew/Tooda',
+    },
     license: {
       name: 'MIT',
       url: 'https://github.com/NguyenAndrew/Tooda/blob/main/LICENSE',

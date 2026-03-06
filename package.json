@@ -7,7 +7,8 @@
     "dev:attach": "node scripts/copy-mermaid.js && astro dev",
     "build": "node scripts/copy-mermaid.js && astro build",
     "preview": "astro preview",
-    "lint": "eslint src/",
+    "lint": "eslint src/ && npm run lint:api",
+    "lint:api": "node --experimental-strip-types scripts/lint-openapi.mjs",
     "postinstall": "npm run install:playwright",
     "install:playwright": "npx playwright install --with-deps chromium",
     "test": "npm run lint && playwright test",
@@ -26,6 +27,7 @@
   "devDependencies": {
     "@astrojs/tailwind": "^6.0.2",
     "@playwright/test": "^1.58.2",
+    "@stoplight/spectral-cli": "^6.15.0",
     "@typescript-eslint/eslint-plugin": "^8.56.1",
     "@typescript-eslint/parser": "^8.56.1",
     "eslint": "^9.39.3",
