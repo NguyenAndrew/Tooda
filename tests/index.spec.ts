@@ -37,3 +37,55 @@ test.describe('Home page', () => {
     await expect(githubLink).toHaveAttribute('href', 'https://github.com/NguyenAndrew/Tooda');
   });
 });
+
+test.describe('Home page – mobile viewport button functionality', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 667 });
+    await page.goto('/Tooda/');
+  });
+
+  test('Online Banking button is clickable on mobile', async ({ page }) => {
+    const link = page.getByRole('link', { name: /Online Banking/ });
+    await expect(link).toBeVisible();
+    await Promise.all([
+      page.waitForURL(/\/Tooda\/c4/),
+      link.click(),
+    ]);
+  });
+
+  test('E-Commerce button is clickable on mobile', async ({ page }) => {
+    const link = page.getByRole('link', { name: /E-Commerce/ });
+    await expect(link).toBeVisible();
+    await Promise.all([
+      page.waitForURL(/\/Tooda\/c4/),
+      link.click(),
+    ]);
+  });
+
+  test('Ride-Sharing button is clickable on mobile', async ({ page }) => {
+    const link = page.getByRole('link', { name: /Ride-Sharing/ });
+    await expect(link).toBeVisible();
+    await Promise.all([
+      page.waitForURL(/\/Tooda\/c4/),
+      link.click(),
+    ]);
+  });
+
+  test('Healthcare (Excalidraw) button is clickable on mobile', async ({ page }) => {
+    const link = page.getByRole('link', { name: /Healthcare/ });
+    await expect(link).toBeVisible();
+    await Promise.all([
+      page.waitForURL(/\/Tooda\/excalidraw/),
+      link.click(),
+    ]);
+  });
+
+  test('API Explorer button is clickable on mobile', async ({ page }) => {
+    const link = page.getByRole('link', { name: /API Explorer/ });
+    await expect(link).toBeVisible();
+    await Promise.all([
+      page.waitForURL(/\/Tooda\/api/),
+      link.click(),
+    ]);
+  });
+});
