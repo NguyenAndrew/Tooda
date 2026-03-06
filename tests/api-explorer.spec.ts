@@ -6,6 +6,11 @@ test.describe('API Explorer page', () => {
     await expect(page).toHaveTitle('API Explorer | Tooda');
   });
 
+  test('displays the main heading', async ({ page }) => {
+    await page.goto('/Tooda/api');
+    await expect(page.getByRole('heading', { name: 'API Explorer' })).toBeVisible();
+  });
+
   test('has a back link to the home page', async ({ page }) => {
     await page.goto('/Tooda/api');
     const back = page.getByRole('link', { name: /Back to Home/ });
