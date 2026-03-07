@@ -1,0 +1,469 @@
+---
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Slide Deck – An overview of Tooda, the browser-based architecture diagram tool" />
+    <title>Slide Deck | Tooda</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        background-color: #0f172a;
+        background-image:
+          radial-gradient(ellipse 80% 60% at 50% -10%, rgba(99,102,241,0.25) 0%, transparent 70%),
+          radial-gradient(ellipse 50% 40% at 90% 80%, rgba(139,92,246,0.15) 0%, transparent 60%),
+          radial-gradient(ellipse 40% 40% at 10% 90%, rgba(56,189,248,0.12) 0%, transparent 60%);
+        @apply min-h-dvh font-sans text-slate-50;
+      }
+
+      body::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        background-image:
+          linear-gradient(rgba(99,102,241,0.06) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(99,102,241,0.06) 1px, transparent 1px);
+        background-size: 60px 60px;
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      .page-content {
+        position: relative;
+        z-index: 1;
+      }
+
+      @keyframes glow-pulse {
+        0%, 100% { filter: drop-shadow(0 0 16px rgba(139,92,246,0.5)); }
+        50%       { filter: drop-shadow(0 0 36px rgba(99,102,241,0.8)); }
+      }
+
+      @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50%       { transform: translateY(-6px); }
+      }
+
+      /* ── Slide layout ── */
+      .slide {
+        display: none;
+        min-height: calc(100dvh - 160px);
+        @apply mx-auto max-w-4xl px-6 py-12;
+      }
+
+      .slide.active {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+
+      /* ── Slide elements ── */
+      .slide-badge {
+        animation: float 4s ease-in-out infinite;
+        @apply mb-6 inline-flex items-center gap-2 self-start rounded-full border border-indigo-500/40 bg-indigo-500/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-indigo-300;
+      }
+
+      .slide-title {
+        animation: glow-pulse 3s ease-in-out infinite;
+        @apply mb-6 bg-gradient-to-br from-indigo-400 via-violet-400 to-sky-400 bg-clip-text text-[clamp(2.2rem,6vw,4rem)] font-extrabold leading-none tracking-tight text-transparent;
+      }
+
+      .slide-subtitle {
+        @apply mb-4 text-[clamp(1rem,2.5vw,1.3rem)] leading-relaxed text-slate-300;
+      }
+
+      .slide-body {
+        @apply text-base leading-relaxed text-slate-400;
+      }
+
+      /* ── Feature grid ── */
+      .feature-grid {
+        @apply mt-8 grid gap-4 sm:grid-cols-2;
+      }
+
+      .feature-item {
+        @apply rounded-xl border border-slate-700/60 bg-slate-800/60 p-5 backdrop-blur-sm;
+      }
+
+      .feature-item-icon {
+        @apply mb-2 text-2xl;
+      }
+
+      .feature-item-title {
+        @apply mb-1 text-base font-bold text-slate-100;
+      }
+
+      .feature-item-desc {
+        @apply text-sm leading-relaxed text-slate-400;
+      }
+
+      /* ── CTA links ── */
+      .cta-primary {
+        @apply inline-flex items-center gap-2 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-500 px-6 py-3 text-sm font-semibold text-white no-underline shadow-lg shadow-indigo-500/25 transition-all duration-200 active:scale-95 active:shadow-md active:shadow-indigo-500/15 active:duration-75;
+      }
+
+      @media (hover: hover) {
+        .cta-primary:hover {
+          @apply -translate-y-0.5 shadow-xl shadow-indigo-500/35;
+        }
+      }
+
+      /* ── Navigation bar ── */
+      .slide-nav {
+        position: sticky;
+        bottom: 0;
+        z-index: 10;
+        @apply flex items-center justify-between gap-4 border-t border-slate-700/60 bg-slate-900/90 px-6 py-4 backdrop-blur-md;
+      }
+
+      .nav-btn {
+        @apply inline-flex items-center gap-2 rounded-xl border border-slate-700 bg-slate-800 px-5 py-2.5 text-sm font-semibold text-slate-300 no-underline transition-all duration-200 active:scale-95 active:duration-75;
+      }
+
+      @media (hover: hover) {
+        .nav-btn:hover:not(:disabled) {
+          @apply border-indigo-500/50 bg-slate-700 text-slate-50;
+        }
+      }
+
+      .nav-btn:disabled {
+        @apply cursor-not-allowed opacity-30;
+      }
+
+      .slide-counter {
+        @apply text-sm font-semibold text-slate-400;
+      }
+
+      /* ── Progress dots ── */
+      .progress-dots {
+        @apply flex items-center gap-2;
+      }
+
+      .dot {
+        @apply h-2 w-2 cursor-pointer rounded-full bg-slate-600 transition-all duration-200;
+      }
+
+      .dot.active {
+        @apply w-5 bg-indigo-500;
+      }
+
+      /* ── Back link ── */
+      nav.back {
+        @apply px-6 pt-6 pb-2;
+      }
+
+      nav.back a {
+        @apply text-[0.9rem] text-violet-400 no-underline;
+      }
+
+      nav.back a:hover {
+        @apply underline;
+      }
+
+      /* ── Code block ── */
+      .code-block {
+        @apply rounded-xl border border-slate-700/60 bg-slate-900 p-4 font-mono text-sm text-slate-300;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page-content">
+
+      <nav class="back">
+        <a href="/Tooda/">← Back to Home</a>
+      </nav>
+
+      <!-- ═══════════════════════ SLIDE 1 – Welcome ═══════════════════════ -->
+      <section class="slide active" data-slide="1" aria-label="Slide 1 of 6">
+        <span class="slide-badge">✦ Slide Deck</span>
+        <h1 class="slide-title">Welcome to Tooda</h1>
+        <p class="slide-subtitle">
+          A lightweight, browser-based tool for creating and maintaining
+          architecture &amp; design diagrams — no install required.
+        </p>
+        <p class="slide-body">
+          Tooda helps software teams visualize complex systems using industry-standard
+          notation. Everything runs in the browser using static files, so there is nothing
+          to deploy or configure: just open a URL and start exploring.
+        </p>
+        <p class="mt-4 text-base leading-relaxed text-slate-400">
+          Use the navigation buttons below (or the ← → arrow keys) to move through the slides.
+        </p>
+      </section>
+
+      <!-- ═══════════════════════ SLIDE 2 – C4 Diagrams ═══════════════════════ -->
+      <section class="slide" data-slide="2" aria-label="Slide 2 of 6">
+        <span class="slide-badge">🏗️ C4 Model</span>
+        <h1 class="slide-title">C4 Architecture Diagrams</h1>
+        <p class="slide-subtitle">
+          Explore real-world system designs at four levels of detail using
+          Mermaid-powered C4 notation.
+        </p>
+        <div class="feature-grid">
+          <div class="feature-item">
+            <div class="feature-item-icon">1️⃣</div>
+            <div class="feature-item-title">Level 1 – Context</div>
+            <div class="feature-item-desc">Shows the system and how users and external systems interact with it.</div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-item-icon">2️⃣</div>
+            <div class="feature-item-title">Level 2 – Container</div>
+            <div class="feature-item-desc">Zooms in to show the applications, services, and data stores that form the system.</div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-item-icon">3️⃣</div>
+            <div class="feature-item-title">Level 3 – Component</div>
+            <div class="feature-item-desc">Reveals the major structural components inside a single container.</div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-item-icon">4️⃣</div>
+            <div class="feature-item-title">Level 4 – Code</div>
+            <div class="feature-item-desc">Shows the classes and interfaces that implement a component.</div>
+          </div>
+        </div>
+        <p class="mt-6 text-sm text-slate-500">
+          Built-in examples: Online Banking, E-Commerce, Ride-Sharing, and Tooda itself.
+        </p>
+      </section>
+
+      <!-- ═══════════════════════ SLIDE 3 – Excalidraw ═══════════════════════ -->
+      <section class="slide" data-slide="3" aria-label="Slide 3 of 6">
+        <span class="slide-badge">✏️ Freehand</span>
+        <h1 class="slide-title">Freehand Diagrams</h1>
+        <p class="slide-subtitle">
+          Sketch architecture ideas freely with Excalidraw's hand-drawn aesthetic —
+          full edit, view, and export support built in.
+        </p>
+        <p class="slide-body">
+          Excalidraw diagrams give your architecture visuals a natural, approachable look
+          without sacrificing the precision of the C4 model. Each of the four C4 levels is
+          available in freehand form for the Healthcare Platform example.
+        </p>
+        <div class="feature-grid mt-8">
+          <div class="feature-item">
+            <div class="feature-item-icon">🖊️</div>
+            <div class="feature-item-title">Edit Mode</div>
+            <div class="feature-item-desc">Modify diagrams interactively directly in the browser canvas.</div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-item-icon">👁️</div>
+            <div class="feature-item-title">View Mode</div>
+            <div class="feature-item-desc">Present diagrams in a clean read-only view without UI clutter.</div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-item-icon">💾</div>
+            <div class="feature-item-title">Export JSON</div>
+            <div class="feature-item-desc">Download any diagram as a portable Excalidraw JSON file.</div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-item-icon">📐</div>
+            <div class="feature-item-title">Responsive Canvas</div>
+            <div class="feature-item-desc">Canvas adapts to any screen size automatically via ResizeObserver.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════ SLIDE 4 – API Explorer ═══════════════════════ -->
+      <section class="slide" data-slide="4" aria-label="Slide 4 of 6">
+        <span class="slide-badge">🔌 API</span>
+        <h1 class="slide-title">API Explorer</h1>
+        <p class="slide-subtitle">
+          Every diagram is also available as a JSON endpoint — explore and test them
+          interactively via a built-in Swagger UI.
+        </p>
+        <p class="slide-body">
+          Tooda exposes a fully documented REST-style API so that teams can programmatically
+          consume diagram data. The API is described with an OpenAPI 3.0 specification and
+          browsable without any extra tooling.
+        </p>
+        <div class="feature-grid mt-8">
+          <div class="feature-item">
+            <div class="feature-item-icon">📄</div>
+            <div class="feature-item-title">C4 Endpoints</div>
+            <div class="feature-item-desc">Fetch full C4 diagram definitions for any of the four built-in examples.</div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-item-icon">🖼️</div>
+            <div class="feature-item-title">Excalidraw Endpoints</div>
+            <div class="feature-item-desc">Retrieve Excalidraw element arrays for each C4 level of the Healthcare Platform.</div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-item-icon">📑</div>
+            <div class="feature-item-title">OpenAPI Spec</div>
+            <div class="feature-item-desc">Machine-readable OpenAPI 3.0 schema served at <code>/Tooda/api/openapi.json</code>.</div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-item-icon">⚡</div>
+            <div class="feature-item-title">Swagger UI</div>
+            <div class="feature-item-desc">Interactive API browser with live request/response testing, no extra tools needed.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════ SLIDE 5 – Platform & Tech ═══════════════════════ -->
+      <section class="slide" data-slide="5" aria-label="Slide 5 of 6">
+        <span class="slide-badge">🔮 Platform</span>
+        <h1 class="slide-title">Platform &amp; Technology</h1>
+        <p class="slide-subtitle">
+          Tooda is built on a modern, zero-server-required stack that deploys as pure
+          static files.
+        </p>
+        <div class="feature-grid">
+          <div class="feature-item">
+            <div class="feature-item-icon">🚀</div>
+            <div class="feature-item-title">Astro v5</div>
+            <div class="feature-item-desc">Static-site generator that compiles pages to HTML, CSS, and minimal JS.</div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-item-icon">⚛️</div>
+            <div class="feature-item-title">React 18</div>
+            <div class="feature-item-desc">Interactive components like the Excalidraw viewer and 3D visualizer.</div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-item-icon">🎨</div>
+            <div class="feature-item-title">Tailwind CSS v3</div>
+            <div class="feature-item-desc">Utility-first CSS for a consistent, responsive, dark-themed interface.</div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-item-icon">🔷</div>
+            <div class="feature-item-title">TypeScript (strict)</div>
+            <div class="feature-item-desc">Full type safety across all source files for reliability and maintainability.</div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-item-icon">🌐</div>
+            <div class="feature-item-title">GitHub Pages</div>
+            <div class="feature-item-desc">Automatic deployment via GitHub Actions on every push to <code>main</code>.</div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-item-icon">🧪</div>
+            <div class="feature-item-title">Playwright Tests</div>
+            <div class="feature-item-desc">Comprehensive end-to-end test suite covering every page and feature.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════ SLIDE 6 – Get Started ═══════════════════════ -->
+      <section class="slide" data-slide="6" aria-label="Slide 6 of 6">
+        <span class="slide-badge">✅ Get Started</span>
+        <h1 class="slide-title">Start Exploring</h1>
+        <p class="slide-subtitle">
+          Jump straight into any of Tooda's features — everything runs in your browser,
+          nothing to install.
+        </p>
+        <div class="feature-grid mt-2">
+          <div class="feature-item">
+            <div class="feature-item-icon">🏗️</div>
+            <div class="feature-item-title">C4 Diagrams</div>
+            <div class="feature-item-desc mb-3">Explore interactive C4 architecture diagrams.</div>
+            <a href="/Tooda/c4?example=banking" class="cta-primary">🏦 Open Banking →</a>
+          </div>
+          <div class="feature-item">
+            <div class="feature-item-icon">✏️</div>
+            <div class="feature-item-title">Freehand Diagrams</div>
+            <div class="feature-item-desc mb-3">Sketch with Excalidraw's hand-drawn style.</div>
+            <a href="/Tooda/excalidraw" class="cta-primary">🏥 Open Healthcare →</a>
+          </div>
+          <div class="feature-item">
+            <div class="feature-item-icon">🔌</div>
+            <div class="feature-item-title">API Explorer</div>
+            <div class="feature-item-desc mb-3">Test and browse diagram API endpoints.</div>
+            <a href="/Tooda/api" class="cta-primary">⚡ Open API Explorer →</a>
+          </div>
+          <div class="feature-item">
+            <div class="feature-item-icon">📋</div>
+            <div class="feature-item-title">All Features</div>
+            <div class="feature-item-desc mb-3">See everything Tooda has to offer.</div>
+            <a href="/Tooda/features" class="cta-primary">📋 View Features →</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════ Navigation bar ═══════════════════════ -->
+      <nav class="slide-nav" aria-label="Slide navigation">
+        <button id="btn-prev" class="nav-btn" aria-label="Previous slide" disabled>← Prev</button>
+
+        <div class="flex flex-col items-center gap-2">
+        <div class="progress-dots" id="progress-dots">
+          <button class="dot active" aria-label="Go to slide 1"></button>
+          <button class="dot" aria-label="Go to slide 2"></button>
+          <button class="dot" aria-label="Go to slide 3"></button>
+          <button class="dot" aria-label="Go to slide 4"></button>
+          <button class="dot" aria-label="Go to slide 5"></button>
+          <button class="dot" aria-label="Go to slide 6"></button>
+        </div>
+          <span class="slide-counter" id="slide-counter" aria-live="polite">1 / 6</span>
+        </div>
+
+        <button id="btn-next" class="nav-btn" aria-label="Next slide">Next →</button>
+      </nav>
+
+    </div>
+
+    <script is:inline>
+      const slides = document.querySelectorAll('[data-slide]');
+      const btnPrev = document.getElementById('btn-prev');
+      const btnNext = document.getElementById('btn-next');
+      const counter = document.getElementById('slide-counter');
+      const dotsContainer = document.getElementById('progress-dots');
+      const total = slides.length;
+      let current = 0;
+
+      // Wire up existing dot buttons
+      dotsContainer.querySelectorAll('.dot').forEach((dot, i) => {
+        dot.addEventListener('click', () => goTo(i));
+      });
+
+      function goTo(index) {
+        slides[current].classList.remove('active');
+        dotsContainer.children[current].classList.remove('active');
+        current = Math.max(0, Math.min(total - 1, index));
+        slides[current].classList.add('active');
+        dotsContainer.children[current].classList.add('active');
+        counter.textContent = (current + 1) + ' / ' + total;
+        btnPrev.disabled = current === 0;
+        btnNext.disabled = current === total - 1;
+        // Reflect in URL hash for bookmarkability
+        history.replaceState(null, '', '#slide-' + (current + 1));
+        // Scroll to top of slide on navigation
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      btnPrev.addEventListener('click', () => goTo(current - 1));
+      btnNext.addEventListener('click', () => goTo(current + 1));
+
+      // Keyboard navigation
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+          e.preventDefault();
+          goTo(current + 1);
+        } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+          e.preventDefault();
+          goTo(current - 1);
+        }
+      });
+
+      // Restore slide from URL hash on load
+      (function initFromHash() {
+        const match = window.location.hash.match(/^#slide-(\d+)$/);
+        if (match) {
+          const idx = parseInt(match[1], 10) - 1;
+          if (idx >= 0 && idx < total) {
+            goTo(idx);
+            return;
+          }
+        }
+        // Default: first slide, set up initial state
+        btnPrev.disabled = true;
+        btnNext.disabled = total <= 1;
+      })();
+    </script>
+  </body>
+</html>
