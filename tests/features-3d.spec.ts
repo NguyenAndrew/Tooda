@@ -46,6 +46,7 @@ test.describe('3D Features page', () => {
   test('displays the hint text', async ({ page }) => {
     await page.goto('/Tooda/features-3d');
     await expect(page.getByText(/Drag to rotate/)).toBeVisible();
+    await expect(page.getByText(/Tap a node to navigate/)).toBeVisible();
   });
 });
 
