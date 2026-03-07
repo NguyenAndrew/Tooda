@@ -97,6 +97,14 @@ test.describe('Slideshow page', () => {
     await expect(page.getByRole('link', { name: /Back to Home/ })).toHaveAttribute('href', '/Tooda/');
   });
 
+  test('fullscreen button is visible and has correct initial label', async ({ page }) => {
+    await page.goto('/Tooda/slideshow');
+    const btn = page.locator('#btn-fullscreen');
+    await expect(btn).toBeVisible();
+    await expect(btn).toHaveAttribute('aria-label', 'Enter Full Screen');
+    await expect(btn).toContainText('Full Screen');
+  });
+
   test('restores slide from URL hash on load', async ({ page }) => {
     await page.goto('/Tooda/slideshow#slide-4');
     await expect(page.getByRole('heading', { name: 'API Explorer' })).toBeVisible();
