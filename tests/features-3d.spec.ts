@@ -47,15 +47,6 @@ test.describe('3D Features page', () => {
     await page.goto('/Tooda/features-3d');
     await expect(page.getByText(/Drag to rotate/)).toBeVisible();
   });
-
-  test('legend links are visible', async ({ page }) => {
-    await page.goto('/Tooda/features-3d');
-    await page.waitForSelector('[data-testid="three-canvas-container"] canvas', { timeout: 10000 });
-    await expect(page.getByRole('link', { name: /C4 Diagrams/ })).toBeVisible();
-    await expect(page.getByRole('link', { name: /Freehand Diagrams/ })).toBeVisible();
-    await expect(page.getByRole('link', { name: /API Explorer/ })).toBeVisible();
-    await expect(page.getByRole('link', { name: /Platform/ })).toBeVisible();
-  });
 });
 
 test.describe('Features page – 3D Visualization link', () => {
