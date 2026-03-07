@@ -125,7 +125,21 @@
         position: sticky;
         bottom: 0;
         z-index: 10;
-        @apply flex items-center justify-between gap-4 border-t border-slate-700/60 bg-slate-900/90 px-6 py-4 backdrop-blur-md;
+        @apply flex flex-col gap-2 border-t border-slate-700/60 bg-slate-900/90 px-6 py-4 backdrop-blur-md;
+      }
+
+      .slide-nav-controls {
+        @apply flex items-center justify-between gap-4;
+      }
+
+      @media (min-width: 640px) {
+        .slide-nav {
+          @apply flex-row items-center;
+        }
+
+        .slide-nav-controls {
+          @apply flex-1;
+        }
       }
 
       .nav-btn {
@@ -178,16 +192,6 @@
       /* ── Code block ── */
       .code-block {
         @apply rounded-xl border border-slate-700/60 bg-slate-900 p-4 font-mono text-sm text-slate-300;
-      }
-
-      /* ── Fullscreen button: visible only on sm+ (≥640 px) ── */
-      #btn-fullscreen {
-        display: none;
-      }
-      @media (min-width: 640px) {
-        #btn-fullscreen {
-          display: inline-flex;
-        }
       }
     </style>
   </head>
@@ -424,22 +428,24 @@
 
       <!-- ═══════════════════════ Navigation bar ═══════════════════════ -->
       <nav class="slide-nav" aria-label="Slide navigation">
-        <button id="btn-prev" class="nav-btn" aria-label="Previous slide" disabled>← Prev</button>
+        <div class="slide-nav-controls">
+          <button id="btn-prev" class="nav-btn" aria-label="Previous slide" disabled>← Prev</button>
 
-        <div class="flex flex-col items-center gap-2">
-          <div class="progress-dots" id="progress-dots">
-            <button class="dot active" aria-label="Go to slide 1"></button>
-            <button class="dot" aria-label="Go to slide 2"></button>
-            <button class="dot" aria-label="Go to slide 3"></button>
-            <button class="dot" aria-label="Go to slide 4"></button>
-            <button class="dot" aria-label="Go to slide 5"></button>
-            <button class="dot" aria-label="Go to slide 6"></button>
+          <div class="flex flex-col items-center gap-2">
+            <div class="progress-dots" id="progress-dots">
+              <button class="dot active" aria-label="Go to slide 1"></button>
+              <button class="dot" aria-label="Go to slide 2"></button>
+              <button class="dot" aria-label="Go to slide 3"></button>
+              <button class="dot" aria-label="Go to slide 4"></button>
+              <button class="dot" aria-label="Go to slide 5"></button>
+              <button class="dot" aria-label="Go to slide 6"></button>
+            </div>
+            <span class="slide-counter" id="slide-counter" aria-live="polite">1 / 6</span>
           </div>
-          <span class="slide-counter" id="slide-counter" aria-live="polite">1 / 6</span>
-        </div>
 
-        <button id="btn-next" class="nav-btn" aria-label="Next slide">Next →</button>
-        <button id="btn-fullscreen" class="nav-btn" aria-label="Enter Full Screen" title="Full screen (F)">⤢ Full Screen</button>
+          <button id="btn-next" class="nav-btn" aria-label="Next slide">Next →</button>
+        </div>
+        <button id="btn-fullscreen" class="nav-btn" aria-label="Enter Full Screen" title="Full screen (F)"><span class="fs-icon">⤢</span><span class="fs-label hidden sm:inline"> Full Screen</span></button>
       </nav>
 
     </div>
@@ -516,7 +522,10 @@
 
       function updateFullscreenBtn(): void {
         const isFs = !!document.fullscreenElement;
-        btnFullscreen.textContent = isFs ? '⤡ Exit Full Screen' : '⤢ Full Screen';
+        const iconEl = btnFullscreen.querySelector('.fs-icon') as HTMLElement;
+        const labelEl = btnFullscreen.querySelector('.fs-label') as HTMLElement;
+        iconEl.textContent = isFs ? '⤡' : '⤢';
+        labelEl.textContent = isFs ? ' Exit Full Screen' : ' Full Screen';
         btnFullscreen.setAttribute('aria-label', isFs ? 'Exit Full Screen' : 'Enter Full Screen');
       }
 
