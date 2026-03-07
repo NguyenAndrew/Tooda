@@ -159,6 +159,30 @@
         @apply cursor-not-allowed opacity-30;
       }
 
+      /* ── Fullscreen button accent ── */
+      #btn-fullscreen {
+        border-color: rgb(99 102 241 / 0.4);
+        background: linear-gradient(135deg, rgb(99 102 241 / 0.15) 0%, rgb(139 92 246 / 0.15) 100%);
+        @apply w-full justify-center text-indigo-300 sm:w-auto;
+      }
+
+      @media (hover: hover) {
+        #btn-fullscreen:hover {
+          border-color: rgb(99 102 241 / 0.6);
+          background: linear-gradient(135deg, rgb(99 102 241 / 0.3) 0%, rgb(139 92 246 / 0.3) 100%);
+          @apply text-indigo-100;
+        }
+      }
+
+      /* ── CSS pseudo-fullscreen fallback for iOS / unsupported browsers ── */
+      .page-content.pseudo-fullscreen {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        overflow-y: auto;
+        background: #0f172a;
+      }
+
       .slide-counter {
         @apply text-sm font-semibold text-slate-400;
       }
@@ -445,7 +469,7 @@
 
           <button id="btn-next" class="nav-btn" aria-label="Next slide">Next →</button>
         </div>
-        <button id="btn-fullscreen" class="nav-btn" aria-label="Enter Full Screen" title="Full screen (F)"><span class="fs-icon">⤢</span><span class="fs-label hidden sm:inline"> Full Screen</span></button>
+        <button id="btn-fullscreen" class="nav-btn" aria-label="Enter Full Screen" title="Full screen (F)"><span class="fs-icon" aria-hidden="true"></span><span class="fs-label">Full Screen</span></button>
       </nav>
 
     </div>
@@ -511,26 +535,59 @@
 
       // ── Fullscreen ──────────────────────────────────────────────────────────
       const btnFullscreen = document.getElementById('btn-fullscreen') as HTMLButtonElement;
+      const pageContent = document.querySelector<HTMLElement>('.page-content')!;
+
+      const ICON_EXPAND = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>`;
+      const ICON_COMPRESS = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="10" y1="14" x2="3" y2="21"/><line x1="21" y1="3" x2="14" y2="10"/></svg>`;
+      const LABEL_ENTER = 'Full Screen';
+      const LABEL_EXIT = 'Exit Full Screen';
+
+      function supportsNativeFullscreen(): boolean {
+        return !!(document.fullscreenEnabled || (document as any).webkitFullscreenEnabled);
+      }
+
+      function isInFullscreen(): boolean {
+        return !!(document.fullscreenElement || (document as any).webkitFullscreenElement);
+      }
 
       function toggleFullscreen(): void {
-        if (!document.fullscreenElement) {
-          document.documentElement.requestFullscreen().catch(() => {});
-        } else {
-          document.exitFullscreen().catch(() => {});
+        if (supportsNativeFullscreen()) {
+          if (!isInFullscreen()) {
+            const el = document.documentElement;
+            if (el.requestFullscreen) {
+              el.requestFullscreen().catch(() => {});
+            } else if ((el as any).webkitRequestFullscreen) {
+              (el as any).webkitRequestFullscreen();
+            }
+          } else {
+            if (document.exitFullscreen) {
+              document.exitFullscreen().catch(() => {});
+            } else if ((document as any).webkitExitFullscreen) {
+              (document as any).webkitExitFullscreen();
+            }
+          }
+          return;
         }
+        // Fallback for browsers without Fullscreen API (e.g. iOS Safari):
+        // toggle a CSS class that makes the page content cover the full viewport.
+        pageContent.classList.toggle('pseudo-fullscreen');
+        updateFullscreenBtn();
       }
 
       function updateFullscreenBtn(): void {
-        const isFs = !!document.fullscreenElement;
+        const isFs = isInFullscreen() || pageContent.classList.contains('pseudo-fullscreen');
         const iconEl = btnFullscreen.querySelector('.fs-icon') as HTMLElement;
         const labelEl = btnFullscreen.querySelector('.fs-label') as HTMLElement;
-        iconEl.textContent = isFs ? '⤡' : '⤢';
-        labelEl.textContent = isFs ? ' Exit Full Screen' : ' Full Screen';
-        btnFullscreen.setAttribute('aria-label', isFs ? 'Exit Full Screen' : 'Enter Full Screen');
+        iconEl.innerHTML = isFs ? ICON_COMPRESS : ICON_EXPAND;
+        labelEl.textContent = isFs ? LABEL_EXIT : LABEL_ENTER;
+        btnFullscreen.setAttribute('aria-label', isFs ? LABEL_EXIT : LABEL_ENTER);
       }
 
       btnFullscreen.addEventListener('click', toggleFullscreen);
       document.addEventListener('fullscreenchange', updateFullscreenBtn);
+      document.addEventListener('webkitfullscreenchange', updateFullscreenBtn);
+      // Initialise button icon/label immediately so the SVG is set before user interaction.
+      updateFullscreenBtn();
 
       // Document-level keyboard navigation so arrow keys work regardless of focus
       document.addEventListener('keydown', (e: KeyboardEvent) => {
