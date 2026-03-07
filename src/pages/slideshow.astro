@@ -183,6 +183,23 @@
         background: #0f172a;
       }
 
+      /* ── Fullscreen deck mode: slides fill the entire viewport ── */
+      body.deck-fullscreen nav.back {
+        display: none;
+      }
+
+      body.deck-fullscreen .reveal {
+        height: 100dvh;
+      }
+
+      body.deck-fullscreen .slide-nav {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 20;
+      }
+
       .slide-counter {
         @apply text-sm font-semibold text-slate-400;
       }
@@ -539,6 +556,8 @@
 
       const ICON_EXPAND = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>`;
       const ICON_COMPRESS = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="10" y1="14" x2="3" y2="21"/><line x1="21" y1="3" x2="14" y2="10"/></svg>`;
+      const ARIA_ENTER = 'Enter Full Screen';
+      const ARIA_EXIT = 'Exit Full Screen';
       const LABEL_ENTER = 'Full Screen';
       const LABEL_EXIT = 'Exit Full Screen';
 
@@ -572,20 +591,22 @@
         // toggle a CSS class that makes the page content cover the full viewport.
         pageContent.classList.toggle('pseudo-fullscreen');
         updateFullscreenBtn();
+        deck.sync();
       }
 
       function updateFullscreenBtn(): void {
         const isFs = isInFullscreen() || pageContent.classList.contains('pseudo-fullscreen');
+        document.body.classList.toggle('deck-fullscreen', isFs);
         const iconEl = btnFullscreen.querySelector('.fs-icon') as HTMLElement;
         const labelEl = btnFullscreen.querySelector('.fs-label') as HTMLElement;
         iconEl.innerHTML = isFs ? ICON_COMPRESS : ICON_EXPAND;
         labelEl.textContent = isFs ? LABEL_EXIT : LABEL_ENTER;
-        btnFullscreen.setAttribute('aria-label', isFs ? LABEL_EXIT : LABEL_ENTER);
+        btnFullscreen.setAttribute('aria-label', isFs ? ARIA_EXIT : ARIA_ENTER);
       }
 
       btnFullscreen.addEventListener('click', toggleFullscreen);
-      document.addEventListener('fullscreenchange', updateFullscreenBtn);
-      document.addEventListener('webkitfullscreenchange', updateFullscreenBtn);
+      document.addEventListener('fullscreenchange', () => { updateFullscreenBtn(); deck.sync(); });
+      document.addEventListener('webkitfullscreenchange', () => { updateFullscreenBtn(); deck.sync(); });
       // Initialise button icon/label immediately so the SVG is set before user interaction.
       updateFullscreenBtn();
 
