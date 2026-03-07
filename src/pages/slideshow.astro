@@ -52,17 +52,21 @@
         50%       { transform: translateY(-6px); }
       }
 
-      /* ── Slide layout ── */
-      .slide {
-        display: none;
-        min-height: calc(100dvh - 160px);
-        @apply mx-auto max-w-4xl px-6 py-12;
+      /* ── Reveal.js slide container ── */
+      .reveal {
+        height: calc(100dvh - 160px);
+        overflow: hidden;
+        /* Reset Reveal.js background so our page background shows through */
+        background: transparent;
       }
 
-      .slide.active {
+      /* ── Slide content wrapper (inside each Reveal.js section) ── */
+      .slide {
         display: flex;
         flex-direction: column;
         justify-content: center;
+        width: 100%;
+        @apply mx-auto max-w-4xl px-6 py-12;
       }
 
       /* ── Slide elements ── */
@@ -181,224 +185,243 @@
         <a href="/Tooda/">← Back to Home</a>
       </nav>
 
-      <!-- ═══════════════════════ SLIDE 1 – Welcome ═══════════════════════ -->
-      <section class="slide active" data-slide="1" aria-label="Slide 1 of 6">
-        <span class="slide-badge">✦ Slide Deck</span>
-        <h1 class="slide-title">Welcome to Tooda</h1>
-        <p class="slide-subtitle">
-          A lightweight, browser-based tool for creating and maintaining
-          architecture &amp; design diagrams — no install required.
-        </p>
-        <p class="slide-body">
-          Tooda helps software teams visualize complex systems using industry-standard
-          notation. Everything runs in the browser using static files, so there is nothing
-          to deploy or configure: just open a URL and start exploring.
-        </p>
-        <p class="mt-4 text-base leading-relaxed text-slate-400">
-          Use the navigation buttons below (or the ← → arrow keys) to move through the slides.
-        </p>
-      </section>
+      <!-- ═══════════════════════ Reveal.js slide container ═══════════════════════ -->
+      <div class="reveal">
+        <div class="slides">
 
-      <!-- ═══════════════════════ SLIDE 2 – C4 Diagrams ═══════════════════════ -->
-      <section class="slide" data-slide="2" aria-label="Slide 2 of 6">
-        <span class="slide-badge">🏗️ C4 Model</span>
-        <h1 class="slide-title">C4 Architecture Diagrams</h1>
-        <p class="slide-subtitle">
-          Explore real-world system designs at four levels of detail using
-          Mermaid-powered C4 notation.
-        </p>
-        <div class="feature-grid">
-          <div class="feature-item">
-            <div class="feature-item-icon">1️⃣</div>
-            <div class="feature-item-title">Level 1 – Context</div>
-            <div class="feature-item-desc">Shows the system and how users and external systems interact with it.</div>
-          </div>
-          <div class="feature-item">
-            <div class="feature-item-icon">2️⃣</div>
-            <div class="feature-item-title">Level 2 – Container</div>
-            <div class="feature-item-desc">Zooms in to show the applications, services, and data stores that form the system.</div>
-          </div>
-          <div class="feature-item">
-            <div class="feature-item-icon">3️⃣</div>
-            <div class="feature-item-title">Level 3 – Component</div>
-            <div class="feature-item-desc">Reveals the major structural components inside a single container.</div>
-          </div>
-          <div class="feature-item">
-            <div class="feature-item-icon">4️⃣</div>
-            <div class="feature-item-title">Level 4 – Code</div>
-            <div class="feature-item-desc">Shows the classes and interfaces that implement a component.</div>
-          </div>
-        </div>
-        <p class="mt-6 text-sm text-slate-500">
-          Built-in examples: Online Banking, E-Commerce, Ride-Sharing, and Tooda itself.
-        </p>
-      </section>
+          <!-- ═══════════════════════ SLIDE 1 – Welcome ═══════════════════════ -->
+          <section aria-label="Slide 1 of 6">
+            <div class="slide">
+              <span class="slide-badge">✦ Slide Deck</span>
+              <h1 class="slide-title">Welcome to Tooda</h1>
+              <p class="slide-subtitle">
+                A lightweight, browser-based tool for creating and maintaining
+                architecture &amp; design diagrams — no install required.
+              </p>
+              <p class="slide-body">
+                Tooda helps software teams visualize complex systems using industry-standard
+                notation. Everything runs in the browser using static files, so there is nothing
+                to deploy or configure: just open a URL and start exploring.
+              </p>
+              <p class="mt-4 text-base leading-relaxed text-slate-400">
+                Use the navigation buttons below (or the ← → arrow keys) to move through the slides.
+              </p>
+            </div>
+          </section>
 
-      <!-- ═══════════════════════ SLIDE 3 – Excalidraw ═══════════════════════ -->
-      <section class="slide" data-slide="3" aria-label="Slide 3 of 6">
-        <span class="slide-badge">✏️ Freehand</span>
-        <h1 class="slide-title">Freehand Diagrams</h1>
-        <p class="slide-subtitle">
-          Sketch architecture ideas freely with Excalidraw's hand-drawn aesthetic —
-          full edit, view, and export support built in.
-        </p>
-        <p class="slide-body">
-          Excalidraw diagrams give your architecture visuals a natural, approachable look
-          without sacrificing the precision of the C4 model. Each of the four C4 levels is
-          available in freehand form for the Healthcare Platform example.
-        </p>
-        <div class="feature-grid mt-8">
-          <div class="feature-item">
-            <div class="feature-item-icon">🖊️</div>
-            <div class="feature-item-title">Edit Mode</div>
-            <div class="feature-item-desc">Modify diagrams interactively directly in the browser canvas.</div>
-          </div>
-          <div class="feature-item">
-            <div class="feature-item-icon">👁️</div>
-            <div class="feature-item-title">View Mode</div>
-            <div class="feature-item-desc">Present diagrams in a clean read-only view without UI clutter.</div>
-          </div>
-          <div class="feature-item">
-            <div class="feature-item-icon">💾</div>
-            <div class="feature-item-title">Export JSON</div>
-            <div class="feature-item-desc">Download any diagram as a portable Excalidraw JSON file.</div>
-          </div>
-          <div class="feature-item">
-            <div class="feature-item-icon">📐</div>
-            <div class="feature-item-title">Responsive Canvas</div>
-            <div class="feature-item-desc">Canvas adapts to any screen size automatically via ResizeObserver.</div>
-          </div>
-        </div>
-      </section>
+          <!-- ═══════════════════════ SLIDE 2 – C4 Diagrams ═══════════════════════ -->
+          <section aria-label="Slide 2 of 6">
+            <div class="slide">
+              <span class="slide-badge">🏗️ C4 Model</span>
+              <h1 class="slide-title">C4 Architecture Diagrams</h1>
+              <p class="slide-subtitle">
+                Explore real-world system designs at four levels of detail using
+                Mermaid-powered C4 notation.
+              </p>
+              <div class="feature-grid">
+                <div class="feature-item">
+                  <div class="feature-item-icon">1️⃣</div>
+                  <div class="feature-item-title">Level 1 – Context</div>
+                  <div class="feature-item-desc">Shows the system and how users and external systems interact with it.</div>
+                </div>
+                <div class="feature-item">
+                  <div class="feature-item-icon">2️⃣</div>
+                  <div class="feature-item-title">Level 2 – Container</div>
+                  <div class="feature-item-desc">Zooms in to show the applications, services, and data stores that form the system.</div>
+                </div>
+                <div class="feature-item">
+                  <div class="feature-item-icon">3️⃣</div>
+                  <div class="feature-item-title">Level 3 – Component</div>
+                  <div class="feature-item-desc">Reveals the major structural components inside a single container.</div>
+                </div>
+                <div class="feature-item">
+                  <div class="feature-item-icon">4️⃣</div>
+                  <div class="feature-item-title">Level 4 – Code</div>
+                  <div class="feature-item-desc">Shows the classes and interfaces that implement a component.</div>
+                </div>
+              </div>
+              <p class="mt-6 text-sm text-slate-500">
+                Built-in examples: Online Banking, E-Commerce, Ride-Sharing, and Tooda itself.
+              </p>
+            </div>
+          </section>
 
-      <!-- ═══════════════════════ SLIDE 4 – API Explorer ═══════════════════════ -->
-      <section class="slide" data-slide="4" aria-label="Slide 4 of 6">
-        <span class="slide-badge">🔌 API</span>
-        <h1 class="slide-title">API Explorer</h1>
-        <p class="slide-subtitle">
-          Every diagram is also available as a JSON endpoint — explore and test them
-          interactively via a built-in Swagger UI.
-        </p>
-        <p class="slide-body">
-          Tooda exposes a fully documented REST-style API so that teams can programmatically
-          consume diagram data. The API is described with an OpenAPI 3.0 specification and
-          browsable without any extra tooling.
-        </p>
-        <div class="feature-grid mt-8">
-          <div class="feature-item">
-            <div class="feature-item-icon">📄</div>
-            <div class="feature-item-title">C4 Endpoints</div>
-            <div class="feature-item-desc">Fetch full C4 diagram definitions for any of the four built-in examples.</div>
-          </div>
-          <div class="feature-item">
-            <div class="feature-item-icon">🖼️</div>
-            <div class="feature-item-title">Excalidraw Endpoints</div>
-            <div class="feature-item-desc">Retrieve Excalidraw element arrays for each C4 level of the Healthcare Platform.</div>
-          </div>
-          <div class="feature-item">
-            <div class="feature-item-icon">📑</div>
-            <div class="feature-item-title">OpenAPI Spec</div>
-            <div class="feature-item-desc">Machine-readable OpenAPI 3.0 schema served at <code>/Tooda/api/openapi.json</code>.</div>
-          </div>
-          <div class="feature-item">
-            <div class="feature-item-icon">⚡</div>
-            <div class="feature-item-title">Swagger UI</div>
-            <div class="feature-item-desc">Interactive API browser with live request/response testing, no extra tools needed.</div>
-          </div>
-        </div>
-      </section>
+          <!-- ═══════════════════════ SLIDE 3 – Excalidraw ═══════════════════════ -->
+          <section aria-label="Slide 3 of 6">
+            <div class="slide">
+              <span class="slide-badge">✏️ Freehand</span>
+              <h1 class="slide-title">Freehand Diagrams</h1>
+              <p class="slide-subtitle">
+                Sketch architecture ideas freely with Excalidraw's hand-drawn aesthetic —
+                full edit, view, and export support built in.
+              </p>
+              <p class="slide-body">
+                Excalidraw diagrams give your architecture visuals a natural, approachable look
+                without sacrificing the precision of the C4 model. Each of the four C4 levels is
+                available in freehand form for the Healthcare Platform example.
+              </p>
+              <div class="feature-grid mt-8">
+                <div class="feature-item">
+                  <div class="feature-item-icon">🖊️</div>
+                  <div class="feature-item-title">Edit Mode</div>
+                  <div class="feature-item-desc">Modify diagrams interactively directly in the browser canvas.</div>
+                </div>
+                <div class="feature-item">
+                  <div class="feature-item-icon">👁️</div>
+                  <div class="feature-item-title">View Mode</div>
+                  <div class="feature-item-desc">Present diagrams in a clean read-only view without UI clutter.</div>
+                </div>
+                <div class="feature-item">
+                  <div class="feature-item-icon">💾</div>
+                  <div class="feature-item-title">Export JSON</div>
+                  <div class="feature-item-desc">Download any diagram as a portable Excalidraw JSON file.</div>
+                </div>
+                <div class="feature-item">
+                  <div class="feature-item-icon">📐</div>
+                  <div class="feature-item-title">Responsive Canvas</div>
+                  <div class="feature-item-desc">Canvas adapts to any screen size automatically via ResizeObserver.</div>
+                </div>
+              </div>
+            </div>
+          </section>
 
-      <!-- ═══════════════════════ SLIDE 5 – Platform & Tech ═══════════════════════ -->
-      <section class="slide" data-slide="5" aria-label="Slide 5 of 6">
-        <span class="slide-badge">🔮 Platform</span>
-        <h1 class="slide-title">Platform &amp; Technology</h1>
-        <p class="slide-subtitle">
-          Tooda is built on a modern, zero-server-required stack that deploys as pure
-          static files.
-        </p>
-        <div class="feature-grid">
-          <div class="feature-item">
-            <div class="feature-item-icon">🚀</div>
-            <div class="feature-item-title">Astro v5</div>
-            <div class="feature-item-desc">Static-site generator that compiles pages to HTML, CSS, and minimal JS.</div>
-          </div>
-          <div class="feature-item">
-            <div class="feature-item-icon">⚛️</div>
-            <div class="feature-item-title">React 18</div>
-            <div class="feature-item-desc">Interactive components like the Excalidraw viewer and 3D visualizer.</div>
-          </div>
-          <div class="feature-item">
-            <div class="feature-item-icon">🎨</div>
-            <div class="feature-item-title">Tailwind CSS v3</div>
-            <div class="feature-item-desc">Utility-first CSS for a consistent, responsive, dark-themed interface.</div>
-          </div>
-          <div class="feature-item">
-            <div class="feature-item-icon">🔷</div>
-            <div class="feature-item-title">TypeScript (strict)</div>
-            <div class="feature-item-desc">Full type safety across all source files for reliability and maintainability.</div>
-          </div>
-          <div class="feature-item">
-            <div class="feature-item-icon">🌐</div>
-            <div class="feature-item-title">GitHub Pages</div>
-            <div class="feature-item-desc">Automatic deployment via GitHub Actions on every push to <code>main</code>.</div>
-          </div>
-          <div class="feature-item">
-            <div class="feature-item-icon">🧪</div>
-            <div class="feature-item-title">Playwright Tests</div>
-            <div class="feature-item-desc">Comprehensive end-to-end test suite covering every page and feature.</div>
-          </div>
-        </div>
-      </section>
+          <!-- ═══════════════════════ SLIDE 4 – API Explorer ═══════════════════════ -->
+          <section aria-label="Slide 4 of 6">
+            <div class="slide">
+              <span class="slide-badge">🔌 API</span>
+              <h1 class="slide-title">API Explorer</h1>
+              <p class="slide-subtitle">
+                Every diagram is also available as a JSON endpoint — explore and test them
+                interactively via a built-in Swagger UI.
+              </p>
+              <p class="slide-body">
+                Tooda exposes a fully documented REST-style API so that teams can programmatically
+                consume diagram data. The API is described with an OpenAPI 3.0 specification and
+                browsable without any extra tooling.
+              </p>
+              <div class="feature-grid mt-8">
+                <div class="feature-item">
+                  <div class="feature-item-icon">📄</div>
+                  <div class="feature-item-title">C4 Endpoints</div>
+                  <div class="feature-item-desc">Fetch full C4 diagram definitions for any of the four built-in examples.</div>
+                </div>
+                <div class="feature-item">
+                  <div class="feature-item-icon">🖼️</div>
+                  <div class="feature-item-title">Excalidraw Endpoints</div>
+                  <div class="feature-item-desc">Retrieve Excalidraw element arrays for each C4 level of the Healthcare Platform.</div>
+                </div>
+                <div class="feature-item">
+                  <div class="feature-item-icon">📑</div>
+                  <div class="feature-item-title">OpenAPI Spec</div>
+                  <div class="feature-item-desc">Machine-readable OpenAPI 3.0 schema served at <code>/Tooda/api/openapi.json</code>.</div>
+                </div>
+                <div class="feature-item">
+                  <div class="feature-item-icon">⚡</div>
+                  <div class="feature-item-title">Swagger UI</div>
+                  <div class="feature-item-desc">Interactive API browser with live request/response testing, no extra tools needed.</div>
+                </div>
+              </div>
+            </div>
+          </section>
 
-      <!-- ═══════════════════════ SLIDE 6 – Get Started ═══════════════════════ -->
-      <section class="slide" data-slide="6" aria-label="Slide 6 of 6">
-        <span class="slide-badge">✅ Get Started</span>
-        <h1 class="slide-title">Start Exploring</h1>
-        <p class="slide-subtitle">
-          Jump straight into any of Tooda's features — everything runs in your browser,
-          nothing to install.
-        </p>
-        <div class="feature-grid mt-2">
-          <div class="feature-item">
-            <div class="feature-item-icon">🏗️</div>
-            <div class="feature-item-title">C4 Diagrams</div>
-            <div class="feature-item-desc mb-3">Explore interactive C4 architecture diagrams.</div>
-            <a href="/Tooda/c4?example=banking" class="cta-primary">🏦 Open Banking →</a>
-          </div>
-          <div class="feature-item">
-            <div class="feature-item-icon">✏️</div>
-            <div class="feature-item-title">Freehand Diagrams</div>
-            <div class="feature-item-desc mb-3">Sketch with Excalidraw's hand-drawn style.</div>
-            <a href="/Tooda/excalidraw" class="cta-primary">🏥 Open Healthcare →</a>
-          </div>
-          <div class="feature-item">
-            <div class="feature-item-icon">🔌</div>
-            <div class="feature-item-title">API Explorer</div>
-            <div class="feature-item-desc mb-3">Test and browse diagram API endpoints.</div>
-            <a href="/Tooda/api" class="cta-primary">⚡ Open API Explorer →</a>
-          </div>
-          <div class="feature-item">
-            <div class="feature-item-icon">📋</div>
-            <div class="feature-item-title">All Features</div>
-            <div class="feature-item-desc mb-3">See everything Tooda has to offer.</div>
-            <a href="/Tooda/features" class="cta-primary">📋 View Features →</a>
-          </div>
+          <!-- ═══════════════════════ SLIDE 5 – Platform & Tech ═══════════════════════ -->
+          <section aria-label="Slide 5 of 6">
+            <div class="slide">
+              <span class="slide-badge">🔮 Platform</span>
+              <h1 class="slide-title">Platform &amp; Technology</h1>
+              <p class="slide-subtitle">
+                Tooda is built on a modern, zero-server-required stack that deploys as pure
+                static files.
+              </p>
+              <div class="feature-grid">
+                <div class="feature-item">
+                  <div class="feature-item-icon">🚀</div>
+                  <div class="feature-item-title">Astro v5</div>
+                  <div class="feature-item-desc">Static-site generator that compiles pages to HTML, CSS, and minimal JS.</div>
+                </div>
+                <div class="feature-item">
+                  <div class="feature-item-icon">⚛️</div>
+                  <div class="feature-item-title">React 18</div>
+                  <div class="feature-item-desc">Interactive components like the Excalidraw viewer and 3D visualizer.</div>
+                </div>
+                <div class="feature-item">
+                  <div class="feature-item-icon">🎨</div>
+                  <div class="feature-item-title">Tailwind CSS v3</div>
+                  <div class="feature-item-desc">Utility-first CSS for a consistent, responsive, dark-themed interface.</div>
+                </div>
+                <div class="feature-item">
+                  <div class="feature-item-icon">🔷</div>
+                  <div class="feature-item-title">TypeScript (strict)</div>
+                  <div class="feature-item-desc">Full type safety across all source files for reliability and maintainability.</div>
+                </div>
+                <div class="feature-item">
+                  <div class="feature-item-icon">🌐</div>
+                  <div class="feature-item-title">GitHub Pages</div>
+                  <div class="feature-item-desc">Automatic deployment via GitHub Actions on every push to <code>main</code>.</div>
+                </div>
+                <div class="feature-item">
+                  <div class="feature-item-icon">🧪</div>
+                  <div class="feature-item-title">Playwright Tests</div>
+                  <div class="feature-item-desc">Comprehensive end-to-end test suite covering every page and feature.</div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ═══════════════════════ SLIDE 6 – Get Started ═══════════════════════ -->
+          <section aria-label="Slide 6 of 6">
+            <div class="slide">
+              <span class="slide-badge">✅ Get Started</span>
+              <h1 class="slide-title">Start Exploring</h1>
+              <p class="slide-subtitle">
+                Jump straight into any of Tooda's features — everything runs in your browser,
+                nothing to install.
+              </p>
+              <div class="feature-grid mt-2">
+                <div class="feature-item">
+                  <div class="feature-item-icon">🏗️</div>
+                  <div class="feature-item-title">C4 Diagrams</div>
+                  <div class="feature-item-desc mb-3">Explore interactive C4 architecture diagrams.</div>
+                  <a href="/Tooda/c4?example=banking" class="cta-primary">🏦 Open Banking →</a>
+                </div>
+                <div class="feature-item">
+                  <div class="feature-item-icon">✏️</div>
+                  <div class="feature-item-title">Freehand Diagrams</div>
+                  <div class="feature-item-desc mb-3">Sketch with Excalidraw's hand-drawn style.</div>
+                  <a href="/Tooda/excalidraw" class="cta-primary">🏥 Open Healthcare →</a>
+                </div>
+                <div class="feature-item">
+                  <div class="feature-item-icon">🔌</div>
+                  <div class="feature-item-title">API Explorer</div>
+                  <div class="feature-item-desc mb-3">Test and browse diagram API endpoints.</div>
+                  <a href="/Tooda/api" class="cta-primary">⚡ Open API Explorer →</a>
+                </div>
+                <div class="feature-item">
+                  <div class="feature-item-icon">📋</div>
+                  <div class="feature-item-title">All Features</div>
+                  <div class="feature-item-desc mb-3">See everything Tooda has to offer.</div>
+                  <a href="/Tooda/features" class="cta-primary">📋 View Features →</a>
+                </div>
+              </div>
+            </div>
+          </section>
+
         </div>
-      </section>
+      </div>
 
       <!-- ═══════════════════════ Navigation bar ═══════════════════════ -->
       <nav class="slide-nav" aria-label="Slide navigation">
         <button id="btn-prev" class="nav-btn" aria-label="Previous slide" disabled>← Prev</button>
 
         <div class="flex flex-col items-center gap-2">
-        <div class="progress-dots" id="progress-dots">
-          <button class="dot active" aria-label="Go to slide 1"></button>
-          <button class="dot" aria-label="Go to slide 2"></button>
-          <button class="dot" aria-label="Go to slide 3"></button>
-          <button class="dot" aria-label="Go to slide 4"></button>
-          <button class="dot" aria-label="Go to slide 5"></button>
-          <button class="dot" aria-label="Go to slide 6"></button>
-        </div>
+          <div class="progress-dots" id="progress-dots">
+            <button class="dot active" aria-label="Go to slide 1"></button>
+            <button class="dot" aria-label="Go to slide 2"></button>
+            <button class="dot" aria-label="Go to slide 3"></button>
+            <button class="dot" aria-label="Go to slide 4"></button>
+            <button class="dot" aria-label="Go to slide 5"></button>
+            <button class="dot" aria-label="Go to slide 6"></button>
+          </div>
           <span class="slide-counter" id="slide-counter" aria-live="polite">1 / 6</span>
         </div>
 
@@ -407,63 +430,74 @@
 
     </div>
 
-    <script is:inline>
-      const slides = document.querySelectorAll('[data-slide]');
-      const btnPrev = document.getElementById('btn-prev');
-      const btnNext = document.getElementById('btn-next');
-      const counter = document.getElementById('slide-counter');
-      const dotsContainer = document.getElementById('progress-dots');
-      const total = slides.length;
-      let current = 0;
+    <script>
+      import Reveal from 'reveal.js';
+      import 'reveal.js/dist/reveal.css';
 
-      // Wire up existing dot buttons
-      dotsContainer.querySelectorAll('.dot').forEach((dot, i) => {
-        dot.addEventListener('click', () => goTo(i));
+      const revealEl = document.querySelector<HTMLElement>('.reveal');
+      if (!revealEl) throw new Error('Reveal.js container (.reveal) not found in DOM');
+      const deck = new Reveal(revealEl, {
+        embedded: true,
+        hash: false,
+        keyboard: false,
+        touch: true,
+        controls: false,
+        progress: false,
+        slideNumber: false,
+        center: true,
+        transition: 'slide',
       });
 
-      function goTo(index) {
-        slides[current].classList.remove('active');
-        dotsContainer.children[current].classList.remove('active');
-        current = Math.max(0, Math.min(total - 1, index));
-        slides[current].classList.add('active');
-        dotsContainer.children[current].classList.add('active');
-        counter.textContent = (current + 1) + ' / ' + total;
-        btnPrev.disabled = current === 0;
-        btnNext.disabled = current === total - 1;
-        // Reflect in URL hash for bookmarkability
-        history.replaceState(null, '', '#slide-' + (current + 1));
-        // Scroll to top of slide on navigation
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+      const btnPrev = document.getElementById('btn-prev') as HTMLButtonElement;
+      const btnNext = document.getElementById('btn-next') as HTMLButtonElement;
+      const counter = document.getElementById('slide-counter')!;
+      const dots = [...document.querySelectorAll<Element>('#progress-dots .dot')];
+
+      function updateUI(): void {
+        const total = deck.getTotalSlides();
+        const idx = deck.getIndices().h;
+        counter.textContent = `${idx + 1} / ${total}`;
+        btnPrev.disabled = deck.isFirstSlide();
+        btnNext.disabled = deck.isLastSlide();
+        dots.forEach((dot, i) => dot.classList.toggle('active', i === idx));
+        history.replaceState(null, '', `#slide-${idx + 1}`);
       }
 
-      btnPrev.addEventListener('click', () => goTo(current - 1));
-      btnNext.addEventListener('click', () => goTo(current + 1));
+      deck.on('slidechanged', updateUI);
 
-      // Keyboard navigation
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
-          e.preventDefault();
-          goTo(current + 1);
-        } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
-          e.preventDefault();
-          goTo(current - 1);
-        }
-      });
-
-      // Restore slide from URL hash on load
-      (function initFromHash() {
+      // On ready: restore slide from URL hash first, then update UI
+      deck.on('ready', () => {
         const match = window.location.hash.match(/^#slide-(\d+)$/);
         if (match) {
           const idx = parseInt(match[1], 10) - 1;
+          const total = deck.getTotalSlides();
           if (idx >= 0 && idx < total) {
-            goTo(idx);
+            deck.slide(idx);
+            // slidechanged fires synchronously -> updateUI() is called automatically
             return;
           }
         }
-        // Default: first slide, set up initial state
-        btnPrev.disabled = true;
-        btnNext.disabled = total <= 1;
-      })();
+        updateUI();
+      });
+
+      btnPrev.addEventListener('click', () => { deck.prev(); });
+      btnNext.addEventListener('click', () => { deck.next(); });
+      dots.forEach((dot, i) => {
+        dot.addEventListener('click', () => { deck.slide(i); });
+      });
+
+      // Document-level keyboard navigation so arrow keys work regardless of focus
+      document.addEventListener('keydown', (e: KeyboardEvent) => {
+        if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+          e.preventDefault();
+          deck.next();
+        } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+          e.preventDefault();
+          deck.prev();
+        }
+      });
+
+      deck.initialize();
     </script>
   </body>
 </html>

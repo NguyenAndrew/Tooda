@@ -22,6 +22,7 @@
     "mermaid": "^11.12.3",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "reveal.js": "^5.2.1",
     "swagger-ui-dist": "^5.32.0",
     "three": "^0.183.2"
   },
@@ -29,6 +30,7 @@
     "@astrojs/tailwind": "^6.0.2",
     "@playwright/test": "^1.58.2",
     "@stoplight/spectral-cli": "^6.15.0",
+    "@types/reveal.js": "^5.2.2",
     "@types/three": "^0.183.1",
     "@typescript-eslint/eslint-plugin": "^8.56.1",
     "@typescript-eslint/parser": "^8.56.1",
