@@ -80,6 +80,9 @@ export default function FeaturesVisualization3D() {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    // Prevent the browser from capturing touch events for page scroll/zoom so
+    // that pointer events (drag-to-rotate, tap-to-navigate) work on mobile.
+    renderer.domElement.style.touchAction = 'none';
     container.appendChild(renderer.domElement);
 
     // ── Lighting ───────────────────────────────────────────────────────────────
@@ -168,6 +171,8 @@ export default function FeaturesVisualization3D() {
     }
 
     function handleClick() {
+      // Ignore click events that were produced by a drag gesture.
+      if (movedSignificantly) return;
       if (hoveredIndex >= 0) {
         logger.info(`Feature node clicked: ${FEATURE_NODES[hoveredIndex].label}`);
         window.location.href = FEATURE_NODES[hoveredIndex].href;
@@ -180,6 +185,14 @@ export default function FeaturesVisualization3D() {
     // ── Orbit rotation ─────────────────────────────────────────────────────────
     let isDragging = false;
     let lastX = 0;
+    let dragStartX = 0;
+    /** Set to true once finger/pointer moves beyond the drag threshold. */
+    let movedSignificantly = false;
+    /**
+     * Minimum horizontal movement (px) required to treat an interaction as a
+     * drag rather than a tap/click. Keeps deliberate taps from being ignored.
+     */
+    const DRAG_THRESHOLD_PX = 8;
     const autoRotateSpeed = 0.003;
     let groupAngle = 0;
     let dragDelta = 0;
@@ -187,12 +200,20 @@ export default function FeaturesVisualization3D() {
     function handlePointerDown(e: PointerEvent) {
       isDragging = true;
       lastX = e.clientX;
+      dragStartX = e.clientX;
+      movedSignificantly = false;
+      // Update pointer immediately so the raycaster can detect a tapped node
+      // even when there is no preceding pointermove (common on touch devices).
+      updatePointer(e);
     }
     function handlePointerUp() {
       isDragging = false;
     }
     function handlePointerMoveDrag(e: PointerEvent) {
       if (!isDragging) return;
+      if (Math.abs(e.clientX - dragStartX) > DRAG_THRESHOLD_PX) {
+        movedSignificantly = true;
+      }
       dragDelta = (e.clientX - lastX) * 0.005;
       groupAngle += dragDelta;
       lastX = e.clientX;
