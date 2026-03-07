@@ -371,19 +371,7 @@ export default function FeaturesVisualization3D() {
           textAlign: 'center',
         }}
       />
-      {/* Legend */}
-      <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 flex-wrap justify-center gap-3">
-        {FEATURE_NODES.map(node => (
-          <a
-            key={node.label}
-            href={node.href}
-            className="flex items-center gap-1.5 rounded-full border border-slate-700/60 bg-slate-800/70 px-3 py-1 text-xs text-slate-300 no-underline backdrop-blur-sm transition-colors hover:border-indigo-500/50 hover:text-slate-100"
-          >
-            <span>{node.icon}</span>
-            <span>{node.label}</span>
-          </a>
-        ))}
-      </div>
+
     </div>
   );
 }
