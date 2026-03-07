@@ -179,6 +179,16 @@
       .code-block {
         @apply rounded-xl border border-slate-700/60 bg-slate-900 p-4 font-mono text-sm text-slate-300;
       }
+
+      /* ── Fullscreen button: visible only on sm+ (≥640 px) ── */
+      #btn-fullscreen {
+        display: none;
+      }
+      @media (min-width: 640px) {
+        #btn-fullscreen {
+          display: inline-flex;
+        }
+      }
     </style>
   </head>
   <body>
@@ -429,6 +439,7 @@
         </div>
 
         <button id="btn-next" class="nav-btn" aria-label="Next slide">Next →</button>
+        <button id="btn-fullscreen" class="nav-btn" aria-label="Enter Full Screen" title="Full screen (F)">⤢ Full Screen</button>
       </nav>
 
     </div>
@@ -492,6 +503,26 @@
         dot.addEventListener('click', () => { deck.slide(i); });
       });
 
+      // ── Fullscreen ──────────────────────────────────────────────────────────
+      const btnFullscreen = document.getElementById('btn-fullscreen') as HTMLButtonElement;
+
+      function toggleFullscreen(): void {
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen().catch(() => {});
+        } else {
+          document.exitFullscreen().catch(() => {});
+        }
+      }
+
+      function updateFullscreenBtn(): void {
+        const isFs = !!document.fullscreenElement;
+        btnFullscreen.textContent = isFs ? '⤡ Exit Full Screen' : '⤢ Full Screen';
+        btnFullscreen.setAttribute('aria-label', isFs ? 'Exit Full Screen' : 'Enter Full Screen');
+      }
+
+      btnFullscreen.addEventListener('click', toggleFullscreen);
+      document.addEventListener('fullscreenchange', updateFullscreenBtn);
+
       // Document-level keyboard navigation so arrow keys work regardless of focus
       document.addEventListener('keydown', (e: KeyboardEvent) => {
         if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
@@ -500,6 +531,8 @@
         } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
           e.preventDefault();
           deck.prev();
+        } else if (e.key === 'f' || e.key === 'F') {
+          toggleFullscreen();
         }
       });
 
