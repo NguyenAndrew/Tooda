@@ -175,4 +175,9 @@ test.describe('Slideshow page – mobile touch navigation', () => {
     await expect(page.locator('#btn-next')).toBeDisabled();
     await expect(page.locator('#slide-counter')).toHaveText('6 / 6');
   });
+
+  test('fullscreen button is visible on mobile', async ({ page }) => {
+    await page.goto('/Tooda/slideshow');
+    await expect(page.locator('#btn-fullscreen')).toBeVisible();
+  });
 });
