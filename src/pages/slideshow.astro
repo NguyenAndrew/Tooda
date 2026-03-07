@@ -129,6 +129,9 @@
       }
 
       .nav-btn {
+        /* touch-action: manipulation removes the 300 ms tap delay on mobile
+           and disables double-tap zoom, so button taps respond immediately */
+        touch-action: manipulation;
         @apply inline-flex items-center gap-2 rounded-xl border border-slate-700 bg-slate-800 px-5 py-2.5 text-sm font-semibold text-slate-300 no-underline transition-all duration-200 active:scale-95 active:duration-75;
       }
 
@@ -446,6 +449,11 @@
         slideNumber: false,
         center: true,
         transition: 'slide',
+        // Disable the responsive scroll-view that Reveal.js activates automatically
+        // on narrow viewports (default threshold: 435 px).  In scroll-view mode every
+        // section is wrapped in a .scroll-page div, so isLastSlide() incorrectly
+        // returns true for slide 1 (no nextElementSibling), graying out the Next button.
+        scrollActivationWidth: 0,
       });
 
       const btnPrev = document.getElementById('btn-prev') as HTMLButtonElement;
@@ -465,7 +473,7 @@
 
       deck.on('slidechanged', updateUI);
 
-      // On ready: restore slide from URL hash first, then update UI
+      // On ready: restore slide from URL hash first, then always sync the UI
       deck.on('ready', () => {
         const match = window.location.hash.match(/^#slide-(\d+)$/);
         if (match) {
@@ -473,8 +481,6 @@
           const total = deck.getTotalSlides();
           if (idx >= 0 && idx < total) {
             deck.slide(idx);
-            // slidechanged fires synchronously -> updateUI() is called automatically
-            return;
           }
         }
         updateUI();

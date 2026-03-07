@@ -131,3 +131,40 @@ test.describe('Home page – Slide Deck link mobile tap', () => {
     ]);
   });
 });
+
+test.describe('Slideshow page – mobile touch navigation', () => {
+  test.use({ hasTouch: true });
+
+  test.beforeEach(async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 667 });
+  });
+
+  test('Next button is enabled on the first slide on mobile', async ({ page }) => {
+    await page.goto('/Tooda/slideshow');
+    await expect(page.locator('#btn-next')).toBeEnabled();
+  });
+
+  test('Next button navigates to the next slide on mobile tap', async ({ page }) => {
+    await page.goto('/Tooda/slideshow');
+    await page.locator('#btn-next').tap();
+    await expect(page.getByRole('heading', { name: 'C4 Architecture Diagrams' })).toBeVisible();
+    await expect(page.locator('#slide-counter')).toHaveText('2 / 6');
+  });
+
+  test('Prev button navigates back on mobile tap', async ({ page }) => {
+    await page.goto('/Tooda/slideshow');
+    await page.locator('#btn-next').tap();
+    await page.locator('#btn-prev').tap();
+    await expect(page.getByRole('heading', { name: 'Welcome to Tooda' })).toBeVisible();
+    await expect(page.locator('#slide-counter')).toHaveText('1 / 6');
+  });
+
+  test('Next button is disabled on the last slide on mobile', async ({ page }) => {
+    await page.goto('/Tooda/slideshow');
+    for (let i = 0; i < 5; i++) {
+      await page.locator('#btn-next').tap();
+    }
+    await expect(page.locator('#btn-next')).toBeDisabled();
+    await expect(page.locator('#slide-counter')).toHaveText('6 / 6');
+  });
+});
