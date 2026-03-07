@@ -4,7 +4,7 @@ import { createLogger } from '../utils/logger';
 
 const logger = createLogger('FeaturesVisualization3D');
 
-/** Pixels the label floats above the sphere's screen-space centre */
+/** Pixels the label floats above the node's screen-space centre */
 const LABEL_VERTICAL_OFFSET = 68;
 
 /** Shared styles for always-visible node labels */
@@ -89,8 +89,11 @@ export default function FeaturesVisualization3D() {
     // ── Feature node meshes ────────────────────────────────────────────────────
     const radius = 3.5; // orbit radius in the XZ plane
     const meshes: THREE.Mesh[] = [];
-    const rings: THREE.Mesh[] = [];
-    const pivots: THREE.Object3D[] = [];
+    const edgeMeshes: THREE.LineSegments[] = [];
+
+    // Shared geometry for all C4 boxes (all nodes use the same dimensions)
+    const boxGeo = new THREE.BoxGeometry(1.6, 1.0, 0.15);
+    const sharedEdgeGeo = new THREE.EdgesGeometry(boxGeo);
 
     FEATURE_NODES.forEach((node, i) => {
       const angle = (i / FEATURE_NODES.length) * Math.PI * 2;
@@ -98,40 +101,30 @@ export default function FeaturesVisualization3D() {
       const z = Math.sin(angle) * radius;
       const y = (i % 2 === 0 ? 0.6 : -0.6); // slight vertical stagger
 
-      // Sphere
-      const geo = new THREE.SphereGeometry(0.7, 32, 32);
+      // C4-style flat rectangular box (card-like, faces the camera)
       const mat = new THREE.MeshStandardMaterial({
         color: node.color,
-        roughness: 0.3,
-        metalness: 0.6,
+        roughness: 0.2,
+        metalness: 0.1,
         transparent: true,
-        opacity: 0.88,
+        opacity: 0.85,
       });
-      const mesh = new THREE.Mesh(geo, mat);
+      const mesh = new THREE.Mesh(boxGeo, mat);
       mesh.position.set(x, y, z);
       mesh.userData = { index: i, originalY: y };
       scene.add(mesh);
       meshes.push(mesh);
 
-      // Glowing ring around each sphere
-      const ringGeo = new THREE.RingGeometry(0.75, 0.85, 64);
-      const ringMat = new THREE.MeshBasicMaterial({
-        color: node.color,
-        side: THREE.DoubleSide,
+      // Box edge outline (C4 diagram border style)
+      const edgeMat = new THREE.LineBasicMaterial({
+        color: 0xffffff,
         transparent: true,
-        opacity: 0.5,
+        opacity: 0.55,
       });
-      const ring = new THREE.Mesh(ringGeo, ringMat);
-      ring.rotation.x = Math.PI / 2;
-      ring.position.copy(mesh.position);
-      scene.add(ring);
-      rings.push(ring);
-
-      // Animated pivot for the ring tilt
-      const pivot = new THREE.Object3D();
-      pivot.position.copy(mesh.position);
-      scene.add(pivot);
-      pivots.push(pivot);
+      const edgeMesh = new THREE.LineSegments(sharedEdgeGeo, edgeMat);
+      edgeMesh.position.copy(mesh.position);
+      scene.add(edgeMesh);
+      edgeMeshes.push(edgeMesh);
     });
 
     // ── Connecting lines between nodes ─────────────────────────────────────────
@@ -217,7 +210,7 @@ export default function FeaturesVisualization3D() {
         groupAngle += autoRotateSpeed;
       }
 
-      // Reposition spheres & rings along the rotating orbit
+      // Reposition C4 boxes & edge outlines along the rotating orbit
       FEATURE_NODES.forEach((_, i) => {
         const baseAngle = (i / FEATURE_NODES.length) * Math.PI * 2;
         const a = baseAngle + groupAngle;
@@ -227,10 +220,10 @@ export default function FeaturesVisualization3D() {
         const bobY = originalY + Math.sin(elapsed * 1.2 + i * 1.5) * 0.15;
 
         meshes[i].position.set(x, bobY, z);
-        meshes[i].rotation.y = elapsed * 0.5 + i;
+        meshes[i].lookAt(camera.position);
 
-        rings[i].position.set(x, bobY, z);
-        rings[i].rotation.z = elapsed * 0.4 + i;
+        edgeMeshes[i].position.set(x, bobY, z);
+        edgeMeshes[i].lookAt(camera.position);
       });
 
       // Update always-visible node labels
@@ -272,7 +265,7 @@ export default function FeaturesVisualization3D() {
         hoveredIndex = idx;
         renderer.domElement.style.cursor = 'pointer';
 
-        // Highlight hovered sphere
+        // Highlight hovered C4 box
         meshes.forEach((m, i) => {
           (m.material as THREE.MeshStandardMaterial).emissive.setHex(
             i === idx ? FEATURE_NODES[i].color : 0x000000
@@ -288,7 +281,7 @@ export default function FeaturesVisualization3D() {
             <span style="font-size:0.75rem;color:#94a3b8">${node.description}</span>`;
           tooltip.style.display = 'block';
 
-          // Position relative to the sphere on screen
+          // Position relative to the C4 box on screen
           const vec = meshes[idx].position.clone().project(camera);
           const rx = renderer.domElement.getBoundingClientRect();
           const sx = ((vec.x + 1) / 2) * rx.width;
