@@ -78,21 +78,28 @@ export default function FeaturesVisualization3D() {
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     container.appendChild(renderer.domElement);
 
     // ── Lighting ───────────────────────────────────────────────────────────────
-    scene.add(new THREE.AmbientLight(0xffffff, 0.7));
-    const dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
+    scene.add(new THREE.AmbientLight(0xffffff, 0.5));
+    const dirLight = new THREE.DirectionalLight(0xffffff, 1.4);
     dirLight.position.set(5, 10, 7);
+    dirLight.castShadow = true;
     scene.add(dirLight);
+    // Fill light from the opposite side to differentiate faces
+    const fillLight = new THREE.DirectionalLight(0x8888ff, 0.4);
+    fillLight.position.set(-5, -2, -5);
+    scene.add(fillLight);
 
     // ── Feature node meshes ────────────────────────────────────────────────────
     const radius = 3.5; // orbit radius in the XZ plane
     const meshes: THREE.Mesh[] = [];
     const edgeMeshes: THREE.LineSegments[] = [];
 
-    // Shared geometry for all C4 boxes (all nodes use the same dimensions)
-    const boxGeo = new THREE.BoxGeometry(1.6, 1.0, 0.15);
+    // Shared geometry for all C4 boxes (depth increased for visible 3D edges)
+    const boxGeo = new THREE.BoxGeometry(1.6, 1.0, 0.4);
     const sharedEdgeGeo = new THREE.EdgesGeometry(boxGeo);
 
     FEATURE_NODES.forEach((node, i) => {
@@ -101,16 +108,18 @@ export default function FeaturesVisualization3D() {
       const z = Math.sin(angle) * radius;
       const y = (i % 2 === 0 ? 0.6 : -0.6); // slight vertical stagger
 
-      // C4-style flat rectangular box (card-like, faces the camera)
+      // C4-style rectangular box with visible depth (faces camera with slight tilt)
       const mat = new THREE.MeshStandardMaterial({
         color: node.color,
-        roughness: 0.2,
-        metalness: 0.1,
+        roughness: 0.15,
+        metalness: 0.3,
         transparent: true,
-        opacity: 0.85,
+        opacity: 0.9,
       });
       const mesh = new THREE.Mesh(boxGeo, mat);
       mesh.position.set(x, y, z);
+      mesh.castShadow = true;
+      mesh.receiveShadow = true;
       mesh.userData = { index: i, originalY: y };
       scene.add(mesh);
       meshes.push(mesh);
@@ -221,9 +230,12 @@ export default function FeaturesVisualization3D() {
 
         meshes[i].position.set(x, bobY, z);
         meshes[i].lookAt(camera.position);
+        // Tilt slightly to reveal the top face, making depth clearly visible
+        meshes[i].rotateX(-0.25);
 
         edgeMeshes[i].position.set(x, bobY, z);
         edgeMeshes[i].lookAt(camera.position);
+        edgeMeshes[i].rotateX(-0.25);
       });
 
       // Update always-visible node labels
