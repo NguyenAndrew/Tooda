@@ -136,17 +136,24 @@ export default function FeaturesVisualization3D() {
       edgeMeshes.push(edgeMesh);
     });
 
-    // ── Connecting lines between nodes ─────────────────────────────────────────
-    const lineMat = new THREE.LineBasicMaterial({
-      color: 0x6366f1,
-      transparent: true,
-      opacity: 0.25,
-    });
+    // ── Connecting arrows between nodes ────────────────────────────────────────
+    const ARROW_OPACITY = 0.75;
+    const arrowHelpers: THREE.ArrowHelper[] = [];
     for (let i = 0; i < meshes.length; i++) {
-      const next = (i + 1) % meshes.length;
-      const points = [meshes[i].position.clone(), meshes[next].position.clone()];
-      const lineGeo = new THREE.BufferGeometry().setFromPoints(points);
-      scene.add(new THREE.Line(lineGeo, lineMat));
+      const arrowHelper = new THREE.ArrowHelper(
+        new THREE.Vector3(1, 0, 0),
+        new THREE.Vector3(),
+        1,
+        0xe2e8f0,
+        0.35,
+        0.22,
+      );
+      (arrowHelper.line.material as THREE.LineBasicMaterial).transparent = true;
+      (arrowHelper.line.material as THREE.LineBasicMaterial).opacity = ARROW_OPACITY;
+      (arrowHelper.cone.material as THREE.MeshBasicMaterial).transparent = true;
+      (arrowHelper.cone.material as THREE.MeshBasicMaterial).opacity = ARROW_OPACITY;
+      scene.add(arrowHelper);
+      arrowHelpers.push(arrowHelper);
     }
 
     // ── Raycaster for hover / click ────────────────────────────────────────────
@@ -255,16 +262,19 @@ export default function FeaturesVisualization3D() {
         }
       });
 
-      // Rebuild connecting lines each frame
-      scene.children
-        .filter(c => c instanceof THREE.Line)
-        .forEach(l => scene.remove(l));
-
+      // Update connecting arrows each frame
       for (let i = 0; i < meshes.length; i++) {
         const next = (i + 1) % meshes.length;
-        const pts = [meshes[i].position.clone(), meshes[next].position.clone()];
-        const geo = new THREE.BufferGeometry().setFromPoints(pts);
-        scene.add(new THREE.Line(geo, lineMat));
+        const from = meshes[i].position.clone();
+        const to = meshes[next].position.clone();
+        const dir = to.clone().sub(from);
+        const dist = dir.length();
+        dir.normalize();
+        // Shorten arrow so it doesn't overlap the boxes (0.8 units per side)
+        const arrowLength = Math.max(0.1, dist - 1.6);
+        arrowHelpers[i].position.copy(from.clone().addScaledVector(dir, 0.8));
+        arrowHelpers[i].setDirection(dir);
+        arrowHelpers[i].setLength(arrowLength, 0.35, 0.22);
       }
 
       // Raycasting for hover highlight
