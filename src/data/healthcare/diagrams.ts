@@ -74,6 +74,10 @@ const level2Meta: LevelMeta = {
       nodeIds: ['l2-webapp', 'l2-mobile', 'l2-api', 'l2-emr', 'l2-appt', 'l2-billing', 'l2-db', 'l2-queue'],
     },
   ],
+  // c4ShapeInRow=4 arranges the 8 containers inside the boundary in two rows
+  // of four (webapp, mobile, api, emr | appt, billing, db, queue), matching the
+  // left-to-right pipeline visible in the Excalidraw diagram.
+  layoutConfig: { c4ShapeInRow: 4, c4BoundaryInRow: 1 },
 };
 
 // ── Level 3 – Component ───────────────────────────────────────────────────────
@@ -98,6 +102,10 @@ const level3Meta: LevelMeta = {
       nodeIds: ['l3-ctrl', 'l3-svc', 'l3-repo', 'l3-auth', 'l3-audit', 'l3-cache'],
     },
   ],
+  // c4ShapeInRow=3 arranges the 6 components inside the boundary in two rows
+  // of three (ctrl, svc, repo | auth, audit, cache), reflecting the two-column
+  // layout visible in the Excalidraw diagram.
+  layoutConfig: { c4ShapeInRow: 3, c4BoundaryInRow: 1 },
 };
 
 // ── Level 4 – Code ────────────────────────────────────────────────────────────
