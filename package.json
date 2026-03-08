@@ -18,6 +18,7 @@
   "dependencies": {
     "@astrojs/react": "^4.4.2",
     "@excalidraw/excalidraw": "^0.18.0",
+    "@mermaid-js/layout-elk": "^0.2.0",
     "astro": "^5.18.0",
     "mermaid": "^11.12.3",
     "react": "^18.3.1",
