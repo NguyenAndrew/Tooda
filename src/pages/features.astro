@@ -1,11 +1,12 @@
 ---
+import FeaturesVisualization3D from '../components/FeaturesVisualization3D';
 ---
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Features – Every feature implemented in Tooda, the browser-based architecture diagram tool" />
+    <meta name="description" content="Features – Interactive 3D visualization of every feature in Tooda" />
     <title>Features | Tooda</title>
     <style>
       *,
@@ -60,63 +61,12 @@
         @apply mb-3 text-base text-slate-400;
       }
 
-      header .back-link {
-        @apply inline-block text-[0.9rem] text-violet-400 no-underline;
+      .canvas-wrapper {
+        @apply mx-auto max-w-[1000px] px-4;
       }
 
-      header .back-link:hover {
-        @apply underline;
-      }
-
-      .feature-section {
-        @apply mx-auto mb-10 max-w-[900px] px-4;
-      }
-
-      .section-heading {
-        @apply mb-4 flex items-center gap-3 border-b border-slate-700/60 pb-3;
-      }
-
-      .section-icon {
-        @apply flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500/20 to-violet-500/20 text-2xl;
-      }
-
-      .section-title {
-        @apply text-xl font-bold text-slate-100;
-      }
-
-      .feature-list {
-        @apply space-y-2;
-      }
-
-      .feature-list li {
-        @apply flex gap-3 rounded-xl border border-slate-700/60 bg-slate-800/60 p-4 backdrop-blur-sm;
-        list-style: none;
-      }
-
-      .feature-list li .dot {
-        @apply mt-1 h-2 w-2 flex-shrink-0 rounded-full bg-indigo-400;
-      }
-
-      .feature-item-body {
-        @apply flex-1;
-      }
-
-      .feature-item-title {
-        @apply mb-1 text-sm font-semibold text-slate-200;
-      }
-
-      .feature-item-desc {
-        @apply text-sm leading-relaxed text-slate-400;
-      }
-
-      .cta-link {
-        @apply inline-flex items-center gap-1.5 rounded-lg bg-gradient-to-br from-indigo-500 to-violet-500 px-4 py-2 text-xs font-semibold text-white no-underline shadow-md shadow-indigo-500/20 transition-all duration-200 active:scale-95 active:duration-75;
-      }
-
-      @media (hover: hover) {
-        .cta-link:hover {
-          @apply -translate-y-0.5 shadow-lg shadow-indigo-500/30;
-        }
+      .hint {
+        @apply mt-3 text-center text-xs text-slate-500;
       }
 
       .back-btn {
@@ -128,246 +78,16 @@
     <div class="page-content">
       <header>
         <h1>Features</h1>
-        <p>Every feature implemented in Tooda — your browser-based architecture diagram tool.</p>
-        <a href="/Tooda/" class="back-link">← Back to Home</a>
+        <p>Explore Tooda's features in an interactive 3D visualization.</p>
       </header>
 
       <main class="pb-16">
-
-        <!-- C4 Model Diagrams -->
-        <section class="feature-section" aria-labelledby="c4-heading">
-          <div class="section-heading">
-            <div class="section-icon">🏗️</div>
-            <h2 id="c4-heading" class="section-title">C4 Model Diagrams</h2>
-          </div>
-          <ul class="feature-list">
-            <li>
-              <span class="dot"></span>
-              <div class="feature-item-body">
-                <div class="feature-item-title">Four C4 Levels</div>
-                <p class="feature-item-desc">Supports all four levels of the C4 model: Level 1 Context, Level 2 Container, Level 3 Component, and Level 4 Code (class diagrams).</p>
-              </div>
-            </li>
-            <li>
-              <span class="dot"></span>
-              <div class="feature-item-body">
-                <div class="feature-item-title">Mermaid Rendering</div>
-                <p class="feature-item-desc">Diagrams are defined as text using Mermaid's C4 syntax and rendered interactively in the browser with no server required.</p>
-              </div>
-            </li>
-            <li>
-              <span class="dot"></span>
-              <div class="feature-item-body">
-                <div class="feature-item-title">Tabbed Level Navigation</div>
-                <p class="feature-item-desc">Switch between C4 levels using tab buttons. The active level is reflected in the URL hash so it can be bookmarked and shared.</p>
-              </div>
-            </li>
-            <li>
-              <span class="dot"></span>
-              <div class="feature-item-body">
-                <div class="feature-item-title">Diagram / Code Toggle</div>
-                <p class="feature-item-desc">Toggle between the rendered diagram and its raw Mermaid source code to inspect or copy the definition.</p>
-              </div>
-            </li>
-            <li>
-              <span class="dot"></span>
-              <div class="feature-item-body">
-                <div class="feature-item-title">Pan &amp; Zoom Controls</div>
-                <p class="feature-item-desc">Zoom in and out with buttons or scroll, and pan across large diagrams with click-and-drag or touch gestures.</p>
-              </div>
-            </li>
-            <li>
-              <span class="dot"></span>
-              <div class="feature-item-body">
-                <div class="feature-item-title">Multiple Built-in Examples</div>
-                <p class="feature-item-desc">Four complete C4 walkthroughs ship out of the box: Online Banking, E-Commerce, Ride-Sharing, and Tooda (the tool itself), each across all four C4 levels.</p>
-              </div>
-            </li>
-            <li>
-              <span class="dot"></span>
-              <div class="feature-item-body">
-                <div class="feature-item-title">Bookmarkable URLs</div>
-                <p class="feature-item-desc">The selected example and active tab level are encoded in the URL (e.g. <code class="text-indigo-300">?example=banking#level1</code>), making every view shareable and supporting browser back/forward.</p>
-              </div>
-            </li>
-          </ul>
-          <div class="mt-4 flex flex-wrap gap-2">
-            <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">Examples:</span>
-            <a href="/Tooda/c4?example=banking" class="cta-link">🏦 Online Banking</a>
-            <a href="/Tooda/c4?example=ecommerce" class="cta-link">🛒 E-Commerce</a>
-            <a href="/Tooda/c4?example=ridesharing" class="cta-link">🚗 Ride-Sharing</a>
-            <a href="/Tooda/c4?example=tooda" class="cta-link">🗂️ Tooda</a>
-          </div>
-        </section>
-
-        <!-- Freehand Diagrams -->
-        <section class="feature-section" aria-labelledby="excalidraw-heading">
-          <div class="section-heading">
-            <div class="section-icon">✏️</div>
-            <h2 id="excalidraw-heading" class="section-title">Freehand Diagrams</h2>
-          </div>
-          <ul class="feature-list">
-            <li>
-              <span class="dot"></span>
-              <div class="feature-item-body">
-                <div class="feature-item-title">Excalidraw Integration</div>
-                <p class="feature-item-desc">Diagrams are rendered with Excalidraw, giving them a hand-drawn, sketch-like aesthetic suited for informal architecture discussions.</p>
-              </div>
-            </li>
-            <li>
-              <span class="dot"></span>
-              <div class="feature-item-body">
-                <div class="feature-item-title">All Four C4 Levels</div>
-                <p class="feature-item-desc">The Healthcare Platform example is illustrated across all four C4 levels using the freehand style with tabbed level navigation.</p>
-              </div>
-            </li>
-            <li>
-              <span class="dot"></span>
-              <div class="feature-item-body">
-                <div class="feature-item-title">View / Edit Toggle</div>
-                <p class="feature-item-desc">Switch between a read-only view mode and the full Excalidraw editor where you can freely modify and annotate the diagrams.</p>
-              </div>
-            </li>
-            <li>
-              <span class="dot"></span>
-              <div class="feature-item-body">
-                <div class="feature-item-title">JSON Export</div>
-                <p class="feature-item-desc">Export diagram element data as JSON directly from the editor, making it easy to save or share the raw diagram definition.</p>
-              </div>
-            </li>
-          </ul>
-          <div class="mt-4 flex flex-wrap gap-2">
-            <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">Example:</span>
-            <a href="/Tooda/excalidraw" class="cta-link">🏥 Healthcare Platform</a>
-          </div>
-        </section>
-
-        <!-- API Explorer -->
-        <section class="feature-section" aria-labelledby="api-heading">
-          <div class="section-heading">
-            <div class="section-icon">🔌</div>
-            <h2 id="api-heading" class="section-title">API Explorer</h2>
-          </div>
-          <ul class="feature-list">
-            <li>
-              <span class="dot"></span>
-              <div class="feature-item-body">
-                <div class="feature-item-title">Swagger UI</div>
-                <p class="feature-item-desc">An interactive Swagger UI lets you browse and test every API endpoint without leaving the browser.</p>
-              </div>
-            </li>
-            <li>
-              <span class="dot"></span>
-              <div class="feature-item-body">
-                <div class="feature-item-title">OpenAPI 3.0 Specification</div>
-                <p class="feature-item-desc">All endpoints are described by a fully-typed OpenAPI 3.0 specification defined in TypeScript, serving as both documentation and contract.</p>
-              </div>
-            </li>
-            <li>
-              <span class="dot"></span>
-              <div class="feature-item-body">
-                <div class="feature-item-title">C4 Diagram Endpoints</div>
-                <p class="feature-item-desc">Static JSON endpoints serve the full C4 diagram data for each example system: Online Banking, E-Commerce, Ride-Sharing, and Tooda.</p>
-              </div>
-            </li>
-            <li>
-              <span class="dot"></span>
-              <div class="feature-item-body">
-                <div class="feature-item-title">Excalidraw Endpoints</div>
-                <p class="feature-item-desc">Separate JSON endpoints expose the Healthcare Platform Excalidraw element arrays for each of the four C4 levels.</p>
-              </div>
-            </li>
-            <li>
-              <span class="dot"></span>
-              <div class="feature-item-body">
-                <div class="feature-item-title">API Spec Linting</div>
-                <p class="feature-item-desc">The OpenAPI specification is automatically validated with Stoplight Spectral on every build, enforcing correctness and consistency.</p>
-              </div>
-            </li>
-          </ul>
-          <div class="mt-4 flex flex-wrap gap-2">
-            <a href="/Tooda/api" class="cta-link">⚡ Open API Explorer</a>
-          </div>
-        </section>
-
-        <!-- Platform Features -->
-        <section class="feature-section" aria-labelledby="platform-heading">
-          <div class="section-heading">
-            <div class="section-icon">⚙️</div>
-            <h2 id="platform-heading" class="section-title">Platform</h2>
-          </div>
-          <ul class="feature-list">
-            <li>
-              <span class="dot"></span>
-              <div class="feature-item-body">
-                <div class="feature-item-title">No Install Required</div>
-                <p class="feature-item-desc">Tooda runs entirely in the browser as a static site — no accounts, no servers, and no installation needed.</p>
-              </div>
-            </li>
-            <li>
-              <span class="dot"></span>
-              <div class="feature-item-body">
-                <div class="feature-item-title">Dark Theme UI</div>
-                <p class="feature-item-desc">A polished dark interface with animated gradient backgrounds, glassmorphism cards, and indigo–violet accent colors throughout.</p>
-              </div>
-            </li>
-            <li>
-              <span class="dot"></span>
-              <div class="feature-item-body">
-                <div class="feature-item-title">Astro Static Site Generation</div>
-                <p class="feature-item-desc">Built with Astro, delivering minimal JavaScript overhead. React is used only where interactivity is needed (Excalidraw).</p>
-              </div>
-            </li>
-            <li>
-              <span class="dot"></span>
-              <div class="feature-item-body">
-                <div class="feature-item-title">Prefetched Navigation</div>
-                <p class="feature-item-desc">All internal links are prefetched on viewport entry, making page transitions feel instant.</p>
-              </div>
-            </li>
-            <li>
-              <span class="dot"></span>
-              <div class="feature-item-body">
-                <div class="feature-item-title">Auto-Deployment via GitHub Actions</div>
-                <p class="feature-item-desc">Every push to the main branch automatically builds and deploys the site to GitHub Pages via a GitHub Actions CI/CD workflow.</p>
-              </div>
-            </li>
-            <li>
-              <span class="dot"></span>
-              <div class="feature-item-body">
-                <div class="feature-item-title">Automated Testing with Playwright</div>
-                <p class="feature-item-desc">A full Playwright test suite covers every page — titles, headings, navigation links, and performance — run automatically in CI.</p>
-              </div>
-            </li>
-            <li>
-              <span class="dot"></span>
-              <div class="feature-item-body">
-                <div class="feature-item-title">TypeScript Throughout</div>
-                <p class="feature-item-desc">The entire codebase — pages, components, utilities, and the OpenAPI spec — is written in strict TypeScript for type-safety.</p>
-              </div>
-            </li>
-            <li>
-              <span class="dot"></span>
-              <div class="feature-item-body">
-                <div class="feature-item-title">Open Source</div>
-                <p class="feature-item-desc">The full source code is available on GitHub under the MIT license — free to use, fork, and extend.</p>
-              </div>
-            </li>
-          </ul>
-        </section>
-
+        <div class="canvas-wrapper">
+          <FeaturesVisualization3D client:only="react" />
+          <p class="hint">Drag to rotate · Tap a node to navigate</p>
+        </div>
       </main>
 
-      <!-- 3D Visualization Banner -->
-      <div class="feature-section">
-        <div class="rounded-2xl border border-indigo-500/30 bg-indigo-500/10 px-6 py-5 text-center">
-          <p class="mb-1 text-sm font-semibold uppercase tracking-widest text-indigo-300">New</p>
-          <p class="mb-4 text-base text-slate-300">See all features laid out in an interactive 3D scene — hover and click to explore.</p>
-          <a href="/Tooda/features-3d" class="cta-link">🔮 View 3D Visualization →</a>
-        </div>
-      </div>
-
-      <!-- Footer -->
       <footer class="pb-10 text-center">
         <a href="/Tooda/" class="back-btn">← Back to Home</a>
       </footer>
