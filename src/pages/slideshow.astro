@@ -198,6 +198,14 @@
         left: 0;
         right: 0;
         z-index: 20;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+      }
+
+      body.deck-fullscreen .slide-nav.nav-active {
+        opacity: 1;
+        pointer-events: auto;
       }
 
       .slide-counter {
@@ -605,6 +613,28 @@
         deck.sync();
       }
 
+      // ── Fullscreen nav auto-hide ──────────────────────────────────────────────
+      const slideNav = document.querySelector<HTMLElement>('.slide-nav')!;
+      let navHideTimer: ReturnType<typeof setTimeout> | null = null;
+      const NAV_VISIBLE_MS = 3000;
+      // Minimum interval between timer resets (throttles mousemove handler)
+      const NAV_RESET_THROTTLE_MS = 500;
+      let lastNavReset = 0;
+
+      function showNavTemporarily(force = false): void {
+        if (!document.body.classList.contains('deck-fullscreen')) return;
+        const now = Date.now();
+        // Skip redundant resets while nav is already visible, unless forced
+        if (!force && slideNav.classList.contains('nav-active') && now - lastNavReset < NAV_RESET_THROTTLE_MS) return;
+        lastNavReset = now;
+        slideNav.classList.add('nav-active');
+        if (navHideTimer !== null) clearTimeout(navHideTimer);
+        navHideTimer = setTimeout(() => {
+          slideNav.classList.remove('nav-active');
+          navHideTimer = null;
+        }, NAV_VISIBLE_MS);
+      }
+
       function updateFullscreenBtn(): void {
         const isFs = isInFullscreen() || pageContent.classList.contains('pseudo-fullscreen');
         document.body.classList.toggle('deck-fullscreen', isFs);
@@ -613,6 +643,14 @@
         iconEl.innerHTML = isFs ? ICON_COMPRESS : ICON_EXPAND;
         labelEl.textContent = isFs ? LABEL_EXIT : LABEL_ENTER;
         btnFullscreen.setAttribute('aria-label', isFs ? ARIA_EXIT : ARIA_ENTER);
+        if (isFs) {
+          // Briefly show nav on fullscreen enter so user knows controls are available
+          showNavTemporarily(true);
+        } else {
+          // Immediately restore nav visibility when exiting fullscreen
+          slideNav.classList.remove('nav-active');
+          if (navHideTimer !== null) { clearTimeout(navHideTimer); navHideTimer = null; }
+        }
       }
 
       btnFullscreen.addEventListener('click', toggleFullscreen);
@@ -621,8 +659,14 @@
       // Initialise button icon/label immediately so the SVG is set before user interaction.
       updateFullscreenBtn();
 
+      // Reveal nav on any user activity while in fullscreen
+      document.addEventListener('mousemove', showNavTemporarily);
+      document.addEventListener('touchstart', showNavTemporarily, { passive: true });
+
       // Document-level keyboard navigation so arrow keys work regardless of focus
       document.addEventListener('keydown', (e: KeyboardEvent) => {
+        // Only show nav on the initial keydown, not while a key is held
+        if (!e.repeat) showNavTemporarily();
         if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
           e.preventDefault();
           deck.next();
