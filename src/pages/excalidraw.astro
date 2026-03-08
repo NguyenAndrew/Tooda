@@ -224,7 +224,15 @@ import {
     </section>
 
     <script src="/Tooda/mermaid.min.js" is:inline></script>
+    <script type="module">
+      const { default: elkLayouts } = await import('/Tooda/mermaid-layout-elk.esm.min.mjs');
+      mermaid.registerLayoutLoaders(elkLayouts);
+      window._resolveElk();
+    </script>
     <script is:inline>
+      // ELK layout engine is loaded asynchronously; all mermaid.run() calls wait for it.
+      window._elkReady = new Promise(resolve => { window._resolveElk = resolve; });
+
       mermaid.initialize({ startOnLoad: false, theme: 'default' });
 
       const tabs = document.querySelectorAll('.tab-btn');
@@ -262,7 +270,7 @@ import {
             );
             if (unrendered.length > 0) {
               unrendered.forEach(el => el.removeAttribute('data-processed'));
-              mermaid.run({ nodes: unrendered });
+              window._elkReady.then(() => mermaid.run({ nodes: unrendered }));
             }
           }
         }
@@ -298,7 +306,7 @@ import {
             );
             if (unrendered.length > 0) {
               unrendered.forEach(el => el.removeAttribute('data-processed'));
-              mermaid.run({ nodes: unrendered });
+              window._elkReady.then(() => mermaid.run({ nodes: unrendered }));
             }
           }
         }
