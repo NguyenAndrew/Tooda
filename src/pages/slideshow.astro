@@ -159,65 +159,6 @@
         @apply cursor-not-allowed opacity-30;
       }
 
-      /* ── Fullscreen button accent ── */
-      #btn-fullscreen {
-        border-color: rgb(99 102 241 / 0.4);
-        background: linear-gradient(135deg, rgb(99 102 241 / 0.15) 0%, rgb(139 92 246 / 0.15) 100%);
-        @apply w-full justify-center text-indigo-300 sm:w-auto;
-      }
-
-      @media (hover: hover) {
-        #btn-fullscreen:hover {
-          border-color: rgb(99 102 241 / 0.6);
-          background: linear-gradient(135deg, rgb(99 102 241 / 0.3) 0%, rgb(139 92 246 / 0.3) 100%);
-          @apply text-indigo-100;
-        }
-      }
-
-      /* ── CSS pseudo-fullscreen fallback for iOS / unsupported browsers ── */
-      .page-content.pseudo-fullscreen {
-        position: fixed;
-        inset: 0;
-        z-index: 9999;
-        overflow: hidden;
-        background: #0f172a;
-      }
-
-      .page-content.pseudo-fullscreen .reveal {
-        height: 100%;
-      }
-
-      /* ── Fullscreen deck mode: slides fill the entire viewport ── */
-      body.deck-fullscreen {
-        overflow: hidden;
-      }
-
-      body.deck-fullscreen nav.back {
-        display: none;
-      }
-
-      body.deck-fullscreen .reveal {
-        height: 100dvh;
-      }
-
-      body.deck-fullscreen .slide-nav {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        z-index: 20;
-        padding-bottom: env(safe-area-inset-bottom);
-        padding-left: env(safe-area-inset-left);
-        padding-right: env(safe-area-inset-right);
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity 0.3s ease;
-      }
-
-      body.deck-fullscreen .slide-nav.nav-active {
-        opacity: 1;
-        pointer-events: auto;
-      }
 
       .slide-counter {
         @apply text-sm font-semibold text-slate-400;
@@ -276,10 +217,8 @@
           padding: 4px 16px 2px;
         }
 
-        /* In non-fullscreen landscape: hide the Back link so the reveal gets
-           the full viewport height (same behaviour as fullscreen mode).
-           Users can still use the browser back gesture or exit fullscreen. */
-        body:not(.deck-fullscreen) nav.back {
+        /* In landscape: hide the Back link so the reveal gets the full viewport height. */
+        nav.back {
           display: none;
         }
 
@@ -357,11 +296,6 @@
           @apply px-3 py-1.5 text-xs;
         }
 
-        /* In fullscreen the reveal must still cover 100 dvh */
-        body.deck-fullscreen .reveal {
-          height: 100dvh !important;
-          flex: none;
-        }
       }
     </style>
   </head>
@@ -615,7 +549,6 @@
 
           <button id="btn-next" class="nav-btn" aria-label="Next slide">Next →</button>
         </div>
-        <button id="btn-fullscreen" class="nav-btn" aria-label="Enter Full Screen" title="Full screen (F)"><span class="fs-icon" aria-hidden="true"></span><span class="fs-label">Full Screen</span></button>
       </nav>
 
     </div>
@@ -686,131 +619,6 @@
         dot.addEventListener('click', () => { deck.slide(i); });
       });
 
-      // ── Fullscreen ──────────────────────────────────────────────────────────
-      const btnFullscreen = document.getElementById('btn-fullscreen') as HTMLButtonElement;
-      const pageContent = document.querySelector<HTMLElement>('.page-content')!;
-
-      const ICON_EXPAND = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>`;
-      const ICON_COMPRESS = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="10" y1="14" x2="3" y2="21"/><line x1="21" y1="3" x2="14" y2="10"/></svg>`;
-      const ARIA_ENTER = 'Enter Full Screen';
-      const ARIA_EXIT = 'Exit Full Screen';
-      const LABEL_ENTER = 'Full Screen';
-      const LABEL_EXIT = 'Exit Full Screen';
-
-      interface WebkitDocument extends Document {
-        webkitFullscreenEnabled?: boolean;
-        webkitFullscreenElement?: Element | null;
-        webkitExitFullscreen?(): void;
-      }
-
-      interface WebkitHTMLElement extends HTMLElement {
-        webkitRequestFullscreen?(): void;
-      }
-
-      function supportsNativeFullscreen(): boolean {
-        return !!(document.fullscreenEnabled || (document as WebkitDocument).webkitFullscreenEnabled);
-      }
-
-      function isInFullscreen(): boolean {
-        return !!(document.fullscreenElement || (document as WebkitDocument).webkitFullscreenElement);
-      }
-
-      // ── Screen orientation helpers ───────────────────────────────────────────
-      // Lock to landscape on mobile when entering fullscreen so the deck fills
-      // the screen. Silently ignored on desktop and iOS (which lacks the API).
-      function lockLandscape(): void {
-        try {
-          // .catch() handles promise rejection (e.g. permission denied)
-          screen.orientation?.lock('landscape').catch(() => {});
-        } catch {
-          // Screen Orientation API not available (e.g. desktop, iOS Safari) – no-op
-        }
-      }
-
-      function unlockOrientation(): void {
-        try {
-          screen.orientation?.unlock();
-        } catch {
-          // Screen Orientation API not available – no-op
-        }
-      }
-
-      function toggleFullscreen(): void {
-        if (supportsNativeFullscreen()) {
-          if (!isInFullscreen()) {
-            const el = document.documentElement as WebkitHTMLElement;
-            if (el.requestFullscreen) {
-              el.requestFullscreen().catch(() => {});
-            } else if (el.webkitRequestFullscreen) {
-              el.webkitRequestFullscreen();
-            }
-          } else {
-            const doc = document as WebkitDocument;
-            if (doc.exitFullscreen) {
-              doc.exitFullscreen().catch(() => {});
-            } else if (doc.webkitExitFullscreen) {
-              doc.webkitExitFullscreen();
-            }
-          }
-          return;
-        }
-        // Fallback for browsers without Fullscreen API (e.g. iOS Safari):
-        // toggle a CSS class that makes the page content cover the full viewport.
-        pageContent.classList.toggle('pseudo-fullscreen');
-        updateFullscreenBtn();
-        deck.sync();
-      }
-
-      // ── Fullscreen nav auto-hide ──────────────────────────────────────────────
-      const slideNav = document.querySelector<HTMLElement>('.slide-nav')!;
-      let navHideTimer: ReturnType<typeof setTimeout> | null = null;
-      const NAV_VISIBLE_MS = 3000;
-      // Minimum interval between timer resets (throttles mousemove handler)
-      const NAV_RESET_THROTTLE_MS = 500;
-      let lastNavReset = 0;
-
-      function showNavTemporarily(force = false): void {
-        if (!document.body.classList.contains('deck-fullscreen')) return;
-        const now = Date.now();
-        // Skip redundant resets while nav is already visible, unless forced
-        if (!force && slideNav.classList.contains('nav-active') && now - lastNavReset < NAV_RESET_THROTTLE_MS) return;
-        lastNavReset = now;
-        slideNav.classList.add('nav-active');
-        if (navHideTimer !== null) clearTimeout(navHideTimer);
-        navHideTimer = setTimeout(() => {
-          slideNav.classList.remove('nav-active');
-          navHideTimer = null;
-        }, NAV_VISIBLE_MS);
-      }
-
-      function updateFullscreenBtn(): void {
-        const isFs = isInFullscreen() || pageContent.classList.contains('pseudo-fullscreen');
-        document.body.classList.toggle('deck-fullscreen', isFs);
-        const iconEl = btnFullscreen.querySelector('.fs-icon') as HTMLElement;
-        const labelEl = btnFullscreen.querySelector('.fs-label') as HTMLElement;
-        iconEl.innerHTML = isFs ? ICON_COMPRESS : ICON_EXPAND;
-        labelEl.textContent = isFs ? LABEL_EXIT : LABEL_ENTER;
-        btnFullscreen.setAttribute('aria-label', isFs ? ARIA_EXIT : ARIA_ENTER);
-        if (isFs) {
-          // Lock to landscape so the deck fills a mobile screen in fullscreen
-          lockLandscape();
-          // Briefly show nav on fullscreen enter so user knows controls are available
-          showNavTemporarily(true);
-        } else {
-          // Restore natural orientation when exiting fullscreen
-          unlockOrientation();
-          // Immediately restore nav visibility when exiting fullscreen
-          slideNav.classList.remove('nav-active');
-          if (navHideTimer !== null) { clearTimeout(navHideTimer); navHideTimer = null; }
-        }
-      }
-
-      btnFullscreen.addEventListener('click', toggleFullscreen);
-      document.addEventListener('fullscreenchange', () => { updateFullscreenBtn(); deck.sync(); });
-      document.addEventListener('webkitfullscreenchange', () => { updateFullscreenBtn(); deck.sync(); });
-      // Initialise button icon/label immediately so the SVG is set before user interaction.
-      updateFullscreenBtn();
-
       // ── Landscape slide alignment ─────────────────────────────────────────────
       // Re-apply the center setting whenever the device is rotated so that
       // switching between portrait and landscape is seamless.
@@ -820,22 +628,14 @@
       }
       mobileLandscapeQuery.addEventListener('change', updateSlideAlignment);
 
-      // Reveal nav on any user activity while in fullscreen
-      document.addEventListener('mousemove', showNavTemporarily);
-      document.addEventListener('touchstart', showNavTemporarily, { passive: true });
-
       // Document-level keyboard navigation so arrow keys work regardless of focus
       document.addEventListener('keydown', (e: KeyboardEvent) => {
-        // Only show nav on the initial keydown, not while a key is held
-        if (!e.repeat) showNavTemporarily();
         if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
           e.preventDefault();
           deck.next();
         } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
           e.preventDefault();
           deck.prev();
-        } else if (e.key === 'f' || e.key === 'F') {
-          toggleFullscreen();
         }
       });
 
