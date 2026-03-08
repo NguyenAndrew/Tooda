@@ -39,15 +39,24 @@ const level1Meta: LevelMeta = {
   },
   boundaries: [
     {
+      id: 'hp',
+      label: 'Healthcare Platform',
+      type: 'System_Boundary',
+      nodeIds: ['l1-platform'],
+    },
+    {
       id: 'ext',
       label: 'External Systems',
       type: 'Enterprise_Boundary',
       nodeIds: ['l1-pharmacy', 'l1-insurance', 'l1-lab'],
     },
   ],
-  // c4ShapeInRow=3 keeps the three persons in their own row so Healthcare
-  // Platform lands alone in row 2, with External Systems beneath in row 3.
-  layoutConfig: { c4ShapeInRow: 3, c4BoundaryInRow: 1 },
+  // c4ShapeInRow=4: the three persons fill GLOBAL row 1 (cnt 1-3), then the
+  // System_Boundary for Healthcare Platform gets cnt=4 which does NOT exceed 4
+  // so platform lands in HP row 1.  The Enterprise_Boundary then starts with
+  // cnt=5 which DOES exceed 4, triggering a row-reset so cnt restarts at 1;
+  // pharmacy(2), insurance(3), lab(4) all fit in ext row 1 — no overlap.
+  layoutConfig: { c4ShapeInRow: 4, c4BoundaryInRow: 1 },
 };
 
 // ── Level 2 – Container ───────────────────────────────────────────────────────
@@ -102,10 +111,12 @@ const level3Meta: LevelMeta = {
       nodeIds: ['l3-ctrl', 'l3-svc', 'l3-repo', 'l3-auth', 'l3-audit', 'l3-cache'],
     },
   ],
-  // c4ShapeInRow=3 arranges the 6 components inside the boundary in two rows
-  // of three (ctrl, svc, repo | auth, audit, cache), reflecting the two-column
-  // layout visible in the Excalidraw diagram.
-  layoutConfig: { c4ShapeInRow: 3, c4BoundaryInRow: 1 },
+  // c4ShapeInRow=4: with cnt≈1 when the EMR boundary begins, ctrl(2)+svc(3)+
+  // repo(4) all fit in boundary row 1 — repo shares the top row with ctrl and
+  // svc so the repo→db arrow exits through the boundary top edge (well to the
+  // right of ctrl/svc) and never passes through them.  auth(1)+audit(2)+
+  // cache(3) fill row 2 with matching columns, giving clean vertical arrows.
+  layoutConfig: { c4ShapeInRow: 4, c4BoundaryInRow: 1 },
 };
 
 // ── Level 4 – Code ────────────────────────────────────────────────────────────
