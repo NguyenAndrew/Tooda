@@ -2,7 +2,8 @@ export const diagrams = {
   banking: {
     title: 'Online Banking System',
     description: 'An Online Banking System illustrated across all 4 levels of the C4 model.',
-    level1: `C4Context
+    level1: `%%{init: {"layout": "elk"}}%%
+C4Context
   title System Context – Online Banking System
 
   Person(customer, "Personal Banking Customer", "A customer of the bank with personal bank accounts.")
@@ -17,7 +18,8 @@ export const diagrams = {
   Rel(staff, onlineBanking, "Manages customer accounts and support requests using")
   Rel(onlineBanking, email, "Sends e-mail notifications using")
   Rel(onlineBanking, mainframe, "Gets account and transaction data from")`,
-    level2: `C4Container
+    level2: `%%{init: {"layout": "elk"}}%%
+C4Container
   title Container – Online Banking System
 
   Person(customer, "Personal Banking Customer", "A customer of the bank with personal bank accounts.")
@@ -41,7 +43,8 @@ export const diagrams = {
   Rel(apiApp, db, "Reads/writes", "SQL")
   Rel(apiApp, email, "Sends emails using", "SMTP")
   Rel(apiApp, mainframe, "Reads/writes account data", "XML/HTTPS")`,
-    level3: `C4Component
+    level3: `%%{init: {"layout": "elk"}}%%
+C4Component
   title Component – API Application
 
   Container_Ext(spa, "Single-Page App", "JavaScript", "Front-end delivered by the web application.")
@@ -130,7 +133,8 @@ export const diagrams = {
   ecommerce: {
     title: 'E-Commerce Platform',
     description: 'An E-Commerce Platform illustrated across all 4 levels of the C4 model.',
-    level1: `C4Context
+    level1: `%%{init: {"layout": "elk"}}%%
+C4Context
   title System Context – E-Commerce Platform
 
   Person(customer, "Customer", "A person who browses products and places orders.")
@@ -147,7 +151,8 @@ export const diagrams = {
   Rel(ecommerce, payment, "Processes payments via")
   Rel(ecommerce, shipping, "Dispatches orders via")
   Rel(ecommerce, email, "Sends notifications using")`,
-    level2: `C4Container
+    level2: `%%{init: {"layout": "elk"}}%%
+C4Container
   title Container – E-Commerce Platform
 
   Person(customer, "Customer", "A person who shops online.")
@@ -180,7 +185,8 @@ export const diagrams = {
   Rel(queue, payment, "Triggers payment via")
   Rel(queue, shipping, "Triggers shipment via")
   Rel(queue, email, "Sends notifications via")`,
-    level3: `C4Component
+    level3: `%%{init: {"layout": "elk"}}%%
+C4Component
   title Component – Order Service
 
   Container_Ext(apiGateway, "API Gateway", "Node.js / Express", "Routes incoming requests.")
@@ -257,7 +263,8 @@ export const diagrams = {
   ridesharing: {
     title: 'Ride-Sharing App',
     description: 'A Ride-Sharing App illustrated across all 4 levels of the C4 model.',
-    level1: `C4Context
+    level1: `%%{init: {"layout": "elk"}}%%
+C4Context
   title System Context – Ride-Sharing App
 
   Person(rider, "Rider", "A passenger who requests and pays for rides.")
@@ -274,7 +281,8 @@ export const diagrams = {
   Rel(ridesharing, maps, "Gets routes and ETAs from")
   Rel(ridesharing, payment, "Processes fares via")
   Rel(ridesharing, sms, "Sends SMS notifications using")`,
-    level2: `C4Container
+    level2: `%%{init: {"layout": "elk"}}%%
+C4Container
   title Container – Ride-Sharing App
 
   Person(rider, "Rider", "Requests a ride.")
@@ -304,7 +312,8 @@ export const diagrams = {
   Rel(apiServer, maps, "Gets routes from", "HTTPS")
   Rel(apiServer, payment, "Processes fares via", "HTTPS")
   Rel(apiServer, sms, "Sends notifications via", "HTTPS")`,
-    level3: `C4Component
+    level3: `%%{init: {"layout": "elk"}}%%
+C4Component
   title Component – API Server
 
   Container_Ext(riderApp, "Rider App", "React Native", "Mobile app for riders.")
@@ -385,7 +394,8 @@ export const diagrams = {
   tooda: {
     title: 'Tooda',
     description: 'Tooda – a browser-based architecture diagramming tool – illustrated across all 4 levels of the C4 model.',
-    level1: `C4Context
+    level1: `%%{init: {"layout": "elk"}}%%
+C4Context
   title System Context – Tooda
 
   Person(developer, "Developer / Architect", "Creates and maintains software architecture diagrams.")
@@ -400,7 +410,8 @@ export const diagrams = {
   Rel(tooda, githubPages, "Is hosted and served by")
   Rel(tooda, mermaid, "Renders C4 diagrams with")
   Rel(tooda, excalidraw, "Renders freehand diagrams with")`,
-    level2: `C4Container
+    level2: `%%{init: {"layout": "elk"}}%%
+C4Container
   title Container – Tooda
 
   Person(developer, "Developer / Architect", "Creates and maintains architecture diagrams.")
@@ -423,7 +434,8 @@ export const diagrams = {
   Rel(webApp, apiPage, "Routes /api to")
   Rel(c4Page, mermaidLib, "Renders diagrams with")
   Rel(excalidrawPage, excalidrawLib, "Renders diagrams with")`,
-    level3: `C4Component
+    level3: `%%{init: {"layout": "elk"}}%%
+C4Component
   title Component – C4 Viewer
 
   Person_Ext(developer, "Developer / Architect", "Interacts with the C4 Viewer.")

@@ -284,6 +284,11 @@ import { diagrams } from '../data/c4/diagrams';
     </section>
 
     <script src="/Tooda/mermaid.min.js" is:inline></script>
+    <script type="module">
+      const { default: elkLayouts } = await import('/Tooda/mermaid-layout-elk.esm.min.mjs');
+      mermaid.registerLayoutLoaders(elkLayouts);
+      window._resolveElk();
+    </script>
     <script define:vars={{ diagrams }} is:inline>
       const logger = (() => {
         const prefix = 'C4';
@@ -298,8 +303,15 @@ import { diagrams } from '../data/c4/diagrams';
 
       logger.info('Initializing Mermaid');
       mermaid.initialize({ startOnLoad: false, theme: 'default' });
-      logger.info('Rendering initial diagrams');
-      mermaid.run({ nodes: document.querySelectorAll('.tab-panel.active .mermaid') });
+
+      // ELK layout engine is loaded asynchronously; all mermaid.run() calls wait for it.
+      window._elkReady = new Promise(resolve => { window._resolveElk = resolve; });
+
+      logger.info('Deferring initial diagram render until ELK layout engine is ready');
+      window._elkReady.then(() => {
+        logger.info('Rendering initial diagrams');
+        mermaid.run({ nodes: document.querySelectorAll('.tab-panel.active .mermaid') });
+      });
 
       // View toggle state – declared first so activateTab can reference it
       let currentView = 'diagram';
@@ -331,7 +343,7 @@ import { diagrams } from '../data/c4/diagrams';
             );
             if (unrendered.length > 0) {
               unrendered.forEach(el => el.removeAttribute('data-processed'));
-              mermaid.run({ nodes: unrendered });
+              window._elkReady.then(() => mermaid.run({ nodes: unrendered }));
             }
           }
         }
@@ -398,7 +410,7 @@ import { diagrams } from '../data/c4/diagrams';
             );
             if (unrendered.length > 0) {
               unrendered.forEach(el => el.removeAttribute('data-processed'));
-              mermaid.run({ nodes: unrendered });
+              window._elkReady.then(() => mermaid.run({ nodes: unrendered }));
             }
             if (isEditMode) updatePositionsPanel(activePanel);
           }
@@ -452,7 +464,7 @@ import { diagrams } from '../data/c4/diagrams';
           const activePanel = document.querySelector('.tab-panel.active');
           if (activePanel) {
             const el = activePanel.querySelector('.mermaid');
-            if (el) mermaid.run({ nodes: [el] });
+            if (el) window._elkReady.then(() => mermaid.run({ nodes: [el] }));
           }
         }
       }
