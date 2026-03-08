@@ -105,6 +105,34 @@ test.describe('Slideshow page', () => {
     await expect(btn).toContainText('Full Screen');
   });
 
+  test('fullscreen button toggles deck-fullscreen class on body and updates label', async ({ page }) => {
+    await page.goto('/Tooda/slideshow');
+
+    // Activate pseudo-fullscreen by disabling native API then clicking
+    await page.evaluate(() => {
+      Object.defineProperty(document, 'fullscreenEnabled', { value: false, writable: true });
+      (document as any).webkitFullscreenEnabled = false;
+    });
+
+    await page.locator('#btn-fullscreen').click();
+
+    // body should have deck-fullscreen class
+    await expect(page.locator('body')).toHaveClass(/deck-fullscreen/);
+    // .reveal should fill the viewport height
+    const revealHeight = await page.locator('.reveal').evaluate((el) => el.getBoundingClientRect().height);
+    const viewportHeight = await page.evaluate(() => window.innerHeight);
+    expect(revealHeight).toBeCloseTo(viewportHeight, -1);
+    // button label should change to Exit
+    await expect(page.locator('#btn-fullscreen')).toHaveAttribute('aria-label', 'Exit Full Screen');
+    // back nav should be hidden
+    await expect(page.locator('nav.back')).toBeHidden();
+
+    // Click again to exit
+    await page.locator('#btn-fullscreen').click();
+    await expect(page.locator('body')).not.toHaveClass(/deck-fullscreen/);
+    await expect(page.locator('#btn-fullscreen')).toHaveAttribute('aria-label', 'Enter Full Screen');
+  });
+
   test('restores slide from URL hash on load', async ({ page }) => {
     await page.goto('/Tooda/slideshow#slide-4');
     await expect(page.getByRole('heading', { name: 'API Explorer' })).toBeVisible();
