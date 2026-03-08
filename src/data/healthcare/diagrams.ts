@@ -45,6 +45,9 @@ const level1Meta: LevelMeta = {
       nodeIds: ['l1-pharmacy', 'l1-insurance', 'l1-lab'],
     },
   ],
+  // c4ShapeInRow=3 keeps the three persons in their own row so Healthcare
+  // Platform lands alone in row 2, with External Systems beneath in row 3.
+  layoutConfig: { c4ShapeInRow: 3, c4BoundaryInRow: 1 },
 };
 
 // ── Level 2 – Container ───────────────────────────────────────────────────────

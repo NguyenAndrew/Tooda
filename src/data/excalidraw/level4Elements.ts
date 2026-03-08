@@ -64,7 +64,7 @@ function makeBox(id: string, x: number, y: number, w: number, h: number, text: s
   ];
 }
 
-function makeArrow(id: string, x: number, y: number, dx: number, dy: number, label?: string) {
+function makeArrow(id: string, fromId: string, toId: string, x: number, y: number, dx: number, dy: number, label?: string) {
   const elements = [
     {
       id,
@@ -93,8 +93,8 @@ function makeArrow(id: string, x: number, y: number, dx: number, dy: number, lab
       locked: false,
       points: [[0, 0], [dx, dy]],
       lastCommittedPoint: null,
-      startBinding: null,
-      endBinding: null,
+      startBinding: { elementId: fromId, focus: 0, gap: 1 },
+      endBinding: { elementId: toId, focus: 0, gap: 1 },
       startArrowhead: null,
       endArrowhead: 'arrow' as const,
       elbowed: false,
@@ -165,9 +165,9 @@ export const level4Elements = [
   ...makeBox('l4-cache', 560, 280, 220, 100,
     'CacheClient\n─────────────────\n+get(key)\n+set(key, value)', '#fce7f3'),
   // Arrows
-  ...makeArrow('l4-a1', 260, 130, 40,    0, 'uses'),
-  ...makeArrow('l4-a2', 520, 130, 40,    0, 'uses'),
-  ...makeArrow('l4-a3', 410, 200, 0,    80, 'returns'),
-  ...makeArrow('l4-a4', 670, 200, 0,    80, 'uses'),
-  ...makeArrow('l4-a5', 670, 200, -260, 80, 'returns'),
+  ...makeArrow('l4-a1', 'l4-ctrl',  'l4-svc',   260, 130, 40,    0, 'uses'),
+  ...makeArrow('l4-a2', 'l4-svc',   'l4-repo',  520, 130, 40,    0, 'uses'),
+  ...makeArrow('l4-a3', 'l4-svc',   'l4-model', 410, 200, 0,    80, 'returns'),
+  ...makeArrow('l4-a4', 'l4-repo',  'l4-cache', 670, 200, 0,    80, 'uses'),
+  ...makeArrow('l4-a5', 'l4-repo',  'l4-model', 670, 200, -260, 80, 'returns'),
 ];
