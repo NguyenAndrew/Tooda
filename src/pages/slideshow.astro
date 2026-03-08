@@ -253,6 +253,116 @@
       .code-block {
         @apply rounded-xl border border-slate-700/60 bg-slate-900 p-4 font-mono text-sm text-slate-300;
       }
+
+      /* ── Mobile landscape: flex column so the deck fills every pixel ── */
+      @media (orientation: landscape) and (max-height: 500px) {
+        /* Prevent the body from growing taller than the viewport */
+        body {
+          height: 100dvh;
+          overflow: hidden;
+        }
+
+        /* Stack children into a full-height flex column */
+        .page-content {
+          display: flex;
+          flex-direction: column;
+          height: 100%;
+          overflow: hidden;
+        }
+
+        /* Compact back nav */
+        nav.back {
+          flex: 0 0 auto;
+          padding: 4px 16px 2px;
+        }
+
+        /* In non-fullscreen landscape: hide the Back link so the reveal gets
+           the full viewport height (same behaviour as fullscreen mode).
+           Users can still use the browser back gesture or exit fullscreen. */
+        body:not(.deck-fullscreen) nav.back {
+          display: none;
+        }
+
+        /* Compact slide nav – one row, no longer needs sticky inside a flex column */
+        .slide-nav {
+          flex: 0 0 auto;
+          position: relative;
+          flex-direction: row;
+          align-items: center;
+          padding: 5px 12px;
+          gap: 8px;
+        }
+
+        .slide-nav-controls {
+          flex: 1;
+        }
+
+        /* Hide progress dots in landscape to save vertical space in the nav */
+        #progress-dots {
+          display: none;
+        }
+
+        /* Reveal fills whatever height is left */
+        .reveal {
+          flex: 1 1 auto;
+          min-height: 0;
+          height: 0 !important; /* flex-basis 0 lets flex-grow drive the size */
+        }
+
+        /* Compact slide content */
+        .slide {
+          justify-content: flex-start;
+          @apply px-4 py-2;
+        }
+
+        .slide-badge {
+          @apply mb-2 py-0.5 px-3 text-[0.65rem];
+        }
+
+        .slide-title {
+          font-size: clamp(1.3rem, 5vw, 2.2rem);
+          @apply mb-2;
+        }
+
+        .slide-subtitle {
+          font-size: clamp(0.75rem, 2vw, 0.95rem);
+          @apply mb-1 leading-snug;
+        }
+
+        .slide-body {
+          @apply text-sm leading-snug;
+        }
+
+        .feature-grid {
+          @apply mt-2 gap-2 grid-cols-2;
+        }
+
+        .feature-item {
+          @apply p-2.5;
+        }
+
+        .feature-item-icon {
+          @apply mb-1 text-lg;
+        }
+
+        .feature-item-title {
+          @apply text-sm;
+        }
+
+        .feature-item-desc {
+          @apply text-xs leading-snug;
+        }
+
+        .nav-btn {
+          @apply px-3 py-1.5 text-xs;
+        }
+
+        /* In fullscreen the reveal must still cover 100 dvh */
+        body.deck-fullscreen .reveal {
+          height: 100dvh !important;
+          flex: none;
+        }
+      }
     </style>
   </head>
   <body>
@@ -516,6 +626,11 @@
 
       const revealEl = document.querySelector<HTMLElement>('.reveal');
       if (!revealEl) throw new Error('Reveal.js container (.reveal) not found in DOM');
+
+      // Detect mobile landscape before initialising Reveal so the correct
+      // center setting is baked in from the very first render.
+      const mobileLandscapeQuery = window.matchMedia('(orientation: landscape) and (max-height: 500px)');
+
       const deck = new Reveal(revealEl, {
         embedded: true,
         hash: false,
@@ -524,7 +639,9 @@
         controls: false,
         progress: false,
         slideNumber: false,
-        center: true,
+        // In mobile landscape top-align content so it fills from the top;
+        // in all other orientations centre it as usual.
+        center: !mobileLandscapeQuery.matches,
         transition: 'slide',
         // Disable the responsive scroll-view that Reveal.js activates automatically
         // on narrow viewports (default threshold: 435 px).  In scroll-view mode every
@@ -598,6 +715,26 @@
         return !!(document.fullscreenElement || (document as WebkitDocument).webkitFullscreenElement);
       }
 
+      // ── Screen orientation helpers ───────────────────────────────────────────
+      // Lock to landscape on mobile when entering fullscreen so the deck fills
+      // the screen. Silently ignored on desktop and iOS (which lacks the API).
+      function lockLandscape(): void {
+        try {
+          // .catch() handles promise rejection (e.g. permission denied)
+          screen.orientation?.lock('landscape').catch(() => {});
+        } catch {
+          // Screen Orientation API not available (e.g. desktop, iOS Safari) – no-op
+        }
+      }
+
+      function unlockOrientation(): void {
+        try {
+          screen.orientation?.unlock();
+        } catch {
+          // Screen Orientation API not available – no-op
+        }
+      }
+
       function toggleFullscreen(): void {
         if (supportsNativeFullscreen()) {
           if (!isInFullscreen()) {
@@ -655,9 +792,13 @@
         labelEl.textContent = isFs ? LABEL_EXIT : LABEL_ENTER;
         btnFullscreen.setAttribute('aria-label', isFs ? ARIA_EXIT : ARIA_ENTER);
         if (isFs) {
+          // Lock to landscape so the deck fills a mobile screen in fullscreen
+          lockLandscape();
           // Briefly show nav on fullscreen enter so user knows controls are available
           showNavTemporarily(true);
         } else {
+          // Restore natural orientation when exiting fullscreen
+          unlockOrientation();
           // Immediately restore nav visibility when exiting fullscreen
           slideNav.classList.remove('nav-active');
           if (navHideTimer !== null) { clearTimeout(navHideTimer); navHideTimer = null; }
@@ -669,6 +810,15 @@
       document.addEventListener('webkitfullscreenchange', () => { updateFullscreenBtn(); deck.sync(); });
       // Initialise button icon/label immediately so the SVG is set before user interaction.
       updateFullscreenBtn();
+
+      // ── Landscape slide alignment ─────────────────────────────────────────────
+      // Re-apply the center setting whenever the device is rotated so that
+      // switching between portrait and landscape is seamless.
+      function updateSlideAlignment(mq: MediaQueryList | MediaQueryListEvent): void {
+        deck.configure({ center: !mq.matches });
+        deck.sync();
+      }
+      mobileLandscapeQuery.addEventListener('change', updateSlideAlignment);
 
       // Reveal nav on any user activity while in fullscreen
       document.addEventListener('mousemove', showNavTemporarily);
