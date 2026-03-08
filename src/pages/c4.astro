@@ -290,6 +290,9 @@ import { diagrams } from '../data/c4/diagrams';
       window._resolveElk();
     </script>
     <script define:vars={{ diagrams }} is:inline>
+      // ELK layout engine is loaded asynchronously; all mermaid.run() calls wait for it.
+      window._elkReady = new Promise(resolve => { window._resolveElk = resolve; });
+
       const logger = (() => {
         const prefix = 'C4';
         const fmt = (level, msg) => `[${new Date().toISOString()}] [${level}] [${prefix}] ${msg}`;
@@ -303,9 +306,6 @@ import { diagrams } from '../data/c4/diagrams';
 
       logger.info('Initializing Mermaid');
       mermaid.initialize({ startOnLoad: false, theme: 'default' });
-
-      // ELK layout engine is loaded asynchronously; all mermaid.run() calls wait for it.
-      window._elkReady = new Promise(resolve => { window._resolveElk = resolve; });
 
       logger.info('Deferring initial diagram render until ELK layout engine is ready');
       window._elkReady.then(() => {

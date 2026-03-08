@@ -230,10 +230,10 @@ import {
       window._resolveElk();
     </script>
     <script is:inline>
-      mermaid.initialize({ startOnLoad: false, theme: 'default' });
-
       // ELK layout engine is loaded asynchronously; all mermaid.run() calls wait for it.
       window._elkReady = new Promise(resolve => { window._resolveElk = resolve; });
+
+      mermaid.initialize({ startOnLoad: false, theme: 'default' });
 
       const tabs = document.querySelectorAll('.tab-btn');
       const panels = document.querySelectorAll('.tab-panel');
