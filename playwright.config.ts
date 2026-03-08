@@ -15,6 +15,14 @@ export default defineConfig({
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
     },
+    {
+      name: 'iPhone 13',
+      use: {
+        ...devices['iPhone 13'],
+        browserName: 'chromium',
+      },
+      testMatch: '**/mobile-iphone.spec.ts',
+    },
   ],
   webServer: {
     command: 'npm run dev:attach',
