@@ -44,7 +44,7 @@ export interface BoundaryMeta {
   id: string;
   /** Display label inside the boundary box (e.g. 'Healthcare Platform'). */
   label: string;
-  type: 'System_Boundary' | 'Container_Boundary';
+  type: 'Enterprise_Boundary' | 'System_Boundary' | 'Container_Boundary';
   /** Excalidraw element IDs of the nodes that sit inside this boundary. */
   nodeIds: string[];
 }
@@ -160,7 +160,6 @@ function generateC4Diagram(els: readonly RawEl[], meta: LevelMeta): string {
   );
 
   const lines: string[] = [];
-  lines.push('%%{init: {"layout": "elk"}}%%');
   lines.push(meta.diagramType);
   lines.push(`  title ${title}`);
   lines.push('');

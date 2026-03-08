@@ -37,6 +37,14 @@ const level1Meta: LevelMeta = {
     'l1-insurance':{ c4type: 'System_Ext', desc: 'Verifies patient coverage and processes claims.' },
     'l1-lab':      { c4type: 'System_Ext', desc: 'Receives test orders and returns results.' },
   },
+  boundaries: [
+    {
+      id: 'ext',
+      label: 'External Systems',
+      type: 'Enterprise_Boundary',
+      nodeIds: ['l1-pharmacy', 'l1-insurance', 'l1-lab'],
+    },
+  ],
 };
 
 // ── Level 2 – Container ───────────────────────────────────────────────────────
