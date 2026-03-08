@@ -4,7 +4,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="description" content="Slide Deck – An overview of Tooda, the browser-based architecture diagram tool" />
     <title>Slide Deck | Tooda</title>
     <style>
@@ -179,11 +179,19 @@
         position: fixed;
         inset: 0;
         z-index: 9999;
-        overflow-y: auto;
+        overflow: hidden;
         background: #0f172a;
       }
 
+      .page-content.pseudo-fullscreen .reveal {
+        height: 100%;
+      }
+
       /* ── Fullscreen deck mode: slides fill the entire viewport ── */
+      body.deck-fullscreen {
+        overflow: hidden;
+      }
+
       body.deck-fullscreen nav.back {
         display: none;
       }
@@ -198,6 +206,9 @@
         left: 0;
         right: 0;
         z-index: 20;
+        padding-bottom: env(safe-area-inset-bottom);
+        padding-left: env(safe-area-inset-left);
+        padding-right: env(safe-area-inset-right);
         opacity: 0;
         pointer-events: none;
         transition: opacity 0.3s ease;
