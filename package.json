@@ -13,7 +13,8 @@
     "install:playwright": "npx playwright install --with-deps chromium",
     "test": "npm run lint && playwright test",
     "test:ci": "playwright test",
-    "make-gifs": "node scripts/make-gifs.js"
+    "make-gifs": "node scripts/make-gifs.js",
+    "generate-healthcare-pngs": "node scripts/generate-healthcare-pngs.js"
   },
   "dependencies": {
     "@astrojs/react": "^4.4.2",

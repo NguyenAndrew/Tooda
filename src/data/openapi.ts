@@ -34,6 +34,13 @@ export const openapiSpec = {
         'Excalidraw element arrays for the Healthcare Platform example, ' +
         'split across four C4 levels.',
     },
+    {
+      name: 'Healthcare',
+      description:
+        'PNG image exports of the Healthcare Platform diagrams. Each endpoint returns ' +
+        'a PNG screenshot of the diagram at one of the four C4 levels, in either the ' +
+        'Excalidraw or Mermaid renderer.',
+    },
   ],
   paths: {
     '/api/c4/banking.json': {
@@ -187,6 +194,158 @@ export const openapiSpec = {
             content: {
               'application/json': {
                 schema: { $ref: '#/components/schemas/ExcalidrawElementArray' },
+              },
+            },
+          },
+        },
+      },
+    },
+    '/api/healthcare/excalidraw/level1.png': {
+      get: {
+        tags: ['Healthcare'],
+        summary: 'Healthcare Platform – Level 1 Excalidraw (PNG)',
+        description:
+          'Returns a PNG screenshot of the Level 1 (System Context) diagram for the Healthcare Platform, rendered in the Excalidraw view.',
+        operationId: 'getHealthcareExcalidrawLevel1Png',
+        responses: {
+          '200': {
+            description: 'Successful response',
+            content: {
+              'image/png': {
+                schema: { type: 'string', format: 'binary' },
+              },
+            },
+          },
+        },
+      },
+    },
+    '/api/healthcare/excalidraw/level2.png': {
+      get: {
+        tags: ['Healthcare'],
+        summary: 'Healthcare Platform – Level 2 Excalidraw (PNG)',
+        description:
+          'Returns a PNG screenshot of the Level 2 (Container) diagram for the Healthcare Platform, rendered in the Excalidraw view.',
+        operationId: 'getHealthcareExcalidrawLevel2Png',
+        responses: {
+          '200': {
+            description: 'Successful response',
+            content: {
+              'image/png': {
+                schema: { type: 'string', format: 'binary' },
+              },
+            },
+          },
+        },
+      },
+    },
+    '/api/healthcare/excalidraw/level3.png': {
+      get: {
+        tags: ['Healthcare'],
+        summary: 'Healthcare Platform – Level 3 Excalidraw (PNG)',
+        description:
+          'Returns a PNG screenshot of the Level 3 (Component) diagram for the Healthcare Platform, rendered in the Excalidraw view.',
+        operationId: 'getHealthcareExcalidrawLevel3Png',
+        responses: {
+          '200': {
+            description: 'Successful response',
+            content: {
+              'image/png': {
+                schema: { type: 'string', format: 'binary' },
+              },
+            },
+          },
+        },
+      },
+    },
+    '/api/healthcare/excalidraw/level4.png': {
+      get: {
+        tags: ['Healthcare'],
+        summary: 'Healthcare Platform – Level 4 Excalidraw (PNG)',
+        description:
+          'Returns a PNG screenshot of the Level 4 (Code) diagram for the Healthcare Platform, rendered in the Excalidraw view.',
+        operationId: 'getHealthcareExcalidrawLevel4Png',
+        responses: {
+          '200': {
+            description: 'Successful response',
+            content: {
+              'image/png': {
+                schema: { type: 'string', format: 'binary' },
+              },
+            },
+          },
+        },
+      },
+    },
+    '/api/healthcare/mermaid/level1.png': {
+      get: {
+        tags: ['Healthcare'],
+        summary: 'Healthcare Platform – Level 1 Mermaid (PNG)',
+        description:
+          'Returns a PNG screenshot of the Level 1 (System Context) diagram for the Healthcare Platform, rendered in the Mermaid view.',
+        operationId: 'getHealthcareMermaidLevel1Png',
+        responses: {
+          '200': {
+            description: 'Successful response',
+            content: {
+              'image/png': {
+                schema: { type: 'string', format: 'binary' },
+              },
+            },
+          },
+        },
+      },
+    },
+    '/api/healthcare/mermaid/level2.png': {
+      get: {
+        tags: ['Healthcare'],
+        summary: 'Healthcare Platform – Level 2 Mermaid (PNG)',
+        description:
+          'Returns a PNG screenshot of the Level 2 (Container) diagram for the Healthcare Platform, rendered in the Mermaid view.',
+        operationId: 'getHealthcareMermaidLevel2Png',
+        responses: {
+          '200': {
+            description: 'Successful response',
+            content: {
+              'image/png': {
+                schema: { type: 'string', format: 'binary' },
+              },
+            },
+          },
+        },
+      },
+    },
+    '/api/healthcare/mermaid/level3.png': {
+      get: {
+        tags: ['Healthcare'],
+        summary: 'Healthcare Platform – Level 3 Mermaid (PNG)',
+        description:
+          'Returns a PNG screenshot of the Level 3 (Component) diagram for the Healthcare Platform, rendered in the Mermaid view.',
+        operationId: 'getHealthcareMermaidLevel3Png',
+        responses: {
+          '200': {
+            description: 'Successful response',
+            content: {
+              'image/png': {
+                schema: { type: 'string', format: 'binary' },
+              },
+            },
+          },
+        },
+      },
+    },
+    '/api/healthcare/mermaid/level4.png': {
+      get: {
+        tags: ['Healthcare'],
+        summary: 'Healthcare Platform – Level 4 Mermaid (PNG)',
+        description:
+          'Returns a PNG screenshot of the Level 4 (Code) diagram for the Healthcare Platform, rendered in the Mermaid view.',
+        operationId: 'getHealthcareMermaidLevel4Png',
+        responses: {
+          '200': {
+            description: 'Successful response',
+            content: {
+              'image/png': {
+                schema: { type: 'string', format: 'binary' },
               },
             },
           },
