@@ -37,6 +37,17 @@ const level1Meta: LevelMeta = {
     'l1-insurance':{ c4type: 'System_Ext', desc: 'Verifies patient coverage and processes claims.' },
     'l1-lab':      { c4type: 'System_Ext', desc: 'Receives test orders and returns results.' },
   },
+  boundaries: [
+    {
+      id: 'ext',
+      label: 'External Systems',
+      type: 'Enterprise_Boundary',
+      nodeIds: ['l1-pharmacy', 'l1-insurance', 'l1-lab'],
+    },
+  ],
+  // c4ShapeInRow=3 keeps the three persons in their own row so Healthcare
+  // Platform lands alone in row 2, with External Systems beneath in row 3.
+  layoutConfig: { c4ShapeInRow: 3, c4BoundaryInRow: 1 },
 };
 
 // ── Level 2 – Container ───────────────────────────────────────────────────────

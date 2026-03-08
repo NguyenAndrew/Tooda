@@ -44,7 +44,7 @@ export interface BoundaryMeta {
   id: string;
   /** Display label inside the boundary box (e.g. 'Healthcare Platform'). */
   label: string;
-  type: 'System_Boundary' | 'Container_Boundary';
+  type: 'Enterprise_Boundary' | 'System_Boundary' | 'Container_Boundary';
   /** Excalidraw element IDs of the nodes that sit inside this boundary. */
   nodeIds: string[];
 }
@@ -55,6 +55,12 @@ export interface LevelMeta {
   nodes?: Record<string, NodeMeta>;
   /** Optional boundaries that group nodes visually. */
   boundaries?: BoundaryMeta[];
+  /**
+   * Optional C4 layout configuration emitted as `UpdateLayoutConfig(...)`.
+   * Uses Mermaid's built-in grid algorithm parameters to control how many
+   * nodes/boundaries appear per row, preventing arrow-node intersections.
+   */
+  layoutConfig?: { c4ShapeInRow?: number; c4BoundaryInRow?: number };
 }
 
 // ── Lightweight internal element shape ───────────────────────────────────────
@@ -164,6 +170,16 @@ function generateC4Diagram(els: readonly RawEl[], meta: LevelMeta): string {
   lines.push(meta.diagramType);
   lines.push(`  title ${title}`);
   lines.push('');
+
+  // Emit UpdateLayoutConfig when caller specifies layout parameters.
+  // This uses Mermaid's built-in C4 grid algorithm to prevent arrow-node
+  // intersections without relying on manual node ordering hacks.
+  if (meta.layoutConfig) {
+    const row = meta.layoutConfig.c4ShapeInRow ?? 4;
+    const boundary = meta.layoutConfig.c4BoundaryInRow ?? 2;
+    lines.push(`  UpdateLayoutConfig($c4ShapeInRow="${row}", $c4BoundaryInRow="${boundary}")`);
+    lines.push('');
+  }
 
   const declaredNodes = new Set<string>();
 
@@ -303,23 +319,14 @@ function generateClassDiagram(els: readonly RawEl[]): string {
     lines.push('');
   }
 
-  // Collect arrows and resolve connections spatially
+  // Collect arrows and resolve connections via standard startBinding/endBinding
   const arrows = els.filter((el) => el.type === 'arrow');
 
   for (const arrow of arrows) {
-    // Compute absolute start and end points
-    const startX = arrow.x;
-    const startY = arrow.y;
-    const lastPt = arrow.points?.[arrow.points.length - 1] ?? [0, 0];
-    const endX = arrow.x + lastPt[0];
-    const endY = arrow.y + lastPt[1];
+    if (!arrow.startBinding?.elementId || !arrow.endBinding?.elementId) continue;
 
-    const fromBox = findBoxAtPoint(classBoxes, startX, startY);
-    const toBox = findBoxAtPoint(classBoxes, endX, endY);
-    if (!fromBox || !toBox || fromBox.id === toBox.id) continue;
-
-    const fromClass = classNameById[fromBox.id];
-    const toClass = classNameById[toBox.id];
+    const fromClass = classNameById[arrow.startBinding.elementId];
+    const toClass = classNameById[arrow.endBinding.elementId];
     if (!fromClass || !toClass) continue;
 
     const rawLabel = labelByContainer[arrow.id] ?? '';
@@ -333,35 +340,4 @@ function generateClassDiagram(els: readonly RawEl[]): string {
   }
 
   return lines.join('\n');
-}
-
-/**
- * Find the class box whose bounding rectangle contains the given point.
- * We expand the box by `TOLERANCE` pixels on each side to handle arrows
- * that start/end exactly on the edge.
- */
-function findBoxAtPoint(boxes: readonly RawEl[], px: number, py: number): RawEl | null {
-  const TOLERANCE = 4;
-  for (const box of boxes) {
-    const x0 = box.x - TOLERANCE;
-    const y0 = box.y - TOLERANCE;
-    const x1 = box.x + (box.width ?? 0) + TOLERANCE;
-    const y1 = box.y + (box.height ?? 0) + TOLERANCE;
-    if (px >= x0 && px <= x1 && py >= y0 && py <= y1) {
-      return box;
-    }
-  }
-  // Fall back to the nearest box centre
-  let nearest: RawEl | null = null;
-  let minDist = Infinity;
-  for (const box of boxes) {
-    const cx = box.x + (box.width ?? 0) / 2;
-    const cy = box.y + (box.height ?? 0) / 2;
-    const dist = Math.hypot(px - cx, py - cy);
-    if (dist < minDist) {
-      minDist = dist;
-      nearest = box;
-    }
-  }
-  return nearest;
 }
