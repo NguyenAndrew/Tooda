@@ -561,28 +561,39 @@
       const LABEL_ENTER = 'Full Screen';
       const LABEL_EXIT = 'Exit Full Screen';
 
+      interface WebkitDocument extends Document {
+        webkitFullscreenEnabled?: boolean;
+        webkitFullscreenElement?: Element | null;
+        webkitExitFullscreen?(): void;
+      }
+
+      interface WebkitHTMLElement extends HTMLElement {
+        webkitRequestFullscreen?(): void;
+      }
+
       function supportsNativeFullscreen(): boolean {
-        return !!(document.fullscreenEnabled || (document as any).webkitFullscreenEnabled);
+        return !!(document.fullscreenEnabled || (document as WebkitDocument).webkitFullscreenEnabled);
       }
 
       function isInFullscreen(): boolean {
-        return !!(document.fullscreenElement || (document as any).webkitFullscreenElement);
+        return !!(document.fullscreenElement || (document as WebkitDocument).webkitFullscreenElement);
       }
 
       function toggleFullscreen(): void {
         if (supportsNativeFullscreen()) {
           if (!isInFullscreen()) {
-            const el = document.documentElement;
+            const el = document.documentElement as WebkitHTMLElement;
             if (el.requestFullscreen) {
               el.requestFullscreen().catch(() => {});
-            } else if ((el as any).webkitRequestFullscreen) {
-              (el as any).webkitRequestFullscreen();
+            } else if (el.webkitRequestFullscreen) {
+              el.webkitRequestFullscreen();
             }
           } else {
-            if (document.exitFullscreen) {
-              document.exitFullscreen().catch(() => {});
-            } else if ((document as any).webkitExitFullscreen) {
-              (document as any).webkitExitFullscreen();
+            const doc = document as WebkitDocument;
+            if (doc.exitFullscreen) {
+              doc.exitFullscreen().catch(() => {});
+            } else if (doc.webkitExitFullscreen) {
+              doc.webkitExitFullscreen();
             }
           }
           return;
