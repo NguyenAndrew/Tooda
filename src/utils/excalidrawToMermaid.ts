@@ -166,7 +166,6 @@ function generateC4Diagram(els: readonly RawEl[], meta: LevelMeta): string {
   );
 
   const lines: string[] = [];
-  lines.push('%%{init: {"layout": "elk"}}%%');
   lines.push(meta.diagramType);
   lines.push(`  title ${title}`);
   lines.push('');
