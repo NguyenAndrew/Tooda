@@ -165,5 +165,39 @@ test.describe('Excalidraw example page', () => {
     await page.waitForSelector('#level2 .mermaid-view svg', { state: 'visible', timeout: 15000 });
     await expect(page.locator('#level2 .mermaid-view svg')).toBeVisible();
   });
+
+  // ── Mermaid derived from Excalidraw (source-of-truth) tests ─────────────────
+
+  test('Mermaid Level 3 diagram renders after switching tab while in Mermaid mode', async ({ page }) => {
+    await page.goto('/Tooda/excalidraw?renderer=mermaid');
+    await page.getByRole('link', { name: 'Level 3 – Component' }).click();
+    await page.waitForSelector('#level3 .mermaid-view svg', { state: 'visible', timeout: 15000 });
+    await expect(page.locator('#level3 .mermaid-view svg')).toBeVisible();
+  });
+
+  test('Mermaid Level 4 diagram renders after switching tab while in Mermaid mode', async ({ page }) => {
+    await page.goto('/Tooda/excalidraw?renderer=mermaid');
+    await page.getByRole('link', { name: 'Level 4 – Code' }).click();
+    await page.waitForSelector('#level4 .mermaid-view svg', { state: 'visible', timeout: 15000 });
+    await expect(page.locator('#level4 .mermaid-view svg')).toBeVisible();
+  });
+
+  test('Mermaid Level 1 diagram contains node labels derived from Excalidraw', async ({ page }) => {
+    await page.goto('/Tooda/excalidraw?renderer=mermaid');
+    await page.waitForSelector('#level1 .mermaid-view svg', { state: 'visible', timeout: 15000 });
+    // The Excalidraw label for l1-patient is "Patient" – it must appear in the rendered SVG
+    const svgText = await page.locator('#level1 .mermaid-view svg').textContent();
+    expect(svgText).toContain('Patient');
+    expect(svgText).toContain('Doctor');
+  });
+
+  test('Mermaid Level 4 classDiagram contains class names derived from Excalidraw', async ({ page }) => {
+    await page.goto('/Tooda/excalidraw?renderer=mermaid');
+    await page.getByRole('link', { name: 'Level 4 – Code' }).click();
+    await page.waitForSelector('#level4 .mermaid-view svg', { state: 'visible', timeout: 15000 });
+    const svgText = await page.locator('#level4 .mermaid-view svg').textContent();
+    expect(svgText).toContain('RecordController');
+    expect(svgText).toContain('RecordService');
+  });
 });
 

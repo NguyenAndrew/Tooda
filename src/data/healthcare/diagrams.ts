@@ -1,127 +1,108 @@
 /**
  * Healthcare Platform – single source of truth
  *
- * This file is the canonical definition of the Healthcare Platform architecture.
- * Both the Mermaid C4 diagram strings and the Excalidraw element sets are
- * exported from here so that every view of the Healthcare Platform diagram
- * traces back to one place.
+ * The Excalidraw element sets are the canonical representation of the
+ * Healthcare Platform architecture.  They encode the full visual model:
+ * node positions, sizes, labels, arrow bindings, and relationship labels.
+ *
+ * Mermaid diagram strings are *derived* from those elements by the
+ * `excalidrawToMermaid` converter, supplemented only by the thin semantic
+ * metadata below (C4 node type, narrative description, and technology strings
+ * that are not embedded in the Excalidraw labels).
  */
+
+import { excalidrawToMermaid } from '../../utils/excalidrawToMermaid';
+import type { LevelMeta } from '../../utils/excalidrawToMermaid';
 
 export { level1Elements } from '../excalidraw/level1Elements';
 export { level2Elements } from '../excalidraw/level2Elements';
 export { level3Elements } from '../excalidraw/level3Elements';
 export { level4Elements } from '../excalidraw/level4Elements';
 
+import { level1Elements } from '../excalidraw/level1Elements';
+import { level2Elements } from '../excalidraw/level2Elements';
+import { level3Elements } from '../excalidraw/level3Elements';
+import { level4Elements } from '../excalidraw/level4Elements';
+
+// ── Level 1 – System Context ──────────────────────────────────────────────────
+
+const level1Meta: LevelMeta = {
+  diagramType: 'C4Context',
+  nodes: {
+    'l1-patient':  { c4type: 'Person',     desc: 'Books appointments and views medical records.' },
+    'l1-doctor':   { c4type: 'Person',     desc: 'Views patient records and orders tests.' },
+    'l1-admin':    { c4type: 'Person',     desc: 'Manages users and platform configuration.' },
+    'l1-platform': { c4type: 'System',     desc: 'Provides appointment scheduling, electronic medical records, and billing.' },
+    'l1-pharmacy': { c4type: 'System_Ext', desc: 'Receives prescriptions and dispenses medication.' },
+    'l1-insurance':{ c4type: 'System_Ext', desc: 'Verifies patient coverage and processes claims.' },
+    'l1-lab':      { c4type: 'System_Ext', desc: 'Receives test orders and returns results.' },
+  },
+};
+
+// ── Level 2 – Container ───────────────────────────────────────────────────────
+
+const level2Meta: LevelMeta = {
+  diagramType: 'C4Container',
+  nodes: {
+    'l2-patient': { c4type: 'Person',      desc: 'Books appointments and views medical records.' },
+    'l2-doctor':  { c4type: 'Person',      desc: 'Views patient records and orders tests.' },
+    'l2-webapp':  { c4type: 'Container',   desc: 'Delivers the web front-end to users via their browser.' },
+    'l2-mobile':  { c4type: 'Container',   desc: 'Provides healthcare access on mobile devices.' },
+    'l2-api':     { c4type: 'Container',   desc: 'Routes requests and enforces authentication.' },
+    'l2-emr':     { c4type: 'Container',   desc: 'Manages electronic medical records.' },
+    'l2-appt':    { c4type: 'Container',   tech: 'Node.js', desc: 'Handles appointment scheduling and reminders.' },
+    'l2-billing': { c4type: 'Container',   tech: 'Node.js', desc: 'Processes billing and insurance claims.' },
+    'l2-db':      { c4type: 'ContainerDb', desc: 'Stores patient records, appointments, and billing data.' },
+    'l2-queue':   { c4type: 'Container',   desc: 'Decouples async communication between services.' },
+  },
+  boundaries: [
+    {
+      id: 'hp',
+      label: 'Healthcare Platform',
+      type: 'System_Boundary',
+      nodeIds: ['l2-webapp', 'l2-mobile', 'l2-api', 'l2-emr', 'l2-appt', 'l2-billing', 'l2-db', 'l2-queue'],
+    },
+  ],
+};
+
+// ── Level 3 – Component ───────────────────────────────────────────────────────
+
+const level3Meta: LevelMeta = {
+  diagramType: 'C4Component',
+  nodes: {
+    'l3-gateway': { c4type: 'Container_Ext',   tech: 'Node.js',       desc: 'Routes authenticated requests to the EMR Service.' },
+    'l3-db':      { c4type: 'ContainerDb_Ext', desc: 'Stores medical records.' },
+    'l3-ctrl':    { c4type: 'Component', tech: 'Express Router',  desc: 'Exposes REST endpoints for medical records.' },
+    'l3-svc':     { c4type: 'Component', tech: 'Node.js module',  desc: 'Business logic for creating and retrieving records.' },
+    'l3-repo':    { c4type: 'Component', tech: 'Node.js module',  desc: 'Abstracts database access for medical records.' },
+    'l3-auth':    { c4type: 'Component', tech: 'Node.js module',  desc: 'Validates JWT tokens on incoming requests.' },
+    'l3-audit':   { c4type: 'Component', tech: 'Node.js module',  desc: 'Logs all record access for compliance.' },
+    'l3-cache':   { c4type: 'Component', tech: 'Redis client',    desc: 'Caches frequently accessed records.' },
+  },
+  boundaries: [
+    {
+      id: 'emr',
+      label: 'EMR Service',
+      type: 'Container_Boundary',
+      nodeIds: ['l3-ctrl', 'l3-svc', 'l3-repo', 'l3-auth', 'l3-audit', 'l3-cache'],
+    },
+  ],
+};
+
+// ── Level 4 – Code ────────────────────────────────────────────────────────────
+// classDiagram: all structural information (classes, members, relationships)
+// is encoded in the Excalidraw elements; no extra metadata is needed.
+
+const level4Meta: LevelMeta = {
+  diagramType: 'classDiagram',
+};
+
+// ── Derived Mermaid diagrams ───────────────────────────────────────────────────
+// These strings are computed at build time from the Excalidraw elements above.
+
 export const mermaidDiagrams = {
-  level1: `C4Context
-  title System Context – Healthcare Platform
-
-  Person(patient, "Patient", "Books appointments and views medical records.")
-  Person(doctor, "Doctor", "Views patient records and orders tests.")
-  Person(admin, "Admin", "Manages users and platform configuration.")
-
-  System(healthcarePlatform, "Healthcare Platform", "Provides appointment scheduling, electronic medical records, and billing.")
-
-  System_Ext(pharmacySystem, "Pharmacy System", "Receives prescriptions and dispenses medication.")
-  System_Ext(insuranceSystem, "Insurance System", "Verifies patient coverage and processes claims.")
-  System_Ext(laboratorySystem, "Laboratory System", "Receives test orders and returns results.")
-
-  Rel(patient, healthcarePlatform, "Schedules appointments using")
-  Rel(doctor, healthcarePlatform, "Views patient records using")
-  Rel(admin, healthcarePlatform, "Manages users using")
-  Rel(healthcarePlatform, pharmacySystem, "Sends prescriptions to")
-  Rel(healthcarePlatform, insuranceSystem, "Verifies coverage with")
-  Rel(healthcarePlatform, laboratorySystem, "Orders tests via")`,
-
-  level2: `C4Container
-  title Container – Healthcare Platform
-
-  Person(patient, "Patient", "Books appointments and views medical records.")
-  Person(doctor, "Doctor", "Views patient records and orders tests.")
-
-  System_Boundary(hp, "Healthcare Platform") {
-    Container(webApp, "Web App", "Astro", "Delivers the web front-end to users via their browser.")
-    Container(mobileApp, "Mobile App", "React Native", "Provides healthcare access on mobile devices.")
-    Container(apiGateway, "API Gateway", "Node.js", "Routes requests and enforces authentication.")
-    Container(emrService, "EMR Service", "Node.js", "Manages electronic medical records.")
-    Container(appointmentService, "Appointment Service", "Node.js", "Handles appointment scheduling and reminders.")
-    Container(billingService, "Billing Service", "Node.js", "Processes billing and insurance claims.")
-    ContainerDb(database, "Database", "PostgreSQL", "Stores patient records, appointments, and billing data.")
-    Container(messageQueue, "Message Queue", "RabbitMQ", "Decouples async communication between services.")
-  }
-
-  Rel(patient, webApp, "Uses", "HTTPS")
-  Rel(patient, mobileApp, "Uses", "HTTPS")
-  Rel(doctor, webApp, "Uses", "HTTPS")
-  Rel(webApp, apiGateway, "Calls", "JSON/HTTPS")
-  Rel(mobileApp, apiGateway, "Calls", "JSON/HTTPS")
-  Rel(apiGateway, emrService, "Routes to", "JSON/HTTPS")
-  Rel(apiGateway, appointmentService, "Routes to", "JSON/HTTPS")
-  Rel(apiGateway, billingService, "Routes to", "JSON/HTTPS")
-  Rel(emrService, database, "Reads/writes", "SQL")
-  Rel(appointmentService, database, "Reads/writes", "SQL")
-  Rel(billingService, database, "Reads/writes", "SQL")
-  Rel(emrService, messageQueue, "Publishes events to", "AMQP")
-  Rel(appointmentService, messageQueue, "Subscribes to", "AMQP")`,
-
-  level3: `C4Component
-  title Component – EMR Service
-
-  Container_Ext(apiGateway, "API Gateway", "Node.js", "Routes authenticated requests to the EMR Service.")
-  ContainerDb_Ext(database, "Database", "PostgreSQL", "Stores medical records.")
-
-  Container_Boundary(emr, "EMR Service") {
-    Component(authMiddleware, "Auth Middleware", "Node.js module", "Validates JWT tokens on incoming requests.")
-    Component(recordController, "Record Controller", "Express Router", "Exposes REST endpoints for medical records.")
-    Component(recordService, "Record Service", "Node.js module", "Business logic for creating and retrieving records.")
-    Component(recordRepository, "Record Repository", "Node.js module", "Abstracts database access for medical records.")
-    Component(auditLogger, "Audit Logger", "Node.js module", "Logs all record access for compliance.")
-    Component(cacheManager, "Cache Manager", "Redis client", "Caches frequently accessed records.")
-  }
-
-  Rel(apiGateway, authMiddleware, "Sends requests through", "JSON/HTTPS")
-  Rel(authMiddleware, recordController, "Passes validated request to")
-  Rel(recordController, recordService, "Uses")
-  Rel(recordController, auditLogger, "Logs access via")
-  Rel(recordService, recordRepository, "Uses")
-  Rel(recordService, cacheManager, "Caches results with")
-  Rel(recordRepository, database, "Reads/writes", "SQL")`,
-
-  level4: `classDiagram
-  direction TB
-
-  class RecordController {
-    +getRecord(req, res) void
-    +createRecord(req, res) void
-  }
-
-  class RecordService {
-    -recordRepository: RecordRepository
-    -cacheClient: CacheClient
-    +getRecord(id: string) Promise~MedicalRecord~
-    +createRecord(data: object) Promise~MedicalRecord~
-  }
-
-  class RecordRepository {
-    -db: DatabaseConnection
-    +findById(id: string) Promise~MedicalRecord~
-    +save(record: MedicalRecord) Promise~MedicalRecord~
-  }
-
-  class MedicalRecord {
-    +id: string
-    +patientId: string
-    +diagnosis: string
-  }
-
-  class CacheClient {
-    +get(key: string) Promise~string~
-    +set(key: string, value: string) Promise~void~
-  }
-
-  RecordController --> RecordService : uses
-  RecordService --> RecordRepository : uses
-  RecordService --> CacheClient : uses
-  RecordRepository --> MedicalRecord : returns
-  RecordService --> MedicalRecord : returns`,
+  level1: excalidrawToMermaid(level1Elements, level1Meta),
+  level2: excalidrawToMermaid(level2Elements, level2Meta),
+  level3: excalidrawToMermaid(level3Elements, level3Meta),
+  level4: excalidrawToMermaid(level4Elements, level4Meta),
 };
