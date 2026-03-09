@@ -51,12 +51,12 @@ const level1Meta: LevelMeta = {
       nodeIds: ['l1-pharmacy', 'l1-insurance', 'l1-lab'],
     },
   ],
-  // c4ShapeInRow=4: the three persons fill GLOBAL row 1 (cnt 1-3), then the
-  // System_Boundary for Healthcare Platform gets cnt=4 which does NOT exceed 4
-  // so platform lands in HP row 1.  The Enterprise_Boundary then starts with
-  // cnt=5 which DOES exceed 4, triggering a row-reset so cnt restarts at 1;
-  // pharmacy(2), insurance(3), lab(4) all fit in ext row 1 — no overlap.
-  layoutConfig: { c4ShapeInRow: 4, c4BoundaryInRow: 1 },
+  // c4ShapeInRow=3: the three persons exactly fill global row 1.  Each boundary
+  // occupies its own row (c4BoundaryInRow=1).  platform sits alone in the HP
+  // boundary row, centered at col 2; pharmacy(1)/insurance(2)/lab(3) fill the
+  // ext boundary row — every inter-row arrow is a short vertical or slight
+  // diagonal with no intermediate node in the path.
+  layoutConfig: { c4ShapeInRow: 3, c4BoundaryInRow: 1 },
 };
 
 // ── Level 2 – Container ───────────────────────────────────────────────────────
@@ -80,13 +80,17 @@ const level2Meta: LevelMeta = {
       id: 'hp',
       label: 'Healthcare Platform',
       type: 'System_Boundary',
-      nodeIds: ['l2-webapp', 'l2-mobile', 'l2-api', 'l2-emr', 'l2-appt', 'l2-billing', 'l2-db', 'l2-queue'],
+      nodeIds: ['l2-webapp', 'l2-api', 'l2-mobile', 'l2-emr', 'l2-appt', 'l2-billing', 'l2-db', 'l2-queue'],
     },
   ],
-  // c4ShapeInRow=4 arranges the 8 containers inside the boundary in two rows
-  // of four (webapp, mobile, api, emr | appt, billing, db, queue), matching the
-  // left-to-right pipeline visible in the Excalidraw diagram.
-  layoutConfig: { c4ShapeInRow: 4, c4BoundaryInRow: 1 },
+  // c4ShapeInRow=3: places api at col 2 (centre) of the first boundary row,
+  // with webapp at col 1 and mobile at col 3.  webapp→api and mobile→api are
+  // short same-row connections (adjacent columns).  The second row holds
+  // emr(1)/appt(2)/billing(3), directly below their respective sources so that
+  // api→emr, api→appt, api→billing are short diagonals or straight verticals.
+  // db(1)/queue(2) in row 3 sit directly below emr/appt, keeping emr→db,
+  // appt→db, and billing→queue all clean with no intermediate node in the path.
+  layoutConfig: { c4ShapeInRow: 3, c4BoundaryInRow: 1 },
 };
 
 // ── Level 3 – Component ───────────────────────────────────────────────────────
@@ -111,12 +115,12 @@ const level3Meta: LevelMeta = {
       nodeIds: ['l3-ctrl', 'l3-svc', 'l3-repo', 'l3-auth', 'l3-audit', 'l3-cache'],
     },
   ],
-  // c4ShapeInRow=4: with cnt≈1 when the EMR boundary begins, ctrl(2)+svc(3)+
-  // repo(4) all fit in boundary row 1 — repo shares the top row with ctrl and
-  // svc so the repo→db arrow exits through the boundary top edge (well to the
-  // right of ctrl/svc) and never passes through them.  auth(1)+audit(2)+
-  // cache(3) fill row 2 with matching columns, giving clean vertical arrows.
-  layoutConfig: { c4ShapeInRow: 4, c4BoundaryInRow: 1 },
+  // c4ShapeInRow=3: places the primary pipeline (ctrl→svc→repo) in boundary
+  // row 1, and the three secondary nodes (auth/audit/cache) directly below in
+  // row 2 at matching columns.  ctrl→auth, svc→audit, and repo→cache are all
+  // straight-down verticals.  ctrl→svc and svc→repo are short same-row hops.
+  // repo→db exits the boundary top-right with no intermediate node in the path.
+  layoutConfig: { c4ShapeInRow: 3, c4BoundaryInRow: 1 },
 };
 
 // ── Level 4 – Code ────────────────────────────────────────────────────────────
