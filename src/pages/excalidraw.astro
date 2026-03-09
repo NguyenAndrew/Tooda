@@ -1,5 +1,6 @@
 ---
 import ExcalidrawViewer from '../components/ExcalidrawViewer';
+import HealthcarePlatform3D from '../components/HealthcarePlatform3D';
 import {
   level1Elements,
   level2Elements,
@@ -140,6 +141,10 @@ import {
         @apply flex justify-center;
       }
 
+      .threeD-wrapper {
+        @apply hidden overflow-hidden rounded-xl;
+      }
+
       .export-png-btn {
         @apply inline-block cursor-pointer rounded-lg border border-slate-700 bg-slate-800 px-5 py-2 text-[0.95rem] text-slate-400 no-underline transition-all duration-200;
       }
@@ -163,6 +168,7 @@ import {
     <div class="renderer-toggle">
       <a href="?renderer=excalidraw" class="renderer-btn active" data-renderer="excalidraw">&#9999;&#65039; Excalidraw</a>
       <a href="?renderer=mermaid" class="renderer-btn" data-renderer="mermaid">&#128202; Mermaid</a>
+      <a href="?renderer=3d" class="renderer-btn" data-renderer="3d">&#127922; 3D</a>
     </div>
 
     <div class="tabs">
@@ -172,7 +178,7 @@ import {
       <a href="#level4" class="tab-btn" data-tab="level4">Level 4 – Code</a>
     </div>
 
-    <div class="mb-6 flex justify-center px-4">
+    <div id="export-png-container" class="mb-6 flex justify-center px-4">
       <a
         id="export-png-btn"
         href="/Tooda/api/healthcare/excalidraw/level1.png"
@@ -195,6 +201,9 @@ import {
       <div class="mermaid-wrapper mermaid-view">
         <div class="mermaid" set:text={mermaidDiagrams.level1}></div>
       </div>
+      <div class="threeD-wrapper threeD-view">
+        <HealthcarePlatform3D client:only="react" level={1} />
+      </div>
     </section>
 
     <!-- Level 2: Container -->
@@ -209,6 +218,9 @@ import {
       </div>
       <div class="mermaid-wrapper mermaid-view">
         <div class="mermaid" set:text={mermaidDiagrams.level2}></div>
+      </div>
+      <div class="threeD-wrapper threeD-view">
+        <HealthcarePlatform3D client:only="react" level={2} />
       </div>
     </section>
 
@@ -225,6 +237,9 @@ import {
       <div class="mermaid-wrapper mermaid-view">
         <div class="mermaid" set:text={mermaidDiagrams.level3}></div>
       </div>
+      <div class="threeD-wrapper threeD-view">
+        <HealthcarePlatform3D client:only="react" level={3} />
+      </div>
     </section>
 
     <!-- Level 4: Code -->
@@ -238,6 +253,9 @@ import {
       </div>
       <div class="mermaid-wrapper mermaid-view">
         <div class="mermaid" set:text={mermaidDiagrams.level4}></div>
+      </div>
+      <div class="threeD-wrapper threeD-view">
+        <HealthcarePlatform3D client:only="react" level={4} />
       </div>
     </section>
 
@@ -264,6 +282,13 @@ import {
       // ── Export PNG button ─────────────────────────────────────────────────────
 
       function updateExportPngBtn() {
+        const container = document.getElementById('export-png-container');
+        if (!container) return;
+        if (currentRenderer === '3d') {
+          container.style.display = 'none';
+          return;
+        }
+        container.style.display = '';
         const btn = document.getElementById('export-png-btn');
         if (!btn) return;
         const href = '/Tooda/api/healthcare/' + currentRenderer + '/' + currentLevel + '.png';
@@ -274,7 +299,7 @@ import {
       // ── Renderer toggle ──────────────────────────────────────────────────────
 
       function activateRenderer(renderer) {
-        if (renderer !== 'excalidraw' && renderer !== 'mermaid') renderer = 'excalidraw';
+        if (renderer !== 'excalidraw' && renderer !== 'mermaid' && renderer !== '3d') renderer = 'excalidraw';
         currentRenderer = renderer;
 
         rendererBtns.forEach(b => b.classList.remove('active'));
@@ -283,13 +308,16 @@ import {
 
         const excalidrawViews = document.querySelectorAll('.excalidraw-view');
         const mermaidViews = document.querySelectorAll('.mermaid-view');
+        const threeDViews = document.querySelectorAll('.threeD-view');
 
         if (renderer === 'excalidraw') {
           excalidrawViews.forEach(el => { el.style.display = 'block'; });
           mermaidViews.forEach(el => { el.style.display = 'none'; });
-        } else {
+          threeDViews.forEach(el => { el.style.display = 'none'; });
+        } else if (renderer === 'mermaid') {
           excalidrawViews.forEach(el => { el.style.display = 'none'; });
           mermaidViews.forEach(el => { el.style.display = 'block'; });
+          threeDViews.forEach(el => { el.style.display = 'none'; });
 
           // Render any un-rendered Mermaid diagrams in the active panel
           const activePanel = document.querySelector('.tab-panel.active');
@@ -302,6 +330,10 @@ import {
               window._elkReady.then(() => mermaid.run({ nodes: unrendered }));
             }
           }
+        } else {
+          excalidrawViews.forEach(el => { el.style.display = 'none'; });
+          mermaidViews.forEach(el => { el.style.display = 'none'; });
+          threeDViews.forEach(el => { el.style.display = 'block'; });
         }
 
         updateExportPngBtn();
