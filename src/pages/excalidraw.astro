@@ -7,6 +7,7 @@ import {
   level3Elements,
   level4Elements,
   mermaidDiagrams,
+  levelConnections,
 } from '../data/healthcare/diagrams';
 ---
 <!doctype html>
@@ -202,7 +203,7 @@ import {
         <div class="mermaid" set:text={mermaidDiagrams.level1}></div>
       </div>
       <div class="threeD-wrapper threeD-view">
-        <HealthcarePlatform3D client:only="react" level={1} />
+        <HealthcarePlatform3D client:only="react" level={1} connections={levelConnections.level1} />
       </div>
     </section>
 
@@ -220,7 +221,7 @@ import {
         <div class="mermaid" set:text={mermaidDiagrams.level2}></div>
       </div>
       <div class="threeD-wrapper threeD-view">
-        <HealthcarePlatform3D client:only="react" level={2} />
+        <HealthcarePlatform3D client:only="react" level={2} connections={levelConnections.level2} />
       </div>
     </section>
 
@@ -238,7 +239,7 @@ import {
         <div class="mermaid" set:text={mermaidDiagrams.level3}></div>
       </div>
       <div class="threeD-wrapper threeD-view">
-        <HealthcarePlatform3D client:only="react" level={3} />
+        <HealthcarePlatform3D client:only="react" level={3} connections={levelConnections.level3} />
       </div>
     </section>
 
@@ -255,7 +256,7 @@ import {
         <div class="mermaid" set:text={mermaidDiagrams.level4}></div>
       </div>
       <div class="threeD-wrapper threeD-view">
-        <HealthcarePlatform3D client:only="react" level={4} />
+        <HealthcarePlatform3D client:only="react" level={4} connections={levelConnections.level4} />
       </div>
     </section>
 

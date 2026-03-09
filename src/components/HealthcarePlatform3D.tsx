@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { createLogger } from '../utils/logger';
+import type { Connection } from '../utils/excalidrawToMermaid';
 
 const logger = createLogger('HealthcarePlatform3D');
 
@@ -22,56 +23,58 @@ interface DiagramNode {
   icon: string;
   color: number;
   description: string;
+  /** Excalidraw element ID – used to map Excalidraw arrow bindings to nodes. */
+  excalidrawId: string;
 }
 
 const LEVEL_NODES: Record<number, DiagramNode[]> = {
   1: [
-    { label: 'Patient',             icon: '👤', color: 0x6366f1, description: 'Books appointments and views medical records.' },
-    { label: 'Doctor',              icon: '🩺', color: 0x6366f1, description: 'Views patient records and orders tests.' },
-    { label: 'Admin',               icon: '👑', color: 0x6366f1, description: 'Manages users and platform configuration.' },
-    { label: 'Healthcare Platform', icon: '🏥', color: 0x8b5cf6, description: 'Provides appointment scheduling, EMR, and billing.' },
-    { label: 'Pharmacy',            icon: '💊', color: 0x64748b, description: 'Receives prescriptions and dispenses medication.' },
-    { label: 'Insurance',           icon: '🛡️', color: 0x64748b, description: 'Verifies patient coverage and processes claims.' },
-    { label: 'Lab',                 icon: '🔬', color: 0x64748b, description: 'Receives test orders and returns results.' },
+    { label: 'Patient',             icon: '👤', color: 0x6366f1, description: 'Books appointments and views medical records.',            excalidrawId: 'l1-patient'  },
+    { label: 'Doctor',              icon: '🩺', color: 0x6366f1, description: 'Views patient records and orders tests.',                  excalidrawId: 'l1-doctor'   },
+    { label: 'Admin',               icon: '👑', color: 0x6366f1, description: 'Manages users and platform configuration.',               excalidrawId: 'l1-admin'    },
+    { label: 'Healthcare Platform', icon: '🏥', color: 0x8b5cf6, description: 'Provides appointment scheduling, EMR, and billing.',       excalidrawId: 'l1-platform' },
+    { label: 'Pharmacy',            icon: '💊', color: 0x64748b, description: 'Receives prescriptions and dispenses medication.',         excalidrawId: 'l1-pharmacy' },
+    { label: 'Insurance',           icon: '🛡️', color: 0x64748b, description: 'Verifies patient coverage and processes claims.',          excalidrawId: 'l1-insurance'},
+    { label: 'Lab',                 icon: '🔬', color: 0x64748b, description: 'Receives test orders and returns results.',                excalidrawId: 'l1-lab'      },
   ],
   2: [
-    { label: 'Patient',         icon: '👤', color: 0x6366f1, description: 'Books appointments and views medical records.' },
-    { label: 'Doctor',          icon: '🩺', color: 0x6366f1, description: 'Views patient records and orders tests.' },
-    { label: 'Web App',         icon: '🌐', color: 0x0ea5e9, description: 'Delivers the web front-end to users via their browser.' },
-    { label: 'Mobile App',      icon: '📱', color: 0x0ea5e9, description: 'Provides healthcare access on mobile devices.' },
-    { label: 'API Gateway',     icon: '🔀', color: 0x0ea5e9, description: 'Routes requests and enforces authentication.' },
-    { label: 'EMR Service',     icon: '📋', color: 0x0ea5e9, description: 'Manages electronic medical records.' },
-    { label: 'Appt Service',    icon: '📅', color: 0x0ea5e9, description: 'Handles appointment scheduling and reminders.' },
-    { label: 'Billing Service', icon: '💳', color: 0x0ea5e9, description: 'Processes billing and insurance claims.' },
-    { label: 'Database',        icon: '🗄️', color: 0x06b6d4, description: 'Stores patient records, appointments, and billing data.' },
-    { label: 'Message Queue',   icon: '📨', color: 0x0ea5e9, description: 'Decouples async communication between services.' },
+    { label: 'Patient',         icon: '👤', color: 0x6366f1, description: 'Books appointments and views medical records.',    excalidrawId: 'l2-patient' },
+    { label: 'Doctor',          icon: '🩺', color: 0x6366f1, description: 'Views patient records and orders tests.',          excalidrawId: 'l2-doctor'  },
+    { label: 'Web App',         icon: '🌐', color: 0x0ea5e9, description: 'Delivers the web front-end to users via their browser.', excalidrawId: 'l2-webapp'  },
+    { label: 'Mobile App',      icon: '📱', color: 0x0ea5e9, description: 'Provides healthcare access on mobile devices.',    excalidrawId: 'l2-mobile'  },
+    { label: 'API Gateway',     icon: '🔀', color: 0x0ea5e9, description: 'Routes requests and enforces authentication.',      excalidrawId: 'l2-api'     },
+    { label: 'EMR Service',     icon: '📋', color: 0x0ea5e9, description: 'Manages electronic medical records.',              excalidrawId: 'l2-emr'     },
+    { label: 'Appt Service',    icon: '📅', color: 0x0ea5e9, description: 'Handles appointment scheduling and reminders.',    excalidrawId: 'l2-appt'    },
+    { label: 'Billing Service', icon: '💳', color: 0x0ea5e9, description: 'Processes billing and insurance claims.',          excalidrawId: 'l2-billing' },
+    { label: 'Database',        icon: '🗄️', color: 0x06b6d4, description: 'Stores patient records, appointments, and billing data.', excalidrawId: 'l2-db'      },
+    { label: 'Message Queue',   icon: '📨', color: 0x0ea5e9, description: 'Decouples async communication between services.',  excalidrawId: 'l2-queue'   },
   ],
   3: [
-    { label: 'API Gateway',       icon: '🔀', color: 0x64748b, description: 'Routes authenticated requests to the EMR Service.' },
-    { label: 'Database',          icon: '🗄️', color: 0x64748b, description: 'Stores medical records.' },
-    { label: 'Record Controller', icon: '🎮', color: 0x10b981, description: 'Exposes REST endpoints for medical records.' },
-    { label: 'Record Service',    icon: '⚙️', color: 0x10b981, description: 'Business logic for creating and retrieving records.' },
-    { label: 'Record Repo',       icon: '📦', color: 0x10b981, description: 'Abstracts database access for medical records.' },
-    { label: 'Auth Module',       icon: '🔐', color: 0x10b981, description: 'Validates JWT tokens on incoming requests.' },
-    { label: 'Audit Logger',      icon: '📝', color: 0x10b981, description: 'Logs all record access for compliance.' },
-    { label: 'Cache Client',      icon: '⚡', color: 0x10b981, description: 'Caches frequently accessed records.' },
+    { label: 'API Gateway',       icon: '🔀', color: 0x64748b, description: 'Routes authenticated requests to the EMR Service.', excalidrawId: 'l3-gateway' },
+    { label: 'Database',          icon: '🗄️', color: 0x64748b, description: 'Stores medical records.',                           excalidrawId: 'l3-db'      },
+    { label: 'Record Controller', icon: '🎮', color: 0x10b981, description: 'Exposes REST endpoints for medical records.',        excalidrawId: 'l3-ctrl'    },
+    { label: 'Record Service',    icon: '⚙️', color: 0x10b981, description: 'Business logic for creating and retrieving records.', excalidrawId: 'l3-svc'     },
+    { label: 'Record Repo',       icon: '📦', color: 0x10b981, description: 'Abstracts database access for medical records.',     excalidrawId: 'l3-repo'    },
+    { label: 'Auth Module',       icon: '🔐', color: 0x10b981, description: 'Validates JWT tokens on incoming requests.',         excalidrawId: 'l3-auth'    },
+    { label: 'Audit Logger',      icon: '📝', color: 0x10b981, description: 'Logs all record access for compliance.',             excalidrawId: 'l3-audit'   },
+    { label: 'Cache Client',      icon: '⚡', color: 0x10b981, description: 'Caches frequently accessed records.',                excalidrawId: 'l3-cache'   },
   ],
   4: [
-    { label: 'IRecordRepo',      icon: '📋', color: 0xa78bfa, description: 'Interface for record storage abstraction.' },
-    { label: 'RecordController', icon: '🎮', color: 0x8b5cf6, description: 'Exposes REST endpoints for medical records.' },
-    { label: 'RecordService',    icon: '⚙️', color: 0x8b5cf6, description: 'Business logic for creating and retrieving records.' },
-    { label: 'RecordRepository', icon: '📦', color: 0x8b5cf6, description: 'Implements IRecordRepository using PostgreSQL.' },
-    { label: 'Record',           icon: '📄', color: 0x8b5cf6, description: 'Entity representing a medical record.' },
-    { label: 'RecordRequest',    icon: '📤', color: 0x8b5cf6, description: 'DTO for creating or updating a record.' },
-    { label: 'RecordResponse',   icon: '📥', color: 0x8b5cf6, description: 'DTO returned from record operations.' },
+    { label: 'RecordController',  icon: '🎮', color: 0x8b5cf6, description: 'Exposes REST endpoints for medical records.',               excalidrawId: 'l4-ctrl'  },
+    { label: 'RecordService',     icon: '⚙️', color: 0x8b5cf6, description: 'Business logic for creating and retrieving records.',       excalidrawId: 'l4-svc'   },
+    { label: 'RecordRepository',  icon: '📦', color: 0x8b5cf6, description: 'Implements IRecordRepository using PostgreSQL.',            excalidrawId: 'l4-repo'  },
+    { label: 'MedicalRecord',     icon: '📄', color: 0x8b5cf6, description: 'Entity representing a medical record.',                     excalidrawId: 'l4-model' },
+    { label: 'CacheClient',       icon: '⚡', color: 0x8b5cf6, description: 'Caches frequently accessed records.',                       excalidrawId: 'l4-cache' },
   ],
 };
 
 interface Props {
   level: 1 | 2 | 3 | 4;
+  /** Directed connections derived from Excalidraw arrow bindings. */
+  connections: Connection[];
 }
 
-export default function HealthcarePlatform3D({ level }: Props) {
+export default function HealthcarePlatform3D({ level, connections }: Props) {
   const mountRef = useRef<HTMLDivElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
   const labelRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -82,6 +85,21 @@ export default function HealthcarePlatform3D({ level }: Props) {
 
     const nodes = LEVEL_NODES[level];
     logger.info(`Initializing 3D healthcare diagram for level ${level}`);
+
+    // Build a map from Excalidraw element ID → node index for O(1) lookups.
+    const idToIndex = new Map<string, number>(
+      nodes.map((n, i) => [n.excalidrawId, i]),
+    );
+
+    // Resolve Excalidraw connections to [fromIndex, toIndex] pairs, skipping
+    // any connection whose endpoint doesn't appear in this level's node list.
+    const connectionPairs: [number, number][] = connections.flatMap(({ from, to }) => {
+      const fromIdx = idToIndex.get(from);
+      const toIdx = idToIndex.get(to);
+      return fromIdx !== undefined && toIdx !== undefined
+        ? [[fromIdx, toIdx] as [number, number]]
+        : [];
+    });
 
     // ── Scene setup ────────────────────────────────────────────────────────────
     const scene = new THREE.Scene();
@@ -158,7 +176,7 @@ export default function HealthcarePlatform3D({ level }: Props) {
     // ── Connecting arrows between nodes ────────────────────────────────────────
     const ARROW_OPACITY = 0.75;
     const arrowHelpers: THREE.ArrowHelper[] = [];
-    for (let i = 0; i < meshes.length; i++) {
+    for (let i = 0; i < connectionPairs.length; i++) {
       const arrowHelper = new THREE.ArrowHelper(
         new THREE.Vector3(1, 0, 0),
         new THREE.Vector3(),
@@ -271,20 +289,19 @@ export default function HealthcarePlatform3D({ level }: Props) {
         }
       });
 
-      // Update connecting arrows each frame
-      for (let i = 0; i < meshes.length; i++) {
-        const next = (i + 1) % meshes.length;
-        const from = meshes[i].position.clone();
-        const to = meshes[next].position.clone();
+      // Update connecting arrows each frame using Excalidraw-derived connections
+      connectionPairs.forEach(([fromIdx, toIdx], ci) => {
+        const from = meshes[fromIdx].position.clone();
+        const to = meshes[toIdx].position.clone();
         const dir = to.clone().sub(from);
         const dist = dir.length();
         dir.normalize();
         // Shorten arrow so it doesn't overlap the boxes (0.8 units per side)
         const arrowLength = Math.max(0.1, dist - 1.6);
-        arrowHelpers[i].position.copy(from.clone().addScaledVector(dir, 0.8));
-        arrowHelpers[i].setDirection(dir);
-        arrowHelpers[i].setLength(arrowLength, 0.35, 0.22);
-      }
+        arrowHelpers[ci].position.copy(from.clone().addScaledVector(dir, 0.8));
+        arrowHelpers[ci].setDirection(dir);
+        arrowHelpers[ci].setLength(arrowLength, 0.35, 0.22);
+      });
 
       // Raycasting for hover highlight
       raycaster.setFromCamera(pointer, camera);
