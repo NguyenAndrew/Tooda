@@ -153,6 +153,7 @@ test.describe('Excalidraw example page', () => {
     await page.locator('.renderer-btn[data-renderer="excalidraw"]').click();
     await expect(page.locator('#level1 .excalidraw-view')).toBeVisible();
     await expect(page.locator('#level1 .mermaid-view')).toBeHidden();
+    await expect(page.locator('#level1 .threeD-view')).toBeHidden();
   });
 
   test('clicking 3D renderer button activates 3D button and hides Excalidraw view', async ({ page }) => {
