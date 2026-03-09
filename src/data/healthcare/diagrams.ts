@@ -11,7 +11,7 @@
  * that are not embedded in the Excalidraw labels).
  */
 
-import { excalidrawToMermaid } from '../../utils/excalidrawToMermaid';
+import { excalidrawToMermaid, extractConnections } from '../../utils/excalidrawToMermaid';
 import type { LevelMeta } from '../../utils/excalidrawToMermaid';
 
 export { level1Elements } from '../excalidraw/level1Elements';
@@ -139,4 +139,15 @@ export const mermaidDiagrams = {
   level2: excalidrawToMermaid(level2Elements, level2Meta),
   level3: excalidrawToMermaid(level3Elements, level3Meta),
   level4: excalidrawToMermaid(level4Elements, level4Meta),
+};
+
+// ── Derived connections for 3D diagram ───────────────────────────────────────
+// Connections are derived from the Excalidraw arrows so the 3D diagram uses
+// Excalidraw as the source of truth for which boxes are connected.
+
+export const levelConnections = {
+  level1: extractConnections(level1Elements),
+  level2: extractConnections(level2Elements),
+  level3: extractConnections(level3Elements),
+  level4: extractConnections(level4Elements),
 };

@@ -81,7 +81,38 @@ interface RawEl {
   points?: [number, number][];
 }
 
-// ── Entry point ───────────────────────────────────────────────────────────────
+// ── Entry points ─────────────────────────────────────────────────────────────
+
+/** A directed connection extracted from an Excalidraw arrow element. */
+export interface Connection {
+  /** Excalidraw element ID of the arrow's source box. */
+  from: string;
+  /** Excalidraw element ID of the arrow's target box. */
+  to: string;
+}
+
+/**
+ * Extract the directed connections (arrows) from a set of Excalidraw elements.
+ *
+ * Only arrow elements that have both a startBinding and an endBinding are
+ * included; decorative or unconnected arrows are silently skipped.
+ *
+ * @param elements  The raw Excalidraw element array (any level file export).
+ */
+export function extractConnections(elements: readonly unknown[]): Connection[] {
+  const els = elements as readonly RawEl[];
+  const connections: Connection[] = [];
+  for (const el of els) {
+    if (
+      el.type === 'arrow' &&
+      el.startBinding?.elementId &&
+      el.endBinding?.elementId
+    ) {
+      connections.push({ from: el.startBinding.elementId, to: el.endBinding.elementId });
+    }
+  }
+  return connections;
+}
 
 /**
  * Convert an array of Excalidraw elements into a Mermaid diagram string.
