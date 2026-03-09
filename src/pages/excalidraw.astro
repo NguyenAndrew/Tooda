@@ -139,6 +139,14 @@ import {
       .mermaid-wrapper .mermaid {
         @apply flex justify-center;
       }
+
+      .export-png-btn {
+        @apply inline-block cursor-pointer rounded-lg border border-slate-700 bg-slate-800 px-5 py-2 text-[0.95rem] text-slate-400 no-underline transition-all duration-200;
+      }
+
+      .export-png-btn:hover {
+        @apply bg-slate-700 text-slate-50;
+      }
     </style>
   </head>
   <body>
@@ -162,6 +170,16 @@ import {
       <a href="#level2" class="tab-btn" data-tab="level2">Level 2 – Container</a>
       <a href="#level3" class="tab-btn" data-tab="level3">Level 3 – Component</a>
       <a href="#level4" class="tab-btn" data-tab="level4">Level 4 – Code</a>
+    </div>
+
+    <div class="mb-6 flex justify-center px-4">
+      <a
+        id="export-png-btn"
+        href="/Tooda/api/healthcare/excalidraw/level1.png"
+        download="healthcare-excalidraw-level1.png"
+        class="export-png-btn"
+        data-testid="export-png-btn"
+      >&#128247; Export PNG</a>
     </div>
 
     <!-- Level 1: System Context -->
@@ -241,6 +259,17 @@ import {
       const validTabs = ['level1', 'level2', 'level3', 'level4'];
 
       let currentRenderer = 'excalidraw';
+      let currentLevel = 'level1';
+
+      // ── Export PNG button ─────────────────────────────────────────────────────
+
+      function updateExportPngBtn() {
+        const btn = document.getElementById('export-png-btn');
+        if (!btn) return;
+        const href = '/Tooda/api/healthcare/' + currentRenderer + '/' + currentLevel + '.png';
+        btn.setAttribute('href', href);
+        btn.setAttribute('download', 'healthcare-' + currentRenderer + '-' + currentLevel + '.png');
+      }
 
       // ── Renderer toggle ──────────────────────────────────────────────────────
 
@@ -274,6 +303,8 @@ import {
             }
           }
         }
+
+        updateExportPngBtn();
       }
 
       rendererBtns.forEach(btn => {
@@ -291,6 +322,7 @@ import {
 
       function activateTab(target) {
         if (!validTabs.includes(target)) target = 'level1';
+        currentLevel = target;
         tabs.forEach(b => b.classList.remove('active'));
         panels.forEach(p => p.classList.remove('active'));
         const activeBtn = document.querySelector('.tab-btn[data-tab="' + target + '"]');
@@ -310,6 +342,8 @@ import {
             }
           }
         }
+
+        updateExportPngBtn();
       }
 
       tabs.forEach(btn => {

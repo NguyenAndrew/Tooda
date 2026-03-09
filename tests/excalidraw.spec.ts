@@ -201,3 +201,52 @@ test.describe('Excalidraw example page', () => {
   });
 });
 
+test.describe('Export PNG button', () => {
+  test('Export PNG button is visible on the page', async ({ page }) => {
+    await page.goto('/Tooda/excalidraw');
+    await expect(page.getByTestId('export-png-btn')).toBeVisible();
+  });
+
+  test('Export PNG button has correct default href (excalidraw level1)', async ({ page }) => {
+    await page.goto('/Tooda/excalidraw');
+    const btn = page.getByTestId('export-png-btn');
+    await expect(btn).toHaveAttribute('href', '/Tooda/api/healthcare/excalidraw/level1.png');
+  });
+
+  test('Export PNG button href updates when switching to Level 2 tab', async ({ page }) => {
+    await page.goto('/Tooda/excalidraw');
+    await page.getByRole('link', { name: 'Level 2 – Container' }).click();
+    const btn = page.getByTestId('export-png-btn');
+    await expect(btn).toHaveAttribute('href', '/Tooda/api/healthcare/excalidraw/level2.png');
+  });
+
+  test('Export PNG button href updates when switching to Mermaid renderer', async ({ page }) => {
+    await page.goto('/Tooda/excalidraw');
+    await page.locator('.renderer-btn[data-renderer="mermaid"]').click();
+    const btn = page.getByTestId('export-png-btn');
+    await expect(btn).toHaveAttribute('href', '/Tooda/api/healthcare/mermaid/level1.png');
+  });
+
+  test('Export PNG button href updates for Mermaid renderer on Level 3 tab', async ({ page }) => {
+    await page.goto('/Tooda/excalidraw');
+    await page.locator('.renderer-btn[data-renderer="mermaid"]').click();
+    await page.getByRole('link', { name: 'Level 3 – Component' }).click();
+    const btn = page.getByTestId('export-png-btn');
+    await expect(btn).toHaveAttribute('href', '/Tooda/api/healthcare/mermaid/level3.png');
+  });
+
+  test('Export PNG button has correct download attribute', async ({ page }) => {
+    await page.goto('/Tooda/excalidraw');
+    const btn = page.getByTestId('export-png-btn');
+    await expect(btn).toHaveAttribute('download', 'healthcare-excalidraw-level1.png');
+  });
+
+  test('Export PNG button download attribute updates when switching to Mermaid renderer on Level 4', async ({ page }) => {
+    await page.goto('/Tooda/excalidraw');
+    await page.locator('.renderer-btn[data-renderer="mermaid"]').click();
+    await page.getByRole('link', { name: 'Level 4 – Code' }).click();
+    const btn = page.getByTestId('export-png-btn');
+    await expect(btn).toHaveAttribute('download', 'healthcare-mermaid-level4.png');
+  });
+});
+
