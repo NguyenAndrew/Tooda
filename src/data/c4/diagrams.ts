@@ -1,49 +1,29 @@
 import { excalidrawToMermaid } from '../../utils/excalidrawToMermaid';
 import type { LevelMeta } from '../../utils/excalidrawToMermaid';
 
-// ── Banking element arrays ────────────────────────────────────────────────────
-export { bankingLevel1Elements } from '../excalidraw/banking/level1Elements';
-export { bankingLevel2Elements } from '../excalidraw/banking/level2Elements';
-export { bankingLevel3Elements } from '../excalidraw/banking/level3Elements';
-export { bankingLevel4Elements } from '../excalidraw/banking/level4Elements';
-
 import { bankingLevel1Elements } from '../excalidraw/banking/level1Elements';
 import { bankingLevel2Elements } from '../excalidraw/banking/level2Elements';
 import { bankingLevel3Elements } from '../excalidraw/banking/level3Elements';
 import { bankingLevel4Elements } from '../excalidraw/banking/level4Elements';
-
-// ── E-Commerce element arrays ─────────────────────────────────────────────────
-export { ecommerceLevel1Elements } from '../excalidraw/ecommerce/level1Elements';
-export { ecommerceLevel2Elements } from '../excalidraw/ecommerce/level2Elements';
-export { ecommerceLevel3Elements } from '../excalidraw/ecommerce/level3Elements';
-export { ecommerceLevel4Elements } from '../excalidraw/ecommerce/level4Elements';
-
 import { ecommerceLevel1Elements } from '../excalidraw/ecommerce/level1Elements';
 import { ecommerceLevel2Elements } from '../excalidraw/ecommerce/level2Elements';
 import { ecommerceLevel3Elements } from '../excalidraw/ecommerce/level3Elements';
 import { ecommerceLevel4Elements } from '../excalidraw/ecommerce/level4Elements';
-
-// ── Ride-Sharing element arrays ───────────────────────────────────────────────
-export { ridesharingLevel1Elements } from '../excalidraw/ridesharing/level1Elements';
-export { ridesharingLevel2Elements } from '../excalidraw/ridesharing/level2Elements';
-export { ridesharingLevel3Elements } from '../excalidraw/ridesharing/level3Elements';
-export { ridesharingLevel4Elements } from '../excalidraw/ridesharing/level4Elements';
-
 import { ridesharingLevel1Elements } from '../excalidraw/ridesharing/level1Elements';
 import { ridesharingLevel2Elements } from '../excalidraw/ridesharing/level2Elements';
 import { ridesharingLevel3Elements } from '../excalidraw/ridesharing/level3Elements';
 import { ridesharingLevel4Elements } from '../excalidraw/ridesharing/level4Elements';
-
-// ── Tooda element arrays ──────────────────────────────────────────────────────
-export { toodaLevel1Elements } from '../excalidraw/tooda/level1Elements';
-export { toodaLevel2Elements } from '../excalidraw/tooda/level2Elements';
-export { toodaLevel3Elements } from '../excalidraw/tooda/level3Elements';
-export { toodaLevel4Elements } from '../excalidraw/tooda/level4Elements';
-
 import { toodaLevel1Elements } from '../excalidraw/tooda/level1Elements';
 import { toodaLevel2Elements } from '../excalidraw/tooda/level2Elements';
 import { toodaLevel3Elements } from '../excalidraw/tooda/level3Elements';
 import { toodaLevel4Elements } from '../excalidraw/tooda/level4Elements';
+
+export {
+  bankingLevel1Elements, bankingLevel2Elements, bankingLevel3Elements, bankingLevel4Elements,
+  ecommerceLevel1Elements, ecommerceLevel2Elements, ecommerceLevel3Elements, ecommerceLevel4Elements,
+  ridesharingLevel1Elements, ridesharingLevel2Elements, ridesharingLevel3Elements, ridesharingLevel4Elements,
+  toodaLevel1Elements, toodaLevel2Elements, toodaLevel3Elements, toodaLevel4Elements,
+};
 
 // ── Banking LevelMeta ─────────────────────────────────────────────────────────
 
