@@ -59,8 +59,17 @@ export interface LevelMeta {
    * Optional C4 layout configuration emitted as `UpdateLayoutConfig(...)`.
    * Uses Mermaid's built-in grid algorithm parameters to control how many
    * nodes/boundaries appear per row, preventing arrow-node intersections.
+   * Ignored when `useElk` is true.
    */
   layoutConfig?: { c4ShapeInRow?: number; c4BoundaryInRow?: number };
+  /**
+   * When true, prepends `%%{init: {"layout": "elk"}}%%` to the generated
+   * Mermaid string so Mermaid uses its ELK layout engine (a Sugiyama-style
+   * layered algorithm) instead of the default C4 grid layout.  This produces
+   * cleaner edge routing that avoids intersecting lines and boxes, similar to
+   * the 2D SVG Sugiyama layout used by HealthcarePlatform2D.
+   */
+  useElk?: boolean;
 }
 
 // ── Lightweight internal element shape ───────────────────────────────────────
@@ -197,14 +206,22 @@ function generateC4Diagram(els: readonly RawEl[], meta: LevelMeta): string {
   );
 
   const lines: string[] = [];
+
+  // Prepend ELK init directive so Mermaid uses its Sugiyama-style layered
+  // layout engine instead of the default C4 grid.  This produces cleaner
+  // edge routing that avoids intersecting lines and boxes.
+  if (meta.useElk) {
+    lines.push('%%{init: {"layout": "elk"}}%%');
+  }
+
   lines.push(meta.diagramType);
   lines.push(`  title ${title}`);
   lines.push('');
 
-  // Emit UpdateLayoutConfig when caller specifies layout parameters.
-  // This uses Mermaid's built-in C4 grid algorithm to prevent arrow-node
-  // intersections without relying on manual node ordering hacks.
-  if (meta.layoutConfig) {
+  // Emit UpdateLayoutConfig when caller specifies layout parameters and ELK
+  // is not enabled.  ELK handles its own node placement so UpdateLayoutConfig
+  // is not needed (and has no effect) in ELK mode.
+  if (meta.layoutConfig && !meta.useElk) {
     const row = meta.layoutConfig.c4ShapeInRow ?? 4;
     const boundary = meta.layoutConfig.c4BoundaryInRow ?? 2;
     lines.push(`  UpdateLayoutConfig($c4ShapeInRow="${row}", $c4BoundaryInRow="${boundary}")`);
