@@ -7,7 +7,7 @@
     "dev:attach": "node scripts/copy-mermaid.js && astro dev",
     "build": "node scripts/copy-mermaid.js && astro build",
     "preview": "astro preview",
-    "lint": "eslint src/ && npm run lint:api",
+    "lint": "eslint src/ --max-warnings 0 && npm run lint:api",
     "lint:api": "node --experimental-strip-types scripts/lint-openapi.mjs",
     "postinstall": "npm run install:playwright",
     "install:playwright": "npx playwright install --with-deps chromium",
