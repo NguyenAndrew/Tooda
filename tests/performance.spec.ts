@@ -21,7 +21,7 @@ const HOME_NAV_LINKS = [
   { name: 'Online Banking', label: /Online Banking/, destination: 'C4 Diagrams' },
   { name: 'E-Commerce', label: /E-Commerce/, destination: 'C4 Diagrams' },
   { name: 'Ride-Sharing', label: /Ride-Sharing/, destination: 'C4 Diagrams' },
-  { name: 'Healthcare', label: /Healthcare/, destination: 'Excalidraw' },
+  { name: 'Healthcare', label: /Healthcare \(Excalidraw\)/, destination: 'Excalidraw' },
 ];
 
 async function getNavigationLoadTime(page: Page): Promise<number | null> {
@@ -75,7 +75,7 @@ test.describe('Performance – responsiveness', () => {
         await expect(page.getByRole('link', { name: /Online Banking/ })).toBeVisible();
         await expect(page.getByRole('link', { name: /E-Commerce/ })).toBeVisible();
         await expect(page.getByRole('link', { name: /Ride-Sharing/ })).toBeVisible();
-        await expect(page.getByRole('link', { name: /Healthcare/ })).toBeVisible();
+        await expect(page.getByRole('link', { name: /Healthcare \(Excalidraw\)/ })).toBeVisible();
       });
 
       test('C4 Diagrams page renders key elements', async ({ page }) => {

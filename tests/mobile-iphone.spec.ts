@@ -29,7 +29,7 @@ test.describe('iPhone – Home page (portrait)', () => {
     await expect(page.getByRole('link', { name: /Online Banking/ })).toBeVisible();
     await expect(page.getByRole('link', { name: /E-Commerce/ })).toBeVisible();
     await expect(page.getByRole('link', { name: /Ride-Sharing/ })).toBeVisible();
-    await expect(page.getByRole('link', { name: /Healthcare/ })).toBeVisible();
+    await expect(page.getByRole('link', { name: /Healthcare \(Excalidraw\)/ })).toBeVisible();
     await expect(page.getByRole('link', { name: /View All Features/ })).toBeVisible();
     await expect(page.getByRole('link', { name: /View Slide Deck/ })).toBeVisible();
     await expect(page.getByRole('link', { name: /API Explorer/ })).toBeVisible();
@@ -59,7 +59,7 @@ test.describe('iPhone – Home page (portrait)', () => {
   test('Healthcare link taps to Excalidraw page', async ({ page }) => {
     await Promise.all([
       page.waitForURL(/\/Tooda\/excalidraw/),
-      page.getByRole('link', { name: /Healthcare/ }).tap(),
+      page.getByRole('link', { name: /Healthcare \(Excalidraw\)/ }).tap(),
     ]);
   });
 
