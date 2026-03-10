@@ -6,12 +6,12 @@ import { LEVEL_NODES } from '../data/healthcare/nodes';
 const BOX_W = 140;
 const BOX_H = 56;
 
-/** Centre-to-centre spacing: horizontal between nodes in the same layer,
+/** Center-to-center spacing: horizontal between nodes in the same layer,
  *  vertical between layers. */
 const H_STEP = 180;
 const V_STEP = 130;
 
-/** Padding from SVG edge to the outermost node centre. */
+/** Padding from SVG edge to the outermost node center. */
 const PAD_X = 80;
 const PAD_Y = 70;
 
@@ -95,7 +95,9 @@ export default function HealthcarePlatform2D({ level, connections }: Props) {
     }
   }
 
-  const numLayers = Math.max(...nodeLayers, 0) + 1;
+  // numLayers: initialise the reduce at -1 so an empty nodeLayers array
+  // correctly yields 0 rather than 1.
+  const numLayers = nodeLayers.reduce((max, l) => Math.max(max, l), -1) + 1;
 
   // ── Barycenter ordering within layers ────────────────────────────────────────
   // Group nodes by layer in their natural (index) order, then sort each layer
@@ -127,9 +129,13 @@ export default function HealthcarePlatform2D({ level, connections }: Props) {
 
   // ── Position computation ─────────────────────────────────────────────────────
   // Layers are stacked top-to-bottom; nodes within a layer are spread
-  // left-to-right and centred relative to the widest layer.
+  // left-to-right and centered relative to the widest layer.
 
-  const maxNodesInLayer = Math.max(...layerNodes.map(l => l.length), 1);
+  // maxNodesInLayer: minimum of 1 avoids zero-width SVG when the graph is empty.
+  const maxNodesInLayer = Math.max(
+    layerNodes.reduce((max, l) => Math.max(max, l.length), 0),
+    1,
+  );
   const svgW = PAD_X * 2 + (maxNodesInLayer - 1) * H_STEP;
   const svgH = PAD_Y * 2 + (numLayers - 1) * V_STEP;
 
@@ -165,7 +171,7 @@ export default function HealthcarePlatform2D({ level, connections }: Props) {
     if (dx < 0) ts.push(-hw / dx);
     if (dy > 0) ts.push(hh / dy);
     if (dy < 0) ts.push(-hh / dy);
-    const t = Math.min(...ts);
+    const t = ts.reduce((min, v) => Math.min(min, v), Infinity);
     return { x: cx + t * dx, y: cy + t * dy };
   }
 
@@ -175,8 +181,11 @@ export default function HealthcarePlatform2D({ level, connections }: Props) {
    * • 1-layer span: straight line clipped to both box edges.  Adjacent-layer
    *   boxes live in separate horizontal bands so the segment never crosses an
    *   intermediate box.
-   * • 2+-layer span (long edge): an orthogonal detour routed through the
-   *   inter-layer lanes avoids every intermediate box.
+   * • 2+-layer span (long edge): a cubic Bézier curve that exits from the
+   *   side of the source box (left when the target is left-or-equal, right
+   *   otherwise) and enters the target from the top.  Exiting sideways keeps
+   *   the curve away from the source's bottom-center where the direct
+   *   next-layer edge already departs, preventing any visual overlap.
    */
   function routeArrow(fi: number, ti: number): string {
     const fp = positions[fi];
@@ -191,35 +200,28 @@ export default function HealthcarePlatform2D({ level, connections }: Props) {
       return `M ${start.x} ${start.y} L ${end.x} ${end.y}`;
     }
 
-    // ── Long edge: orthogonal detour ─────────────────────────────────────────
-    // Find the rightmost right-edge of every box in the intermediate layers.
-    let maxIntRight = fp.cx + BOX_W / 2;
-    for (let l = fl + 1; l < tl; l++) {
-      for (const n of layerNodes[l]) {
-        maxIntRight = Math.max(maxIntRight, positions[n].cx + BOX_W / 2);
-      }
-    }
-    // The detour lane sits just to the right of all intermediate boxes,
-    // but must stay within the SVG canvas.
-    const detourX = Math.min(maxIntRight + H_STEP / 4, svgW - PAD_X / 2);
+    // ── Long edge: cubic Bézier curve ────────────────────────────────────────
+    // Exit from the side of the source (left when target is left-of-center,
+    // right otherwise) so the curve never overlaps the bottom-center anchor
+    // used by the direct adjacent-layer edge.
+    const goLeft = tp.cx <= fp.cx;
+    const startX = goLeft ? fp.cx - BOX_W / 2 : fp.cx + BOX_W / 2;
+    const startY = fp.cy;
+    const endX   = tp.cx;
+    const endY   = tp.cy - BOX_H / 2; // enter target from the top
 
-    // Horizontal lanes sit midway between adjacent layers.
-    const topLaneY    = fp.cy + V_STEP / 2; // below source layer
-    const bottomLaneY = tp.cy - V_STEP / 2; // above target layer
+    // The midpoint Y sits halfway between the two layers.
+    const midY = (fp.cy + tp.cy) / 2;
 
-    const startY = fp.cy + BOX_H / 2; // exit source from bottom
-    const endY   = tp.cy - BOX_H / 2; // enter target from top
+    // Control points: pull the curve sideways at midY so it bows away from
+    // any intermediate boxes that sit directly below the source.
+    const cpOffset = goLeft ? -H_STEP * 0.4 : H_STEP * 0.4;
+    const cp1x = startX + cpOffset;
+    const cp1y = midY;
+    const cp2x = endX;
+    const cp2y = midY;
 
-    // Path: down from source → right to detour lane → down to target band
-    //       → left to target x → into target.
-    return (
-      `M ${fp.cx} ${startY} ` +
-      `L ${fp.cx} ${topLaneY} ` +
-      `L ${detourX} ${topLaneY} ` +
-      `L ${detourX} ${bottomLaneY} ` +
-      `L ${tp.cx} ${bottomLaneY} ` +
-      `L ${tp.cx} ${endY}`
-    );
+    return `M ${startX} ${startY} C ${cp1x} ${cp1y} ${cp2x} ${cp2y} ${endX} ${endY}`;
   }
 
   const MARKER_ID = `arrow2d-l${level}`;
