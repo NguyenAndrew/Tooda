@@ -25,9 +25,21 @@ test.describe('Home page', () => {
     await expect(ridesharingLink).toBeVisible();
     await expect(ridesharingLink).toHaveAttribute('href', '/Tooda/c4?example=ridesharing');
 
-    const healthcareLink = page.getByRole('link', { name: /Healthcare/ });
-    await expect(healthcareLink).toBeVisible();
-    await expect(healthcareLink).toHaveAttribute('href', '/Tooda/excalidraw');
+    const healthcareExcalidrawLink = page.getByRole('link', { name: /Healthcare \(Excalidraw\)/ });
+    await expect(healthcareExcalidrawLink).toBeVisible();
+    await expect(healthcareExcalidrawLink).toHaveAttribute('href', '/Tooda/excalidraw?renderer=excalidraw');
+
+    const healthcareMermaidLink = page.getByRole('link', { name: /Healthcare \(Mermaid\)/ });
+    await expect(healthcareMermaidLink).toBeVisible();
+    await expect(healthcareMermaidLink).toHaveAttribute('href', '/Tooda/excalidraw?renderer=mermaid');
+
+    const healthcareTwoDLink = page.getByRole('link', { name: /Healthcare \(2D\)/ });
+    await expect(healthcareTwoDLink).toBeVisible();
+    await expect(healthcareTwoDLink).toHaveAttribute('href', '/Tooda/excalidraw?renderer=2d');
+
+    const healthcareThreeDLink = page.getByRole('link', { name: /Healthcare \(3D\)/ });
+    await expect(healthcareThreeDLink).toBeVisible();
+    await expect(healthcareThreeDLink).toHaveAttribute('href', '/Tooda/excalidraw?renderer=3d');
   });
 
   test('has a link to the GitHub repository', async ({ page }) => {
@@ -136,7 +148,7 @@ test.describe('Home page – mobile viewport button functionality', () => {
   });
 
   test('Healthcare (Excalidraw) button is clickable on mobile', async ({ page }) => {
-    const link = page.getByRole('link', { name: /Healthcare/ });
+    const link = page.getByRole('link', { name: /Healthcare \(Excalidraw\)/ });
     await expect(link).toBeVisible();
     await Promise.all([
       page.waitForURL(/\/Tooda\/excalidraw/),
