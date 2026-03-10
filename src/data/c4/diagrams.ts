@@ -1,501 +1,338 @@
+import { excalidrawToMermaid } from '../../utils/excalidrawToMermaid';
+import type { LevelMeta } from '../../utils/excalidrawToMermaid';
+
+import { bankingLevel1Elements } from '../excalidraw/banking/level1Elements';
+import { bankingLevel2Elements } from '../excalidraw/banking/level2Elements';
+import { bankingLevel3Elements } from '../excalidraw/banking/level3Elements';
+import { bankingLevel4Elements } from '../excalidraw/banking/level4Elements';
+import { ecommerceLevel1Elements } from '../excalidraw/ecommerce/level1Elements';
+import { ecommerceLevel2Elements } from '../excalidraw/ecommerce/level2Elements';
+import { ecommerceLevel3Elements } from '../excalidraw/ecommerce/level3Elements';
+import { ecommerceLevel4Elements } from '../excalidraw/ecommerce/level4Elements';
+import { ridesharingLevel1Elements } from '../excalidraw/ridesharing/level1Elements';
+import { ridesharingLevel2Elements } from '../excalidraw/ridesharing/level2Elements';
+import { ridesharingLevel3Elements } from '../excalidraw/ridesharing/level3Elements';
+import { ridesharingLevel4Elements } from '../excalidraw/ridesharing/level4Elements';
+import { toodaLevel1Elements } from '../excalidraw/tooda/level1Elements';
+import { toodaLevel2Elements } from '../excalidraw/tooda/level2Elements';
+import { toodaLevel3Elements } from '../excalidraw/tooda/level3Elements';
+import { toodaLevel4Elements } from '../excalidraw/tooda/level4Elements';
+
+export {
+  bankingLevel1Elements, bankingLevel2Elements, bankingLevel3Elements, bankingLevel4Elements,
+  ecommerceLevel1Elements, ecommerceLevel2Elements, ecommerceLevel3Elements, ecommerceLevel4Elements,
+  ridesharingLevel1Elements, ridesharingLevel2Elements, ridesharingLevel3Elements, ridesharingLevel4Elements,
+  toodaLevel1Elements, toodaLevel2Elements, toodaLevel3Elements, toodaLevel4Elements,
+};
+
+// ── Banking LevelMeta ─────────────────────────────────────────────────────────
+
+const bankingLevel1Meta: LevelMeta = {
+  diagramType: 'C4Context',
+  useElk: true,
+  nodes: {
+    'l1-customer': { c4type: 'Person', desc: 'A customer of the bank with personal bank accounts.' },
+    'l1-staff': { c4type: 'Person', desc: 'Bank employees managing accounts and support.' },
+    'l1-onlineBanking': { c4type: 'System', desc: 'Allows customers to view account information and make payments.' },
+    'l1-email': { c4type: 'System_Ext', desc: 'The internal Microsoft Exchange e-mail system.' },
+    'l1-mainframe': { c4type: 'System_Ext', desc: 'Stores all core banking information about customers, accounts, and transactions.' },
+  },
+};
+
+const bankingLevel2Meta: LevelMeta = {
+  diagramType: 'C4Container',
+  useElk: true,
+  nodes: {
+    'l2-customer': { c4type: 'Person', desc: 'A customer of the bank with personal bank accounts.' },
+    'l2-email': { c4type: 'System_Ext', desc: 'Microsoft Exchange' },
+    'l2-mainframe': { c4type: 'System_Ext', desc: 'Core banking records' },
+    'l2-webApp': { c4type: 'Container', tech: 'Astro / Node.js', desc: 'Delivers the static web front-end to customers via their browser.' },
+    'l2-spa': { c4type: 'Container', tech: 'JavaScript', desc: 'Provides the banking functionality to customers via their browser.' },
+    'l2-mobileApp': { c4type: 'Container', tech: 'React Native', desc: 'Provides the banking functionality to customers via their mobile device.' },
+    'l2-apiApp': { c4type: 'Container', tech: 'Node.js / Express', desc: 'Provides banking functionality via a JSON/HTTPS API.' },
+    'l2-db': { c4type: 'ContainerDb', tech: 'PostgreSQL', desc: 'Stores customer and account information.' },
+  },
+  boundaries: [
+    {
+      id: 'ob',
+      label: 'Online Banking System',
+      type: 'System_Boundary',
+      nodeIds: ['l2-webApp', 'l2-spa', 'l2-mobileApp', 'l2-apiApp', 'l2-db'],
+    },
+  ],
+};
+
+const bankingLevel3Meta: LevelMeta = {
+  diagramType: 'C4Component',
+  useElk: true,
+  nodes: {
+    'l3-spa': { c4type: 'Container_Ext', tech: 'JavaScript', desc: 'Front-end delivered by the web application.' },
+    'l3-mobileApp': { c4type: 'Container_Ext', tech: 'React Native', desc: 'Mobile front-end.' },
+    'l3-db': { c4type: 'ContainerDb_Ext', tech: 'PostgreSQL', desc: 'Stores account and customer data.' },
+    'l3-email': { c4type: 'System_Ext', desc: 'Microsoft Exchange' },
+    'l3-mainframe': { c4type: 'System_Ext', desc: 'Core banking records' },
+    'l3-authController': { c4type: 'Component', tech: 'Express Router', desc: 'Handles sign-in, sign-out, and token refresh.' },
+    'l3-accountsController': { c4type: 'Component', tech: 'Express Router', desc: 'Provides account balance and transaction history endpoints.' },
+    'l3-paymentsController': { c4type: 'Component', tech: 'Express Router', desc: 'Handles payment initiation and confirmation.' },
+    'l3-authService': { c4type: 'Component', tech: 'Node.js module', desc: 'Validates credentials and issues JWT tokens.' },
+    'l3-accountsService': { c4type: 'Component', tech: 'Node.js module', desc: 'Business logic for account data.' },
+    'l3-paymentsService': { c4type: 'Component', tech: 'Node.js module', desc: 'Business logic for payments.' },
+    'l3-emailService': { c4type: 'Component', tech: 'Node.js module', desc: 'Sends notification e-mails.' },
+  },
+  boundaries: [
+    {
+      id: 'api',
+      label: 'API Application',
+      type: 'Container_Boundary',
+      nodeIds: ['l3-authController', 'l3-accountsController', 'l3-paymentsController', 'l3-authService', 'l3-accountsService', 'l3-paymentsService', 'l3-emailService'],
+    },
+  ],
+};
+
+const bankingLevel4Meta: LevelMeta = {
+  diagramType: 'classDiagram',
+};
+
+// ── E-Commerce LevelMeta ──────────────────────────────────────────────────────
+
+const ecommerceLevel1Meta: LevelMeta = {
+  diagramType: 'C4Context',
+  useElk: true,
+  nodes: {
+    'l1-customer': { c4type: 'Person', desc: 'A person who browses products and places orders.' },
+    'l1-seller': { c4type: 'Person', desc: 'A business or individual who lists products for sale.' },
+    'l1-ecommerce': { c4type: 'System', desc: 'Allows customers to browse products, place orders, and track deliveries.' },
+    'l1-payment': { c4type: 'System_Ext', desc: 'Processes credit card and digital wallet payments.' },
+    'l1-shipping': { c4type: 'System_Ext', desc: 'Handles order fulfillment and delivery tracking.' },
+    'l1-email': { c4type: 'System_Ext', desc: 'Sends order confirmations and shipping notifications.' },
+  },
+};
+
+const ecommerceLevel2Meta: LevelMeta = {
+  diagramType: 'C4Container',
+  useElk: true,
+  nodes: {
+    'l2-customer': { c4type: 'Person', desc: 'A person who shops online.' },
+    'l2-seller': { c4type: 'Person', desc: 'A product vendor.' },
+    'l2-payment': { c4type: 'System_Ext', desc: 'Stripe' },
+    'l2-shipping': { c4type: 'System_Ext', desc: 'FedEx / UPS' },
+    'l2-email': { c4type: 'System_Ext', desc: 'SendGrid' },
+    'l2-webApp': { c4type: 'Container', tech: 'Astro / Node.js', desc: 'Serves the storefront to customers via their browser.' },
+    'l2-mobileApp': { c4type: 'Container', tech: 'React Native', desc: 'Provides the shopping experience on mobile devices.' },
+    'l2-apiGateway': { c4type: 'Container', tech: 'Node.js / Express', desc: 'Routes requests to the appropriate microservices.' },
+    'l2-productService': { c4type: 'Container', tech: 'Node.js', desc: 'Manages product catalogue and search.' },
+    'l2-orderService': { c4type: 'Container', tech: 'Node.js', desc: 'Handles order creation, status, and history.' },
+    'l2-db': { c4type: 'ContainerDb', tech: 'PostgreSQL', desc: 'Stores products, orders, and customer data.' },
+    'l2-queue': { c4type: 'Container', tech: 'RabbitMQ', desc: 'Decouples order events from downstream processing.' },
+  },
+  boundaries: [
+    {
+      id: 'ec',
+      label: 'E-Commerce Platform',
+      type: 'System_Boundary',
+      nodeIds: ['l2-webApp', 'l2-mobileApp', 'l2-apiGateway', 'l2-productService', 'l2-orderService', 'l2-db', 'l2-queue'],
+    },
+  ],
+};
+
+const ecommerceLevel3Meta: LevelMeta = {
+  diagramType: 'C4Component',
+  useElk: true,
+  nodes: {
+    'l3-apiGateway': { c4type: 'Container_Ext', tech: 'Node.js / Express', desc: 'Routes incoming requests.' },
+    'l3-queue': { c4type: 'Container_Ext', tech: 'RabbitMQ', desc: 'Receives order events.' },
+    'l3-db': { c4type: 'ContainerDb_Ext', tech: 'PostgreSQL', desc: 'Stores order records.' },
+    'l3-orderController': { c4type: 'Component', tech: 'Express Router', desc: 'Handles order creation and retrieval endpoints.' },
+    'l3-orderService': { c4type: 'Component', tech: 'Node.js module', desc: 'Business logic for orders.' },
+    'l3-paymentClient': { c4type: 'Component', tech: 'Node.js module', desc: 'Integrates with the Payment Gateway.' },
+    'l3-shippingClient': { c4type: 'Component', tech: 'Node.js module', desc: 'Integrates with the Shipping Provider.' },
+    'l3-orderRepository': { c4type: 'Component', tech: 'Node.js module', desc: 'Persists and queries order records.' },
+    'l3-eventPublisher': { c4type: 'Component', tech: 'Node.js module', desc: 'Publishes order events to the message queue.' },
+  },
+  boundaries: [
+    {
+      id: 'os',
+      label: 'Order Service',
+      type: 'Container_Boundary',
+      nodeIds: ['l3-orderController', 'l3-orderService', 'l3-paymentClient', 'l3-shippingClient', 'l3-orderRepository', 'l3-eventPublisher'],
+    },
+  ],
+};
+
+const ecommerceLevel4Meta: LevelMeta = {
+  diagramType: 'classDiagram',
+};
+
+// ── Ride-Sharing LevelMeta ────────────────────────────────────────────────────
+
+const ridesharingLevel1Meta: LevelMeta = {
+  diagramType: 'C4Context',
+  useElk: true,
+  nodes: {
+    'l1-rider': { c4type: 'Person', desc: 'A passenger who requests and pays for rides.' },
+    'l1-driver': { c4type: 'Person', desc: 'A driver who accepts ride requests.' },
+    'l1-ridesharing': { c4type: 'System', desc: 'Connects riders with nearby drivers and handles trip booking and payment.' },
+    'l1-maps': { c4type: 'System_Ext', desc: 'Provides location search, routing, and ETA calculations.' },
+    'l1-payment': { c4type: 'System_Ext', desc: 'Processes ride fares and driver payouts.' },
+    'l1-sms': { c4type: 'System_Ext', desc: 'Sends trip status notifications to riders and drivers.' },
+  },
+};
+
+const ridesharingLevel2Meta: LevelMeta = {
+  diagramType: 'C4Container',
+  useElk: true,
+  nodes: {
+    'l2-rider': { c4type: 'Person', desc: 'Requests a ride.' },
+    'l2-driver': { c4type: 'Person', desc: 'Accepts a ride.' },
+    'l2-maps': { c4type: 'System_Ext', desc: 'Google Maps Platform' },
+    'l2-payment': { c4type: 'System_Ext', desc: 'Stripe' },
+    'l2-sms': { c4type: 'System_Ext', desc: 'Twilio' },
+    'l2-riderApp': { c4type: 'Container', tech: 'React Native', desc: 'Lets riders request rides, track drivers, and pay.' },
+    'l2-driverApp': { c4type: 'Container', tech: 'React Native', desc: 'Lets drivers accept trips and navigate to destinations.' },
+    'l2-apiServer': { c4type: 'Container', tech: 'Node.js / Express', desc: 'Core backend handling trips, matching, and payments.' },
+    'l2-locationService': { c4type: 'Container', tech: 'Node.js', desc: 'Tracks real-time driver positions.' },
+    'l2-db': { c4type: 'ContainerDb', tech: 'PostgreSQL', desc: 'Stores users, trips, and payment records.' },
+    'l2-cache': { c4type: 'ContainerDb', tech: 'Redis', desc: 'Stores active driver locations and trip state.' },
+  },
+  boundaries: [
+    {
+      id: 'rs',
+      label: 'Ride-Sharing App',
+      type: 'System_Boundary',
+      nodeIds: ['l2-riderApp', 'l2-driverApp', 'l2-apiServer', 'l2-locationService', 'l2-db', 'l2-cache'],
+    },
+  ],
+};
+
+const ridesharingLevel3Meta: LevelMeta = {
+  diagramType: 'C4Component',
+  useElk: true,
+  nodes: {
+    'l3-riderApp': { c4type: 'Container_Ext', tech: 'React Native', desc: 'Mobile app for riders.' },
+    'l3-driverApp': { c4type: 'Container_Ext', tech: 'React Native', desc: 'Mobile app for drivers.' },
+    'l3-db': { c4type: 'ContainerDb_Ext', tech: 'PostgreSQL', desc: 'Stores trip records.' },
+    'l3-cache': { c4type: 'ContainerDb_Ext', tech: 'Redis', desc: 'Active driver locations.' },
+    'l3-payment': { c4type: 'System_Ext', desc: 'Stripe' },
+    'l3-sms': { c4type: 'System_Ext', desc: 'Twilio' },
+    'l3-tripController': { c4type: 'Component', tech: 'Express Router', desc: 'Handles trip request, acceptance, and completion.' },
+    'l3-matchingService': { c4type: 'Component', tech: 'Node.js module', desc: 'Finds the nearest available driver for a rider.' },
+    'l3-tripService': { c4type: 'Component', tech: 'Node.js module', desc: 'Business logic for trip lifecycle.' },
+    'l3-paymentService': { c4type: 'Component', tech: 'Node.js module', desc: 'Calculates fares and triggers payment.' },
+    'l3-notificationService': { c4type: 'Component', tech: 'Node.js module', desc: 'Sends SMS updates to riders and drivers.' },
+    'l3-tripRepository': { c4type: 'Component', tech: 'Node.js module', desc: 'Persists trip records to the database.' },
+  },
+  boundaries: [
+    {
+      id: 'api',
+      label: 'API Server',
+      type: 'Container_Boundary',
+      nodeIds: ['l3-tripController', 'l3-matchingService', 'l3-tripService', 'l3-paymentService', 'l3-notificationService', 'l3-tripRepository'],
+    },
+  ],
+};
+
+const ridesharingLevel4Meta: LevelMeta = {
+  diagramType: 'classDiagram',
+};
+
+// ── Tooda LevelMeta ───────────────────────────────────────────────────────────
+
+const toodaLevel1Meta: LevelMeta = {
+  diagramType: 'C4Context',
+  useElk: true,
+  nodes: {
+    'l1-developer': { c4type: 'Person', desc: 'Creates and maintains software architecture diagrams.' },
+    'l1-tooda': { c4type: 'System', desc: 'A browser-based tool for visualizing software architecture using C4/Mermaid and Excalidraw.' },
+    'l1-githubPages': { c4type: 'System_Ext', desc: 'Hosts and serves the Tooda static site.' },
+    'l1-mermaid': { c4type: 'System_Ext', desc: 'Renders C4 and class diagrams from plain-text definitions in the browser.' },
+    'l1-excalidraw': { c4type: 'System_Ext', desc: 'Renders freehand-style architecture diagrams in the browser.' },
+  },
+};
+
+const toodaLevel2Meta: LevelMeta = {
+  diagramType: 'C4Container',
+  useElk: true,
+  nodes: {
+    'l2-developer': { c4type: 'Person', desc: 'Creates and maintains architecture diagrams.' },
+    'l2-githubPages': { c4type: 'System_Ext', desc: 'Hosts and serves the built static site.' },
+    'l2-mermaidLib': { c4type: 'System_Ext', desc: 'Renders C4 and class diagrams as SVG in the browser.' },
+    'l2-excalidrawLib': { c4type: 'System_Ext', desc: 'Renders interactive freehand diagrams in the browser.' },
+    'l2-webApp': { c4type: 'Container', tech: 'Astro / Node.js', desc: 'Builds and serves the static site to users via their browser.' },
+    'l2-c4Page': { c4type: 'Container', tech: 'Astro Page + Mermaid.js', desc: 'Provides tabbed C4 diagram navigation for multiple example systems.' },
+    'l2-excalidrawPage': { c4type: 'Container', tech: 'Astro Page + React', desc: 'Renders freehand-style diagrams using the Excalidraw component.' },
+    'l2-apiPage': { c4type: 'Container', tech: 'Astro Page', desc: 'Allows users to inspect and test API endpoints interactively.' },
+  },
+  boundaries: [
+    {
+      id: 't',
+      label: 'Tooda',
+      type: 'System_Boundary',
+      nodeIds: ['l2-webApp', 'l2-c4Page', 'l2-excalidrawPage', 'l2-apiPage'],
+    },
+  ],
+};
+
+const toodaLevel3Meta: LevelMeta = {
+  diagramType: 'C4Component',
+  useElk: true,
+  nodes: {
+    'l3-developer': { c4type: 'Person', desc: 'Interacts with the C4 Viewer.' },
+    'l3-mermaidLib': { c4type: 'System_Ext', desc: 'Renders SVG from Mermaid source text.' },
+    'l3-diagramData': { c4type: 'Component', tech: 'TypeScript module', desc: 'Holds Mermaid diagram definitions for all examples and all four C4 levels.' },
+    'l3-tabController': { c4type: 'Component', tech: 'Vanilla JS', desc: 'Handles switching between Level 1–4 diagram tabs and URL hash routing.' },
+    'l3-exampleSwitcher': { c4type: 'Component', tech: 'Vanilla JS', desc: 'Switches the active example and updates all level diagrams from Diagram Data.' },
+    'l3-viewToggle': { c4type: 'Component', tech: 'Vanilla JS', desc: 'Toggles between Diagram, Code, and Edit views and updates URL query params.' },
+    'l3-mermaidRenderer': { c4type: 'Component', tech: 'Mermaid.js', desc: 'Renders Mermaid source text as SVG diagrams on demand.' },
+    'l3-panZoomController': { c4type: 'Component', tech: 'Vanilla JS', desc: 'Handles mouse/touch pan and scroll-to-zoom interactions on diagram SVGs.' },
+    'l3-nodeDragController': { c4type: 'Component', tech: 'Vanilla JS', desc: 'Allows repositioning diagram nodes in Edit mode and exports coordinates.' },
+  },
+  boundaries: [
+    {
+      id: 'c4',
+      label: 'C4 Viewer',
+      type: 'Container_Boundary',
+      nodeIds: ['l3-diagramData', 'l3-tabController', 'l3-exampleSwitcher', 'l3-viewToggle', 'l3-mermaidRenderer', 'l3-panZoomController', 'l3-nodeDragController'],
+    },
+  ],
+};
+
+const toodaLevel4Meta: LevelMeta = {
+  diagramType: 'classDiagram',
+};
+
+// ── Derived Mermaid diagram strings ───────────────────────────────────────────
+
 export const diagrams = {
   banking: {
     title: 'Online Banking System',
     description: 'An Online Banking System illustrated across all 4 levels of the C4 model.',
-    level1: `%%{init: {"layout": "elk"}}%%
-C4Context
-  title System Context – Online Banking System
-
-  Person(customer, "Personal Banking Customer", "A customer of the bank with personal bank accounts.")
-  Person(staff, "Bank Staff", "Bank employees managing accounts and support.")
-
-  System(onlineBanking, "Online Banking System", "Allows customers to view account information and make payments.")
-
-  System_Ext(email, "E-mail System", "The internal Microsoft Exchange e-mail system.")
-  System_Ext(mainframe, "Mainframe Banking System", "Stores all core banking information about customers, accounts, and transactions.")
-
-  Rel(customer, onlineBanking, "Views account balances and makes payments using")
-  Rel(staff, onlineBanking, "Manages customer accounts and support requests using")
-  Rel(onlineBanking, email, "Sends e-mail notifications using")
-  Rel(onlineBanking, mainframe, "Gets account and transaction data from")`,
-    level2: `%%{init: {"layout": "elk"}}%%
-C4Container
-  title Container – Online Banking System
-
-  Person(customer, "Personal Banking Customer", "A customer of the bank with personal bank accounts.")
-
-  System_Boundary(ob, "Online Banking System") {
-    Container(webApp, "Web Application", "Astro / Node.js", "Delivers the static web front-end to customers via their browser.")
-    Container(spa, "Single-Page App", "JavaScript", "Provides the banking functionality to customers via their browser.")
-    Container(mobileApp, "Mobile App", "React Native", "Provides the banking functionality to customers via their mobile device.")
-    Container(apiApp, "API Application", "Node.js / Express", "Provides banking functionality via a JSON/HTTPS API.")
-    ContainerDb(db, "Database", "PostgreSQL", "Stores customer and account information.")
-  }
-
-  System_Ext(email, "E-mail System", "Microsoft Exchange")
-  System_Ext(mainframe, "Mainframe Banking System", "Core banking records")
-
-  Rel(customer, webApp, "Visits", "HTTPS")
-  Rel(customer, mobileApp, "Uses", "HTTPS")
-  Rel(webApp, spa, "Delivers")
-  Rel(spa, apiApp, "Makes API calls to", "JSON/HTTPS")
-  Rel(mobileApp, apiApp, "Makes API calls to", "JSON/HTTPS")
-  Rel(apiApp, db, "Reads/writes", "SQL")
-  Rel(apiApp, email, "Sends emails using", "SMTP")
-  Rel(apiApp, mainframe, "Reads/writes account data", "XML/HTTPS")`,
-    level3: `%%{init: {"layout": "elk"}}%%
-C4Component
-  title Component – API Application
-
-  Container_Ext(spa, "Single-Page App", "JavaScript", "Front-end delivered by the web application.")
-  Container_Ext(mobileApp, "Mobile App", "React Native", "Mobile front-end.")
-
-  Container_Boundary(api, "API Application") {
-    Component(authController, "Auth Controller", "Express Router", "Handles sign-in, sign-out, and token refresh.")
-    Component(accountsController, "Accounts Controller", "Express Router", "Provides account balance and transaction history endpoints.")
-    Component(paymentsController, "Payments Controller", "Express Router", "Handles payment initiation and confirmation.")
-    Component(authService, "Auth Service", "Node.js module", "Validates credentials and issues JWT tokens.")
-    Component(accountsService, "Accounts Service", "Node.js module", "Business logic for account data.")
-    Component(paymentsService, "Payments Service", "Node.js module", "Business logic for payments.")
-    Component(emailService, "E-mail Service", "Node.js module", "Sends notification e-mails.")
-  }
-
-  ContainerDb_Ext(db, "Database", "PostgreSQL", "Stores account and customer data.")
-  System_Ext(email, "E-mail System", "Microsoft Exchange")
-  System_Ext(mainframe, "Mainframe Banking System", "Core banking records")
-
-  Rel(spa, authController, "Calls", "JSON/HTTPS")
-  Rel(spa, accountsController, "Calls", "JSON/HTTPS")
-  Rel(spa, paymentsController, "Calls", "JSON/HTTPS")
-  Rel(mobileApp, authController, "Calls", "JSON/HTTPS")
-  Rel(mobileApp, accountsController, "Calls", "JSON/HTTPS")
-  Rel(mobileApp, paymentsController, "Calls", "JSON/HTTPS")
-  Rel(authController, authService, "Uses")
-  Rel(accountsController, accountsService, "Uses")
-  Rel(paymentsController, paymentsService, "Uses")
-  Rel(paymentsService, emailService, "Uses")
-  Rel(accountsService, db, "Reads/writes", "SQL")
-  Rel(paymentsService, db, "Reads/writes", "SQL")
-  Rel(authService, db, "Reads/writes", "SQL")
-  Rel(emailService, email, "Sends e-mail using", "SMTP")
-  Rel(accountsService, mainframe, "Reads account data from", "XML/HTTPS")
-  Rel(paymentsService, mainframe, "Submits payments to", "XML/HTTPS")`,
-    level4: `classDiagram
-  direction TB
-
-  class AccountsController {
-    +getBalance(req, res) void
-    +getTransactions(req, res) void
-  }
-
-  class AccountsService {
-    -accountsRepository: AccountsRepository
-    -mainframeClient: MainframeClient
-    +getBalance(customerId: string) Promise~Account~
-    +getTransactions(customerId: string) Promise~Transaction~
-  }
-
-  class AccountsRepository {
-    -db: DatabaseConnection
-    +findByCustomerId(customerId: string) Promise~Account~
-    +findTransactions(accountId: string) Promise~Transaction~
-  }
-
-  class MainframeClient {
-    -baseUrl: string
-    +fetchAccount(customerId: string) Promise~Account~
-    +fetchTransactions(accountId: string) Promise~Transaction~
-  }
-
-  class Account {
-    +id: string
-    +customerId: string
-    +balance: number
-    +currency: string
-  }
-
-  class Transaction {
-    +id: string
-    +accountId: string
-    +amount: number
-    +description: string
-    +date: Date
-  }
-
-  AccountsController --> AccountsService : uses
-  AccountsService --> AccountsRepository : uses
-  AccountsService --> MainframeClient : uses
-  AccountsRepository --> Account : returns
-  AccountsRepository --> Transaction : returns
-  MainframeClient --> Account : returns
-  MainframeClient --> Transaction : returns`,
+    level1: excalidrawToMermaid(bankingLevel1Elements, bankingLevel1Meta),
+    level2: excalidrawToMermaid(bankingLevel2Elements, bankingLevel2Meta),
+    level3: excalidrawToMermaid(bankingLevel3Elements, bankingLevel3Meta),
+    level4: excalidrawToMermaid(bankingLevel4Elements, bankingLevel4Meta),
   },
   ecommerce: {
     title: 'E-Commerce Platform',
     description: 'An E-Commerce Platform illustrated across all 4 levels of the C4 model.',
-    level1: `%%{init: {"layout": "elk"}}%%
-C4Context
-  title System Context – E-Commerce Platform
-
-  Person(customer, "Customer", "A person who browses products and places orders.")
-  Person(seller, "Seller", "A business or individual who lists products for sale.")
-
-  System(ecommerce, "E-Commerce Platform", "Allows customers to browse products, place orders, and track deliveries.")
-
-  System_Ext(payment, "Payment Gateway", "Processes credit card and digital wallet payments.")
-  System_Ext(shipping, "Shipping Provider", "Handles order fulfillment and delivery tracking.")
-  System_Ext(email, "E-mail System", "Sends order confirmations and shipping notifications.")
-
-  Rel(customer, ecommerce, "Browses products and places orders using")
-  Rel(seller, ecommerce, "Lists products and manages inventory using")
-  Rel(ecommerce, payment, "Processes payments via")
-  Rel(ecommerce, shipping, "Dispatches orders via")
-  Rel(ecommerce, email, "Sends notifications using")`,
-    level2: `%%{init: {"layout": "elk"}}%%
-C4Container
-  title Container – E-Commerce Platform
-
-  Person(customer, "Customer", "A person who shops online.")
-  Person(seller, "Seller", "A product vendor.")
-
-  System_Boundary(ec, "E-Commerce Platform") {
-    Container(webApp, "Web Application", "Astro / Node.js", "Serves the storefront to customers via their browser.")
-    Container(mobileApp, "Mobile App", "React Native", "Provides the shopping experience on mobile devices.")
-    Container(apiGateway, "API Gateway", "Node.js / Express", "Routes requests to the appropriate microservices.")
-    Container(productService, "Product Service", "Node.js", "Manages product catalogue and search.")
-    Container(orderService, "Order Service", "Node.js", "Handles order creation, status, and history.")
-    ContainerDb(db, "Database", "PostgreSQL", "Stores products, orders, and customer data.")
-    Container(queue, "Message Queue", "RabbitMQ", "Decouples order events from downstream processing.")
-  }
-
-  System_Ext(payment, "Payment Gateway", "Stripe")
-  System_Ext(shipping, "Shipping Provider", "FedEx / UPS")
-  System_Ext(email, "E-mail System", "SendGrid")
-
-  Rel(customer, webApp, "Visits", "HTTPS")
-  Rel(customer, mobileApp, "Uses", "HTTPS")
-  Rel(seller, webApp, "Manages listings via", "HTTPS")
-  Rel(webApp, apiGateway, "Calls", "JSON/HTTPS")
-  Rel(mobileApp, apiGateway, "Calls", "JSON/HTTPS")
-  Rel(apiGateway, productService, "Routes to", "JSON/HTTPS")
-  Rel(apiGateway, orderService, "Routes to", "JSON/HTTPS")
-  Rel(productService, db, "Reads/writes", "SQL")
-  Rel(orderService, db, "Reads/writes", "SQL")
-  Rel(orderService, queue, "Publishes events to", "AMQP")
-  Rel(queue, payment, "Triggers payment via")
-  Rel(queue, shipping, "Triggers shipment via")
-  Rel(queue, email, "Sends notifications via")`,
-    level3: `%%{init: {"layout": "elk"}}%%
-C4Component
-  title Component – Order Service
-
-  Container_Ext(apiGateway, "API Gateway", "Node.js / Express", "Routes incoming requests.")
-  Container_Ext(queue, "Message Queue", "RabbitMQ", "Receives order events.")
-
-  Container_Boundary(os, "Order Service") {
-    Component(orderController, "Order Controller", "Express Router", "Handles order creation and retrieval endpoints.")
-    Component(orderService, "Order Service", "Node.js module", "Business logic for orders.")
-    Component(paymentClient, "Payment Client", "Node.js module", "Integrates with the Payment Gateway.")
-    Component(shippingClient, "Shipping Client", "Node.js module", "Integrates with the Shipping Provider.")
-    Component(orderRepository, "Order Repository", "Node.js module", "Persists and queries order records.")
-    Component(eventPublisher, "Event Publisher", "Node.js module", "Publishes order events to the message queue.")
-  }
-
-  ContainerDb_Ext(db, "Database", "PostgreSQL", "Stores order records.")
-
-  Rel(apiGateway, orderController, "Calls", "JSON/HTTPS")
-  Rel(orderController, orderService, "Uses")
-  Rel(orderService, paymentClient, "Uses")
-  Rel(orderService, shippingClient, "Uses")
-  Rel(orderService, orderRepository, "Uses")
-  Rel(orderService, eventPublisher, "Uses")
-  Rel(orderRepository, db, "Reads/writes", "SQL")
-  Rel(eventPublisher, queue, "Publishes to", "AMQP")`,
-    level4: `classDiagram
-  direction TB
-
-  class OrderController {
-    +createOrder(req, res) void
-    +getOrder(req, res) void
-    +listOrders(req, res) void
-  }
-
-  class OrderService {
-    -orderRepository: OrderRepository
-    -paymentClient: PaymentClient
-    -eventPublisher: EventPublisher
-    +createOrder(customerId: string, items: OrderItem[]) Promise~Order~
-    +getOrder(orderId: string) Promise~Order~
-  }
-
-  class OrderRepository {
-    -db: DatabaseConnection
-    +save(order: Order) Promise~Order~
-    +findById(orderId: string) Promise~Order~
-    +findByCustomer(customerId: string) Promise~Order[]~
-  }
-
-  class PaymentClient {
-    -apiKey: string
-    +charge(amount: number, token: string) Promise~PaymentResult~
-  }
-
-  class Order {
-    +id: string
-    +customerId: string
-    +status: string
-    +total: number
-    +createdAt: Date
-  }
-
-  class OrderItem {
-    +productId: string
-    +quantity: number
-    +unitPrice: number
-  }
-
-  OrderController --> OrderService : uses
-  OrderService --> OrderRepository : uses
-  OrderService --> PaymentClient : uses
-  OrderRepository --> Order : returns
-  Order --> OrderItem : contains`,
+    level1: excalidrawToMermaid(ecommerceLevel1Elements, ecommerceLevel1Meta),
+    level2: excalidrawToMermaid(ecommerceLevel2Elements, ecommerceLevel2Meta),
+    level3: excalidrawToMermaid(ecommerceLevel3Elements, ecommerceLevel3Meta),
+    level4: excalidrawToMermaid(ecommerceLevel4Elements, ecommerceLevel4Meta),
   },
   ridesharing: {
     title: 'Ride-Sharing App',
     description: 'A Ride-Sharing App illustrated across all 4 levels of the C4 model.',
-    level1: `%%{init: {"layout": "elk"}}%%
-C4Context
-  title System Context – Ride-Sharing App
-
-  Person(rider, "Rider", "A passenger who requests and pays for rides.")
-  Person(driver, "Driver", "A driver who accepts ride requests.")
-
-  System(ridesharing, "Ride-Sharing App", "Connects riders with nearby drivers and handles trip booking and payment.")
-
-  System_Ext(maps, "Maps & Routing API", "Provides location search, routing, and ETA calculations.")
-  System_Ext(payment, "Payment Gateway", "Processes ride fares and driver payouts.")
-  System_Ext(sms, "SMS Provider", "Sends trip status notifications to riders and drivers.")
-
-  Rel(rider, ridesharing, "Requests and pays for rides using")
-  Rel(driver, ridesharing, "Accepts trips and receives payouts via")
-  Rel(ridesharing, maps, "Gets routes and ETAs from")
-  Rel(ridesharing, payment, "Processes fares via")
-  Rel(ridesharing, sms, "Sends SMS notifications using")`,
-    level2: `%%{init: {"layout": "elk"}}%%
-C4Container
-  title Container – Ride-Sharing App
-
-  Person(rider, "Rider", "Requests a ride.")
-  Person(driver, "Driver", "Accepts a ride.")
-
-  System_Boundary(rs, "Ride-Sharing App") {
-    Container(riderApp, "Rider App", "React Native", "Lets riders request rides, track drivers, and pay.")
-    Container(driverApp, "Driver App", "React Native", "Lets drivers accept trips and navigate to destinations.")
-    Container(apiServer, "API Server", "Node.js / Express", "Core backend handling trips, matching, and payments.")
-    Container(locationService, "Location Service", "Node.js", "Tracks real-time driver positions.")
-    ContainerDb(db, "Database", "PostgreSQL", "Stores users, trips, and payment records.")
-    ContainerDb(cache, "Cache", "Redis", "Stores active driver locations and trip state.")
-  }
-
-  System_Ext(maps, "Maps & Routing API", "Google Maps Platform")
-  System_Ext(payment, "Payment Gateway", "Stripe")
-  System_Ext(sms, "SMS Provider", "Twilio")
-
-  Rel(rider, riderApp, "Uses", "HTTPS")
-  Rel(driver, driverApp, "Uses", "HTTPS")
-  Rel(riderApp, apiServer, "Calls", "JSON/HTTPS")
-  Rel(driverApp, apiServer, "Calls", "JSON/HTTPS")
-  Rel(driverApp, locationService, "Sends location updates to", "WebSocket")
-  Rel(apiServer, db, "Reads/writes", "SQL")
-  Rel(apiServer, cache, "Reads/writes", "Redis Protocol")
-  Rel(locationService, cache, "Updates driver positions in", "Redis Protocol")
-  Rel(apiServer, maps, "Gets routes from", "HTTPS")
-  Rel(apiServer, payment, "Processes fares via", "HTTPS")
-  Rel(apiServer, sms, "Sends notifications via", "HTTPS")`,
-    level3: `%%{init: {"layout": "elk"}}%%
-C4Component
-  title Component – API Server
-
-  Container_Ext(riderApp, "Rider App", "React Native", "Mobile app for riders.")
-  Container_Ext(driverApp, "Driver App", "React Native", "Mobile app for drivers.")
-
-  Container_Boundary(api, "API Server") {
-    Component(tripController, "Trip Controller", "Express Router", "Handles trip request, acceptance, and completion.")
-    Component(matchingService, "Matching Service", "Node.js module", "Finds the nearest available driver for a rider.")
-    Component(tripService, "Trip Service", "Node.js module", "Business logic for trip lifecycle.")
-    Component(paymentService, "Payment Service", "Node.js module", "Calculates fares and triggers payment.")
-    Component(notificationService, "Notification Service", "Node.js module", "Sends SMS updates to riders and drivers.")
-    Component(tripRepository, "Trip Repository", "Node.js module", "Persists trip records to the database.")
-  }
-
-  ContainerDb_Ext(db, "Database", "PostgreSQL", "Stores trip records.")
-  ContainerDb_Ext(cache, "Cache", "Redis", "Active driver locations.")
-  System_Ext(payment, "Payment Gateway", "Stripe")
-  System_Ext(sms, "SMS Provider", "Twilio")
-
-  Rel(riderApp, tripController, "Calls", "JSON/HTTPS")
-  Rel(driverApp, tripController, "Calls", "JSON/HTTPS")
-  Rel(tripController, tripService, "Uses")
-  Rel(tripService, matchingService, "Uses")
-  Rel(tripService, paymentService, "Uses")
-  Rel(tripService, notificationService, "Uses")
-  Rel(tripService, tripRepository, "Uses")
-  Rel(matchingService, cache, "Reads driver locations from", "Redis Protocol")
-  Rel(tripRepository, db, "Reads/writes", "SQL")
-  Rel(paymentService, payment, "Charges via", "HTTPS")
-  Rel(notificationService, sms, "Sends via", "HTTPS")`,
-    level4: `classDiagram
-  direction TB
-
-  class TripController {
-    +requestTrip(req, res) void
-    +acceptTrip(req, res) void
-    +completeTrip(req, res) void
-  }
-
-  class TripService {
-    -matchingService: MatchingService
-    -tripRepository: TripRepository
-    -paymentService: PaymentService
-    +requestTrip(riderId: string, pickup: Location) Promise~Trip~
-    +completeTrip(tripId: string) Promise~Trip~
-  }
-
-  class MatchingService {
-    -cache: CacheClient
-    +findNearestDriver(pickup: Location) Promise~Driver~
-  }
-
-  class TripRepository {
-    -db: DatabaseConnection
-    +save(trip: Trip) Promise~Trip~
-    +findById(tripId: string) Promise~Trip~
-  }
-
-  class Trip {
-    +id: string
-    +riderId: string
-    +driverId: string
-    +status: string
-    +fare: number
-  }
-
-  class Location {
-    +lat: number
-    +lng: number
-  }
-
-  TripController --> TripService : uses
-  TripService --> MatchingService : uses
-  TripService --> TripRepository : uses
-  TripRepository --> Trip : returns
-  Trip --> Location : uses`,
+    level1: excalidrawToMermaid(ridesharingLevel1Elements, ridesharingLevel1Meta),
+    level2: excalidrawToMermaid(ridesharingLevel2Elements, ridesharingLevel2Meta),
+    level3: excalidrawToMermaid(ridesharingLevel3Elements, ridesharingLevel3Meta),
+    level4: excalidrawToMermaid(ridesharingLevel4Elements, ridesharingLevel4Meta),
   },
   tooda: {
     title: 'Tooda',
     description: 'Tooda – a browser-based architecture diagramming tool – illustrated across all 4 levels of the C4 model.',
-    level1: `%%{init: {"layout": "elk"}}%%
-C4Context
-  title System Context – Tooda
-
-  Person(developer, "Developer / Architect", "Creates and maintains software architecture diagrams.")
-
-  System(tooda, "Tooda", "A browser-based tool for visualizing software architecture using C4/Mermaid and Excalidraw.")
-
-  System_Ext(githubPages, "GitHub Pages", "Hosts and serves the Tooda static site.")
-  System_Ext(mermaid, "Mermaid", "Renders C4 and class diagrams from plain-text definitions in the browser.")
-  System_Ext(excalidraw, "Excalidraw", "Renders freehand-style architecture diagrams in the browser.")
-
-  Rel(developer, tooda, "Browses and creates diagrams using")
-  Rel(tooda, githubPages, "Is hosted and served by")
-  Rel(tooda, mermaid, "Renders C4 diagrams with")
-  Rel(tooda, excalidraw, "Renders freehand diagrams with")`,
-    level2: `%%{init: {"layout": "elk"}}%%
-C4Container
-  title Container – Tooda
-
-  Person(developer, "Developer / Architect", "Creates and maintains architecture diagrams.")
-
-  System_Boundary(t, "Tooda") {
-    Container(webApp, "Static Web App", "Astro / Node.js", "Builds and serves the static site to users via their browser.")
-    Container(c4Page, "C4 Viewer", "Astro Page + Mermaid.js", "Provides tabbed C4 diagram navigation for multiple example systems.")
-    Container(excalidrawPage, "Excalidraw Viewer", "Astro Page + React", "Renders freehand-style diagrams using the Excalidraw component.")
-    Container(apiPage, "API Explorer", "Astro Page", "Allows users to inspect and test API endpoints interactively.")
-  }
-
-  System_Ext(githubPages, "GitHub Pages", "Hosts and serves the built static site.")
-  System_Ext(mermaidLib, "Mermaid Library", "Renders C4 and class diagrams as SVG in the browser.")
-  System_Ext(excalidrawLib, "Excalidraw Library", "Renders interactive freehand diagrams in the browser.")
-
-  Rel(developer, webApp, "Visits", "HTTPS")
-  Rel(githubPages, webApp, "Hosts and serves")
-  Rel(webApp, c4Page, "Routes /c4 to")
-  Rel(webApp, excalidrawPage, "Routes /excalidraw to")
-  Rel(webApp, apiPage, "Routes /api to")
-  Rel(c4Page, mermaidLib, "Renders diagrams with")
-  Rel(excalidrawPage, excalidrawLib, "Renders diagrams with")`,
-    level3: `%%{init: {"layout": "elk"}}%%
-C4Component
-  title Component – C4 Viewer
-
-  Person_Ext(developer, "Developer / Architect", "Interacts with the C4 Viewer.")
-
-  Container_Boundary(c4, "C4 Viewer") {
-    Component(diagramData, "Diagram Data", "TypeScript module", "Holds Mermaid diagram definitions for all examples and all four C4 levels.")
-    Component(tabController, "Tab Controller", "Vanilla JS", "Handles switching between Level 1–4 diagram tabs and URL hash routing.")
-    Component(exampleSwitcher, "Example Switcher", "Vanilla JS", "Switches the active example and updates all level diagrams from Diagram Data.")
-    Component(viewToggle, "View Toggle", "Vanilla JS", "Toggles between Diagram, Code, and Edit views and updates URL query params.")
-    Component(mermaidRenderer, "Mermaid Renderer", "Mermaid.js", "Renders Mermaid source text as SVG diagrams on demand.")
-    Component(panZoomController, "Pan/Zoom Controller", "Vanilla JS", "Handles mouse/touch pan and scroll-to-zoom interactions on diagram SVGs.")
-    Component(nodeDragController, "Node Drag Controller", "Vanilla JS", "Allows repositioning diagram nodes in Edit mode and exports coordinates.")
-  }
-
-  System_Ext(mermaidLib, "Mermaid Library", "Renders SVG from Mermaid source text.")
-
-  Rel(developer, tabController, "Clicks level tabs")
-  Rel(developer, exampleSwitcher, "Selects example")
-  Rel(developer, viewToggle, "Toggles view")
-  Rel(developer, panZoomController, "Pans and zooms diagram")
-  Rel(developer, nodeDragController, "Drags nodes in Edit mode")
-  Rel(tabController, mermaidRenderer, "Triggers re-render on tab switch")
-  Rel(exampleSwitcher, diagramData, "Reads diagram source from")
-  Rel(exampleSwitcher, mermaidRenderer, "Triggers re-render on example switch")
-  Rel(viewToggle, mermaidRenderer, "Triggers re-render when switching to Diagram view")
-  Rel(mermaidRenderer, mermaidLib, "Delegates SVG rendering to")
-  Rel(nodeDragController, panZoomController, "Coordinates transform with")`,
-    level4: `classDiagram
-  direction TB
-
-  class DiagramEntry {
-    +title: string
-    +description: string
-    +level1: string
-    +level2: string
-    +level3: string
-    +level4: string
-  }
-
-  class DiagramCollection {
-    +banking: DiagramEntry
-    +ecommerce: DiagramEntry
-    +ridesharing: DiagramEntry
-    +tooda: DiagramEntry
-  }
-
-  class Logger {
-    -prefix: string
-    +debug(msg: string) void
-    +info(msg: string) void
-    +warn(msg: string) void
-    +error(msg: string) void
-  }
-
-  class MermaidConfig {
-    +startOnLoad: boolean
-    +theme: string
-  }
-
-  DiagramCollection --> DiagramEntry : contains
-  Logger ..> MermaidConfig : used alongside`,
+    level1: excalidrawToMermaid(toodaLevel1Elements, toodaLevel1Meta),
+    level2: excalidrawToMermaid(toodaLevel2Elements, toodaLevel2Meta),
+    level3: excalidrawToMermaid(toodaLevel3Elements, toodaLevel3Meta),
+    level4: excalidrawToMermaid(toodaLevel4Elements, toodaLevel4Meta),
   },
 };
