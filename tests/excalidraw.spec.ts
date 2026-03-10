@@ -335,18 +335,26 @@ test.describe('Export PNG button', () => {
     await expect(page.locator('#export-png-container')).toBeHidden();
   });
 
-  test('Export PNG button is hidden when 2D renderer is active', async ({ page }) => {
+  test('Export PNG button is visible when 2D renderer is active', async ({ page }) => {
     await page.goto('/Tooda/excalidraw');
     await page.locator('.renderer-btn[data-renderer="2d"]').click();
-    await expect(page.locator('#export-png-container')).toBeHidden();
-  });
-
-  test('Export PNG button is visible again after switching from 2D back to Excalidraw', async ({ page }) => {
-    await page.goto('/Tooda/excalidraw');
-    await page.locator('.renderer-btn[data-renderer="2d"]').click();
-    await page.locator('.renderer-btn[data-renderer="excalidraw"]').click();
     await expect(page.locator('#export-png-container')).toBeVisible();
     await expect(page.getByTestId('export-png-btn')).toBeVisible();
+  });
+
+  test('Export PNG button href updates when switching to 2D renderer', async ({ page }) => {
+    await page.goto('/Tooda/excalidraw');
+    await page.locator('.renderer-btn[data-renderer="2d"]').click();
+    const btn = page.getByTestId('export-png-btn');
+    await expect(btn).toHaveAttribute('href', '/Tooda/api/healthcare/2d/level1.png');
+  });
+
+  test('Export PNG button href updates for 2D renderer on Level 2 tab', async ({ page }) => {
+    await page.goto('/Tooda/excalidraw');
+    await page.locator('.renderer-btn[data-renderer="2d"]').click();
+    await page.getByRole('link', { name: 'Level 2 – Container' }).click();
+    const btn = page.getByTestId('export-png-btn');
+    await expect(btn).toHaveAttribute('href', '/Tooda/api/healthcare/2d/level2.png');
   });
 
   test('Export PNG button is visible again after switching from 3D back to Excalidraw', async ({ page }) => {
@@ -356,10 +364,18 @@ test.describe('Export PNG button', () => {
     await expect(page.locator('#export-png-container')).toBeVisible();
     await expect(page.getByTestId('export-png-btn')).toBeVisible();
   });
+
   test('Export PNG button has correct download attribute', async ({ page }) => {
     await page.goto('/Tooda/excalidraw');
     const btn = page.getByTestId('export-png-btn');
     await expect(btn).toHaveAttribute('download', 'healthcare-excalidraw-level1.png');
+  });
+
+  test('Export PNG button download attribute updates when switching to 2D renderer', async ({ page }) => {
+    await page.goto('/Tooda/excalidraw');
+    await page.locator('.renderer-btn[data-renderer="2d"]').click();
+    const btn = page.getByTestId('export-png-btn');
+    await expect(btn).toHaveAttribute('download', 'healthcare-2d-level1.png');
   });
 
   test('Export PNG button download attribute updates when switching to Mermaid renderer on Level 4', async ({ page }) => {

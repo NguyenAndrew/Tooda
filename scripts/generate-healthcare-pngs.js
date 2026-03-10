@@ -7,7 +7,7 @@
  *   npm run generate-healthcare-pngs
  *
  * The script builds the project, starts a temporary preview server, captures
- * browser screenshots of each healthcare diagram level in both renderers,
+ * browser screenshots of each healthcare diagram level in all renderers,
  * then saves them as static PNG files served under /api/healthcare/:
  *
  *   public/api/healthcare/excalidraw/level1.png  — Level 1 Excalidraw view
@@ -18,6 +18,10 @@
  *   public/api/healthcare/mermaid/level2.png     — Level 2 Mermaid view
  *   public/api/healthcare/mermaid/level3.png     — Level 3 Mermaid view
  *   public/api/healthcare/mermaid/level4.png     — Level 4 Mermaid view
+ *   public/api/healthcare/2d/level1.png          — Level 1 2D view
+ *   public/api/healthcare/2d/level2.png          — Level 2 2D view
+ *   public/api/healthcare/2d/level3.png          — Level 3 2D view
+ *   public/api/healthcare/2d/level4.png          — Level 4 2D view
  */
 
 import { chromium } from '@playwright/test';
@@ -38,6 +42,7 @@ const LEVELS = ['level1', 'level2', 'level3', 'level4'];
 
 const EXCALIDRAW_OUT = 'public/api/healthcare/excalidraw';
 const MERMAID_OUT = 'public/api/healthcare/mermaid';
+const TWOD_OUT = 'public/api/healthcare/2d';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -45,6 +50,7 @@ const MERMAID_OUT = 'public/api/healthcare/mermaid';
 
 mkdirSync(EXCALIDRAW_OUT, { recursive: true });
 mkdirSync(MERMAID_OUT, { recursive: true });
+mkdirSync(TWOD_OUT, { recursive: true });
 
 /**
  * Polls `url` until it responds with a 2xx status.
@@ -101,6 +107,24 @@ async function captureMermaidPng(page, level) {
   return page.locator(`#${level} .mermaid-wrapper`).screenshot({ type: 'png' });
 }
 
+/**
+ * Captures a PNG of the 2D diagram for the given level.
+ * @param {import('@playwright/test').Page} page
+ * @param {string} level  e.g. 'level1'
+ * @returns {Promise<Buffer>}
+ */
+async function capture2DPng(page, level) {
+  await page.goto(
+    `${BASE_URL}${BASE_PATH}/excalidraw?renderer=2d#${level}`,
+    { waitUntil: 'networkidle' },
+  );
+  await page.waitForSelector(`#${level} .twoD-view svg`, {
+    state: 'visible',
+    timeout: 30000,
+  });
+  return page.locator(`#${level} .twoD-wrapper`).screenshot({ type: 'png' });
+}
+
 // ---------------------------------------------------------------------------
 // Main capture sequence
 // ---------------------------------------------------------------------------
@@ -122,6 +146,12 @@ async function captureAllPngs(page) {
     const mermaidPath = `${MERMAID_OUT}/${level}.png`;
     writeFileSync(mermaidPath, mermaidPng);
     console.log(`  ✓ ${mermaidPath}`);
+
+    console.log(`  Capturing 2D ${level}...`);
+    const twoDPng = await capture2DPng(page, level);
+    const twoDPath = `${TWOD_OUT}/${level}.png`;
+    writeFileSync(twoDPath, twoDPng);
+    console.log(`  ✓ ${twoDPath}`);
   }
 }
 
@@ -155,7 +185,7 @@ async function main() {
       await browser.close();
     }
 
-    console.log(`\nDone! PNGs saved to ${EXCALIDRAW_OUT}/ and ${MERMAID_OUT}/`);
+    console.log(`\nDone! PNGs saved to ${EXCALIDRAW_OUT}/, ${MERMAID_OUT}/, and ${TWOD_OUT}/`);
   } finally {
     server.kill();
   }
