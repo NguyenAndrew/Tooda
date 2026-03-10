@@ -303,7 +303,7 @@ import {
       function updateExportPngBtn() {
         const container = document.getElementById('export-png-container');
         if (!container) return;
-        if (currentRenderer === '3d' || currentRenderer === '2d') {
+        if (currentRenderer === '3d') {
           container.style.display = 'none';
           return;
         }
