@@ -336,3 +336,51 @@ test.describe('C4 diagram page', () => {
   });
 
 });
+
+test.describe('Export PNG button', () => {
+  test('Export PNG button is visible in diagram view', async ({ page }) => {
+    await page.goto('/Tooda/c4');
+    await expect(page.getByTestId('export-png-btn')).toBeVisible();
+  });
+
+  test('Export PNG button is hidden in code view', async ({ page }) => {
+    await page.goto('/Tooda/c4?view=code');
+    await expect(page.locator('#export-png-container')).toBeHidden();
+  });
+
+  test('Export PNG button is visible in edit view', async ({ page }) => {
+    await page.goto('/Tooda/c4?view=edit');
+    await expect(page.getByTestId('export-png-btn')).toBeVisible();
+  });
+
+  test('Export PNG button triggers a download when clicked', async ({ page }) => {
+    await page.goto('/Tooda/c4');
+    await page.waitForSelector('#level1 .mermaid svg', { state: 'visible', timeout: 15000 });
+    const [download] = await Promise.all([
+      page.waitForEvent('download'),
+      page.getByTestId('export-png-btn').click(),
+    ]);
+    expect(download.suggestedFilename()).toMatch(/^c4-banking-level1\.png$/);
+  });
+
+  test('Export PNG download filename includes the active example', async ({ page }) => {
+    await page.goto('/Tooda/c4?example=ecommerce');
+    await page.waitForSelector('#level1 .mermaid svg', { state: 'visible', timeout: 15000 });
+    const [download] = await Promise.all([
+      page.waitForEvent('download'),
+      page.getByTestId('export-png-btn').click(),
+    ]);
+    expect(download.suggestedFilename()).toMatch(/^c4-ecommerce-level1\.png$/);
+  });
+
+  test('Export PNG download filename includes the active level', async ({ page }) => {
+    await page.goto('/Tooda/c4');
+    await page.getByRole('link', { name: 'Level 3 – Component' }).click();
+    await page.waitForSelector('#level3 .mermaid svg', { state: 'visible', timeout: 15000 });
+    const [download] = await Promise.all([
+      page.waitForEvent('download'),
+      page.getByTestId('export-png-btn').click(),
+    ]);
+    expect(download.suggestedFilename()).toMatch(/^c4-banking-level3\.png$/);
+  });
+});

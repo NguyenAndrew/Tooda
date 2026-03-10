@@ -177,6 +177,14 @@ import { diagrams } from '../data/c4/diagrams';
       .positions-container pre {
         @apply break-words whitespace-pre-wrap font-mono text-sm leading-relaxed text-slate-200;
       }
+
+      .export-png-btn {
+        @apply inline-block cursor-pointer rounded-lg border border-slate-700 bg-slate-800 px-5 py-2 text-[0.95rem] text-slate-400 no-underline transition-all duration-200;
+      }
+
+      .export-png-btn:hover {
+        @apply bg-slate-700 text-slate-50;
+      }
     </style>
   </head>
   <body>
@@ -213,6 +221,14 @@ import { diagrams } from '../data/c4/diagrams';
       <button class="zoom-btn" id="zoom-reset" aria-label="Reset zoom" title="Reset zoom">⟳</button>
       <span class="zoom-hint" aria-live="polite" id="edit-hint" style="display:none">Drag boxes to reposition · Scroll to zoom</span>
       <span class="zoom-hint" aria-live="polite" id="pan-hint">Drag to pan · Scroll to zoom</span>
+    </div>
+
+    <div id="export-png-container" class="mb-6 flex justify-center px-4">
+      <button
+        id="export-png-btn"
+        class="export-png-btn"
+        data-testid="export-png-btn"
+      >&#128247; Export PNG</button>
     </div>
 
     <!-- Level 1: System Context -->
@@ -316,6 +332,8 @@ import { diagrams } from '../data/c4/diagrams';
       // View toggle state – declared first so activateTab can reference it
       let currentView = 'diagram';
       let isEditMode = false;
+      let currentExample = 'banking';
+      let currentTab = 'level1';
 
       // Tab switching
       const buttons = document.querySelectorAll('.tab-btn');
@@ -324,6 +342,7 @@ import { diagrams } from '../data/c4/diagrams';
 
       function activateTab(target) {
         if (!validTabs.includes(target)) target = 'level1';
+        currentTab = target;
         logger.info(`Tab switched to: ${target}`);
 
         buttons.forEach(b => b.classList.remove('active'));
@@ -391,6 +410,8 @@ import { diagrams } from '../data/c4/diagrams';
         // Show/hide zoom controls and update hints
         const zoomCtrl = document.getElementById('zoom-controls');
         if (zoomCtrl) zoomCtrl.style.display = view === 'code' ? 'none' : '';
+        const exportContainer = document.getElementById('export-png-container');
+        if (exportContainer) exportContainer.style.display = view === 'code' ? 'none' : '';
         const editHint = document.getElementById('edit-hint');
         const panHint = document.getElementById('pan-hint');
         if (editHint) editHint.style.display = isEditMode ? '' : 'none';
@@ -437,6 +458,7 @@ import { diagrams } from '../data/c4/diagrams';
           logger.warn(`Unknown example key: ${key}`);
           return;
         }
+        currentExample = key;
         logger.info(`Example changed to: ${key}`);
 
         exampleBtns.forEach(b => b.classList.remove('active'));
@@ -898,6 +920,52 @@ import { diagrams } from '../data/c4/diagrams';
         logger.info('Zoom reset');
         const svg = getActiveSvg();
         if (svg) resetZoom(svg);
+      });
+
+      // ---- Export PNG button ----
+      document.getElementById('export-png-btn')?.addEventListener('click', () => {
+        logger.info('Export PNG');
+        const svgEl = getActiveSvg();
+        if (!svgEl) return;
+
+        // Use original (unzoomed) viewBox for export
+        const s = vbState.get(svgEl);
+        const origX = s ? s.ox : 0;
+        const origY = s ? s.oy : 0;
+        const origW = s ? s.ow : (svgEl.viewBox.baseVal.width || 800);
+        const origH = s ? s.oh : (svgEl.viewBox.baseVal.height || 600);
+
+        const svgClone = svgEl.cloneNode(true);
+        svgClone.setAttribute('viewBox', `${origX} ${origY} ${origW} ${origH}`);
+        svgClone.setAttribute('width', origW);
+        svgClone.setAttribute('height', origH);
+
+        const svgData = new XMLSerializer().serializeToString(svgClone);
+        const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+        const svgUrl = URL.createObjectURL(svgBlob);
+
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          canvas.width = origW;
+          canvas.height = origH;
+          const ctx = canvas.getContext('2d');
+          ctx.fillStyle = 'white';
+          ctx.fillRect(0, 0, origW, origH);
+          ctx.drawImage(img, 0, 0, origW, origH);
+          URL.revokeObjectURL(svgUrl);
+
+          canvas.toBlob((blob) => {
+            if (!blob) return;
+            const link = document.createElement('a');
+            link.download = `c4-${currentExample}-${currentTab}.png`;
+            link.href = URL.createObjectURL(blob);
+            link.click();
+            URL.revokeObjectURL(link.href);
+          }, 'image/png');
+        };
+        img.onerror = () => URL.revokeObjectURL(svgUrl);
+        img.src = svgUrl;
       });
 
       // ---- Auto-setup containers via MutationObserver ----

@@ -247,6 +247,10 @@ test.describe('iPhone – C4 Diagrams page (portrait)', () => {
       page.getByRole('link', { name: /Back to Home/ }).tap(),
     ]);
   });
+
+  test('Export PNG button is visible on mobile', async ({ page }) => {
+    await expect(page.getByTestId('export-png-btn')).toBeVisible();
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -269,6 +273,15 @@ test.describe('iPhone – Excalidraw page (portrait)', () => {
 
   test('Back to Home link is visible', async ({ page }) => {
     await expect(page.getByRole('link', { name: /Back to Home/ })).toBeVisible();
+  });
+
+  test('Export PNG button is visible on mobile', async ({ page }) => {
+    await expect(page.getByTestId('export-png-btn')).toBeVisible();
+  });
+
+  test('Export PNG button is visible on mobile when 2D renderer is active', async ({ page }) => {
+    await page.goto('/Tooda/excalidraw?renderer=2d');
+    await expect(page.getByTestId('export-png-btn')).toBeVisible();
   });
 });
 
