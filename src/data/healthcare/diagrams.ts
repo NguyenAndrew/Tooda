@@ -51,12 +51,9 @@ const level1Meta: LevelMeta = {
       nodeIds: ['l1-pharmacy', 'l1-insurance', 'l1-lab'],
     },
   ],
-  // c4ShapeInRow=3: the three persons exactly fill global row 1.  Each boundary
-  // occupies its own row (c4BoundaryInRow=1).  platform sits alone in the HP
-  // boundary row, centered at col 2; pharmacy(1)/insurance(2)/lab(3) fill the
-  // ext boundary row — every inter-row arrow is a short vertical or slight
-  // diagonal with no intermediate node in the path.
-  layoutConfig: { c4ShapeInRow: 3, c4BoundaryInRow: 1 },
+  // Use ELK (Sugiyama-style layered layout) for cleaner edge routing that
+  // avoids intersecting lines and boxes, matching the 2D SVG diagram style.
+  useElk: true,
 };
 
 // ── Level 2 – Container ───────────────────────────────────────────────────────
@@ -83,14 +80,9 @@ const level2Meta: LevelMeta = {
       nodeIds: ['l2-webapp', 'l2-api', 'l2-mobile', 'l2-emr', 'l2-appt', 'l2-billing', 'l2-db', 'l2-queue'],
     },
   ],
-  // c4ShapeInRow=3: places api at col 2 (centre) of the first boundary row,
-  // with webapp at col 1 and mobile at col 3.  webapp→api and mobile→api are
-  // short same-row connections (adjacent columns).  The second row holds
-  // emr(1)/appt(2)/billing(3), directly below their respective sources so that
-  // api→emr, api→appt, api→billing are short diagonals or straight verticals.
-  // db(1)/queue(2) in row 3 sit directly below emr/appt, keeping emr→db,
-  // appt→db, and billing→queue all clean with no intermediate node in the path.
-  layoutConfig: { c4ShapeInRow: 3, c4BoundaryInRow: 1 },
+  // Use ELK (Sugiyama-style layered layout) for cleaner edge routing that
+  // avoids intersecting lines and boxes, matching the 2D SVG diagram style.
+  useElk: true,
 };
 
 // ── Level 3 – Component ───────────────────────────────────────────────────────
@@ -115,12 +107,9 @@ const level3Meta: LevelMeta = {
       nodeIds: ['l3-ctrl', 'l3-svc', 'l3-repo', 'l3-auth', 'l3-audit', 'l3-cache'],
     },
   ],
-  // c4ShapeInRow=3: places the primary pipeline (ctrl→svc→repo) in boundary
-  // row 1, and the three secondary nodes (auth/audit/cache) directly below in
-  // row 2 at matching columns.  ctrl→auth, svc→audit, and repo→cache are all
-  // straight-down verticals.  ctrl→svc and svc→repo are short same-row hops.
-  // repo→db exits the boundary top-right with no intermediate node in the path.
-  layoutConfig: { c4ShapeInRow: 3, c4BoundaryInRow: 1 },
+  // Use ELK (Sugiyama-style layered layout) for cleaner edge routing that
+  // avoids intersecting lines and boxes, matching the 2D SVG diagram style.
+  useElk: true,
 };
 
 // ── Level 4 – Code ────────────────────────────────────────────────────────────
