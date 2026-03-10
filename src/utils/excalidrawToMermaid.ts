@@ -50,7 +50,7 @@ export interface BoundaryMeta {
 }
 
 export interface LevelMeta {
-  diagramType: 'C4Context' | 'C4Container' | 'C4Component' | 'classDiagram';
+  diagramType: 'C4Context' | 'C4Container' | 'C4Component' | 'classDiagram' | 'flowchart';
   /** Per-node semantic metadata, keyed by Excalidraw element ID. */
   nodes?: Record<string, NodeMeta>;
   /** Optional boundaries that group nodes visually. */
@@ -134,6 +134,9 @@ export function excalidrawToMermaid(
   meta: LevelMeta,
 ): string {
   const els = elements as readonly RawEl[];
+  if (meta.diagramType === 'flowchart') {
+    return generateFlowchart(els);
+  }
   if (meta.diagramType === 'classDiagram') {
     return generateClassDiagram(els);
   }
@@ -383,6 +386,97 @@ function generateClassDiagram(els: readonly RawEl[]): string {
       lines.push(`  ${fromClass} --> ${toClass} : ${label}`);
     } else {
       lines.push(`  ${fromClass} --> ${toClass}`);
+    }
+  }
+
+  return lines.join('\n');
+}
+
+// ── flowchart generator ───────────────────────────────────────────────────────
+
+/**
+ * Extract only the display name from a raw node label.
+ *
+ * Handles two label styles:
+ *   • Class-style (separator line):
+ *       "RecordController\n─────────────────\n+getRecord(req,res)"
+ *       → "RecordController"
+ *   • Simple / tech-parenthetical style:
+ *       "Web App\n(Astro)"  → "Web App"
+ *       "Healthcare\nPlatform" → "Healthcare Platform"
+ */
+function extractNodeName(rawLabel: string): string {
+  const labelLines = rawLabel.split('\n');
+  // Match a separator line that consists of 3+ box-drawing horizontals (─, U+2500)
+  // or ASCII hyphens (-). In the character class [─-], the `-` is at the end
+  // and is therefore treated as a literal hyphen, not a range delimiter.
+  const separatorIdx = labelLines.findIndex((l) => /^[─-]+$/.test(l));
+  if (separatorIdx > 0) {
+    return labelLines.slice(0, separatorIdx).join(' ').trim();
+  }
+  // No separator: use parseNodeLabel to strip trailing "(Tech)" annotation
+  const { name } = parseNodeLabel(rawLabel);
+  return name;
+}
+
+/**
+ * Generate a `flowchart TB` Mermaid diagram from Excalidraw elements.
+ *
+ * Unlike the C4 generators (which require explicit node-type metadata) and
+ * the classDiagram generator (which shows class members), this generator
+ * produces a minimal directed graph with one labelled box per node and one
+ * labelled arrow per connection.  Mermaid renders flowchart diagrams with
+ * its built-in Dagre engine — a Sugiyama-style layered layout — so the
+ * result closely mirrors the 2D SVG diagram without needing the ELK plugin.
+ */
+function generateFlowchart(els: readonly RawEl[]): string {
+  // Build label lookup: containerId → text content
+  const labelByContainer: Record<string, string> = {};
+  for (const el of els) {
+    if (el.type === 'text' && el.containerId) {
+      labelByContainer[el.containerId] = el.text ?? el.originalText ?? '';
+    }
+  }
+
+  // Collect node boxes (rectangles that have an associated label)
+  const nodeBoxes = els.filter(
+    (el) => el.type === 'rectangle' && labelByContainer[el.id],
+  );
+
+  const lines: string[] = ['flowchart TB', ''];
+
+  // Emit one node declaration per box
+  const mermaidIdByElementId: Record<string, string> = {};
+  for (const box of nodeBoxes) {
+    const rawLabel = labelByContainer[box.id] ?? '';
+    const name = extractNodeName(rawLabel);
+    const mId = toMermaidId(box.id);
+    mermaidIdByElementId[box.id] = mId;
+    lines.push(`  ${mId}["${name.replace(/"/g, "'")}"]`);
+  }
+
+  lines.push('');
+
+  // Emit one edge per arrow that has both start and end bindings
+  const arrows = els.filter(
+    (el) => el.type === 'arrow' && el.startBinding?.elementId && el.endBinding?.elementId,
+  );
+
+  for (const arrow of arrows) {
+    // startBinding and endBinding are guaranteed non-null by the filter on line 461.
+    const fromId = arrow.startBinding!.elementId;
+    const toId = arrow.endBinding!.elementId;
+    if (!mermaidIdByElementId[fromId] || !mermaidIdByElementId[toId]) continue;
+
+    const rawLabel = labelByContainer[arrow.id] ?? '';
+    const label = cleanLabel(rawLabel);
+    const fromMId = mermaidIdByElementId[fromId];
+    const toMId = mermaidIdByElementId[toId];
+
+    if (label) {
+      lines.push(`  ${fromMId} -- "${label.replace(/"/g, "'")}" --> ${toMId}`);
+    } else {
+      lines.push(`  ${fromMId} --> ${toMId}`);
     }
   }
 
