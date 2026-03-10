@@ -316,7 +316,7 @@ export default function HealthcarePlatform3D({ level, connections }: Props) {
         container.removeChild(renderer.domElement);
       }
     };
-  }, [level]);
+  }, [level, connections]);
 
   const nodes = LEVEL_NODES[level];
 
