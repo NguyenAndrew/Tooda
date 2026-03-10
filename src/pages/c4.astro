@@ -1,5 +1,86 @@
 ---
 import { diagrams } from '../data/c4/diagrams';
+import { C4_ELEMENTS } from '../data/c4/elements';
+import { C4_CONNECTIONS } from '../data/c4/connections';
+import { C4_LEVEL_NODES } from '../data/c4/nodeMetadata';
+import C4ExcalidrawViewer from '../components/C4ExcalidrawViewer';
+import C4Platform2D from '../components/C4Platform2D';
+import C4Platform3D from '../components/C4Platform3D';
+
+const level1AllElements = {
+  banking: C4_ELEMENTS.banking[1],
+  ecommerce: C4_ELEMENTS.ecommerce[1],
+  ridesharing: C4_ELEMENTS.ridesharing[1],
+  tooda: C4_ELEMENTS.tooda[1],
+};
+const level2AllElements = {
+  banking: C4_ELEMENTS.banking[2],
+  ecommerce: C4_ELEMENTS.ecommerce[2],
+  ridesharing: C4_ELEMENTS.ridesharing[2],
+  tooda: C4_ELEMENTS.tooda[2],
+};
+const level3AllElements = {
+  banking: C4_ELEMENTS.banking[3],
+  ecommerce: C4_ELEMENTS.ecommerce[3],
+  ridesharing: C4_ELEMENTS.ridesharing[3],
+  tooda: C4_ELEMENTS.tooda[3],
+};
+const level4AllElements = {
+  banking: C4_ELEMENTS.banking[4],
+  ecommerce: C4_ELEMENTS.ecommerce[4],
+  ridesharing: C4_ELEMENTS.ridesharing[4],
+  tooda: C4_ELEMENTS.tooda[4],
+};
+
+const level1AllNodes = {
+  banking: C4_LEVEL_NODES.banking[1],
+  ecommerce: C4_LEVEL_NODES.ecommerce[1],
+  ridesharing: C4_LEVEL_NODES.ridesharing[1],
+  tooda: C4_LEVEL_NODES.tooda[1],
+};
+const level2AllNodes = {
+  banking: C4_LEVEL_NODES.banking[2],
+  ecommerce: C4_LEVEL_NODES.ecommerce[2],
+  ridesharing: C4_LEVEL_NODES.ridesharing[2],
+  tooda: C4_LEVEL_NODES.tooda[2],
+};
+const level3AllNodes = {
+  banking: C4_LEVEL_NODES.banking[3],
+  ecommerce: C4_LEVEL_NODES.ecommerce[3],
+  ridesharing: C4_LEVEL_NODES.ridesharing[3],
+  tooda: C4_LEVEL_NODES.tooda[3],
+};
+const level4AllNodes = {
+  banking: C4_LEVEL_NODES.banking[4],
+  ecommerce: C4_LEVEL_NODES.ecommerce[4],
+  ridesharing: C4_LEVEL_NODES.ridesharing[4],
+  tooda: C4_LEVEL_NODES.tooda[4],
+};
+
+const level1AllConnections = {
+  banking: C4_CONNECTIONS.banking[1],
+  ecommerce: C4_CONNECTIONS.ecommerce[1],
+  ridesharing: C4_CONNECTIONS.ridesharing[1],
+  tooda: C4_CONNECTIONS.tooda[1],
+};
+const level2AllConnections = {
+  banking: C4_CONNECTIONS.banking[2],
+  ecommerce: C4_CONNECTIONS.ecommerce[2],
+  ridesharing: C4_CONNECTIONS.ridesharing[2],
+  tooda: C4_CONNECTIONS.tooda[2],
+};
+const level3AllConnections = {
+  banking: C4_CONNECTIONS.banking[3],
+  ecommerce: C4_CONNECTIONS.ecommerce[3],
+  ridesharing: C4_CONNECTIONS.ridesharing[3],
+  tooda: C4_CONNECTIONS.tooda[3],
+};
+const level4AllConnections = {
+  banking: C4_CONNECTIONS.banking[4],
+  ecommerce: C4_CONNECTIONS.ecommerce[4],
+  ridesharing: C4_CONNECTIONS.ridesharing[4],
+  tooda: C4_CONNECTIONS.tooda[4],
+};
 ---
 <!doctype html>
 <html lang="en">
@@ -85,6 +166,22 @@ import { diagrams } from '../data/c4/diagrams';
         @apply border-transparent bg-gradient-to-br from-sky-400 to-indigo-500 text-white;
       }
 
+      .renderer-toggle {
+        @apply mb-4 flex flex-wrap justify-center gap-2 px-4;
+      }
+
+      .renderer-btn {
+        @apply inline-block cursor-pointer rounded-lg border border-slate-700 bg-slate-800 px-5 py-2 text-[0.95rem] text-slate-400 no-underline transition-all duration-200;
+      }
+
+      .renderer-btn:hover {
+        @apply bg-slate-700 text-slate-50;
+      }
+
+      .renderer-btn.active {
+        @apply border-transparent bg-gradient-to-br from-violet-500 to-sky-400 text-white;
+      }
+
       .tabs {
         @apply mb-8 flex flex-wrap justify-center gap-2 px-4;
       }
@@ -109,28 +206,8 @@ import { diagrams } from '../data/c4/diagrams';
         @apply block;
       }
 
-      .tab-panel h2 {
-        @apply mb-2 text-2xl font-bold text-slate-200;
-      }
-
       .tab-panel .description {
         @apply mb-6 text-[0.95rem] leading-relaxed text-slate-400;
-      }
-
-      .view-toggle {
-        @apply mb-6 flex flex-wrap justify-center gap-2 px-4;
-      }
-
-      .view-btn {
-        @apply inline-block cursor-pointer rounded-lg border border-slate-700 bg-slate-800 px-5 py-2 text-[0.95rem] text-slate-400 no-underline transition-all duration-200;
-      }
-
-      .view-btn:hover {
-        @apply bg-slate-700 text-slate-50;
-      }
-
-      .view-btn.active {
-        @apply border-transparent bg-gradient-to-br from-sky-400 to-indigo-500 text-white;
       }
 
       .zoom-controls {
@@ -149,33 +226,40 @@ import { diagrams } from '../data/c4/diagrams';
         @apply text-[0.8rem] text-slate-500;
       }
 
-      .diagram-container {
-        /* touch-action: none enables our custom pan/pinch-zoom handlers */
+      .mermaid-view {
+        @apply hidden;
+      }
+
+      .mermaid-view .diagram-container {
         @apply cursor-grab overflow-hidden rounded-xl bg-white p-6 touch-none select-none;
       }
 
-      .diagram-container:active {
+      .mermaid-view .diagram-container:active {
         @apply cursor-grabbing;
       }
 
-      .diagram-container .mermaid {
+      .mermaid-view .diagram-container .mermaid {
         @apply flex justify-center;
       }
 
-      .code-container {
+      .mermaid-view .code-container {
         @apply hidden overflow-x-auto rounded-xl border border-slate-700 bg-slate-800 p-6;
       }
 
-      .code-container pre {
+      .mermaid-view .code-container pre {
         @apply break-words whitespace-pre-wrap font-mono text-sm leading-relaxed text-slate-200;
       }
 
-      .positions-container {
-        @apply mt-4 hidden overflow-x-auto rounded-xl border border-slate-700 bg-slate-800 p-6;
+      .excalidraw-view {
+        @apply hidden overflow-hidden rounded-xl bg-white;
       }
 
-      .positions-container pre {
-        @apply break-words whitespace-pre-wrap font-mono text-sm leading-relaxed text-slate-200;
+      .twoD-view {
+        @apply hidden overflow-hidden rounded-xl bg-slate-900;
+      }
+
+      .threeD-view {
+        @apply hidden overflow-hidden rounded-xl;
       }
     </style>
   </head>
@@ -184,7 +268,7 @@ import { diagrams } from '../data/c4/diagrams';
     <header>
       <h1>C4 Diagram Examples</h1>
       <p>Four systems illustrated across all 4 levels of the C4 model</p>
-      <a href="/Tooda/" class="back-link">← Back to Home</a>
+      <a href="/Tooda/" class="back-link">&#8592; Back to Home</a>
     </header>
 
     <div class="examples">
@@ -194,25 +278,25 @@ import { diagrams } from '../data/c4/diagrams';
       <a href="/Tooda/c4?example=tooda" class="example-btn" data-example="tooda">Tooda</a>
     </div>
 
-    <div class="tabs">
-      <a href="#level1" class="tab-btn active" data-tab="level1">Level 1 – Context</a>
-      <a href="#level2" class="tab-btn" data-tab="level2">Level 2 – Container</a>
-      <a href="#level3" class="tab-btn" data-tab="level3">Level 3 – Component</a>
-      <a href="#level4" class="tab-btn" data-tab="level4">Level 4 – Code</a>
+    <div class="renderer-toggle">
+      <a href="?renderer=excalidraw" class="renderer-btn" data-renderer="excalidraw">&#9999;&#65039; Excalidraw</a>
+      <a href="?renderer=mermaid" class="renderer-btn active" data-renderer="mermaid">&#128202; Mermaid</a>
+      <a href="?renderer=2d" class="renderer-btn" data-renderer="2d">&#128506;&#65039; 2D</a>
+      <a href="?renderer=3d" class="renderer-btn" data-renderer="3d">&#127922; 3D</a>
     </div>
 
-    <div class="view-toggle">
-      <a href="?view=diagram" class="view-btn active" data-view="diagram">Diagram</a>
-      <a href="?view=code" class="view-btn" data-view="code">Code</a>
-      <a href="?view=edit" class="view-btn" data-view="edit">Edit</a>
+    <div class="tabs">
+      <a href="#level1" class="tab-btn active" data-tab="level1">Level 1 &#8211; Context</a>
+      <a href="#level2" class="tab-btn" data-tab="level2">Level 2 &#8211; Container</a>
+      <a href="#level3" class="tab-btn" data-tab="level3">Level 3 &#8211; Component</a>
+      <a href="#level4" class="tab-btn" data-tab="level4">Level 4 &#8211; Code</a>
     </div>
 
     <div class="zoom-controls" id="zoom-controls">
       <button class="zoom-btn" id="zoom-in" aria-label="Zoom in" title="Zoom in">+</button>
-      <button class="zoom-btn" id="zoom-out" aria-label="Zoom out" title="Zoom out">−</button>
-      <button class="zoom-btn" id="zoom-reset" aria-label="Reset zoom" title="Reset zoom">⟳</button>
-      <span class="zoom-hint" aria-live="polite" id="edit-hint" style="display:none">Drag boxes to reposition · Scroll to zoom</span>
-      <span class="zoom-hint" aria-live="polite" id="pan-hint">Drag to pan · Scroll to zoom</span>
+      <button class="zoom-btn" id="zoom-out" aria-label="Zoom out" title="Zoom out">&#8722;</button>
+      <button class="zoom-btn" id="zoom-reset" aria-label="Reset zoom" title="Reset zoom">&#10227;</button>
+      <span class="zoom-hint" aria-live="polite" id="pan-hint">Drag to pan &#183; Scroll to zoom</span>
     </div>
 
     <!-- Level 1: System Context -->
@@ -221,14 +305,22 @@ import { diagrams } from '../data/c4/diagrams';
         Shows the system in context: who uses it and which external systems it
         interacts with.
       </p>
-      <div class="diagram-container">
-        <div class="mermaid" set:text={diagrams.banking.level1}></div>
+      <div class="excalidraw-view">
+        <C4ExcalidrawViewer client:only="react" allElements={level1AllElements} initialExample="banking" />
       </div>
-      <div class="code-container">
-        <pre><code>{diagrams.banking.level1}</code></pre>
+      <div class="mermaid-view">
+        <div class="diagram-container">
+          <div class="mermaid" set:text={diagrams.banking.level1}></div>
+        </div>
+        <div class="code-container">
+          <pre><code>{diagrams.banking.level1}</code></pre>
+        </div>
       </div>
-      <div class="positions-container">
-        <pre><code></code></pre>
+      <div class="twoD-view">
+        <C4Platform2D client:only="react" allNodes={level1AllNodes} allConnections={level1AllConnections} initialExample="banking" level={1} />
+      </div>
+      <div class="threeD-view">
+        <C4Platform3D client:only="react" allNodes={level1AllNodes} allConnections={level1AllConnections} initialExample="banking" level={1} />
       </div>
     </section>
 
@@ -238,14 +330,22 @@ import { diagrams } from '../data/c4/diagrams';
         Zooms in on the system to show the containers (applications and data
         stores) that make it up.
       </p>
-      <div class="diagram-container">
-        <div class="mermaid" set:text={diagrams.banking.level2}></div>
+      <div class="excalidraw-view">
+        <C4ExcalidrawViewer client:only="react" allElements={level2AllElements} initialExample="banking" />
       </div>
-      <div class="code-container">
-        <pre><code>{diagrams.banking.level2}</code></pre>
+      <div class="mermaid-view">
+        <div class="diagram-container">
+          <div class="mermaid" set:text={diagrams.banking.level2}></div>
+        </div>
+        <div class="code-container">
+          <pre><code>{diagrams.banking.level2}</code></pre>
+        </div>
       </div>
-      <div class="positions-container">
-        <pre><code></code></pre>
+      <div class="twoD-view">
+        <C4Platform2D client:only="react" allNodes={level2AllNodes} allConnections={level2AllConnections} initialExample="banking" level={2} />
+      </div>
+      <div class="threeD-view">
+        <C4Platform3D client:only="react" allNodes={level2AllNodes} allConnections={level2AllConnections} initialExample="banking" level={2} />
       </div>
     </section>
 
@@ -255,14 +355,22 @@ import { diagrams } from '../data/c4/diagrams';
         Zooms in on a key container to show the components (services and
         controllers) inside it.
       </p>
-      <div class="diagram-container">
-        <div class="mermaid" set:text={diagrams.banking.level3}></div>
+      <div class="excalidraw-view">
+        <C4ExcalidrawViewer client:only="react" allElements={level3AllElements} initialExample="banking" />
       </div>
-      <div class="code-container">
-        <pre><code>{diagrams.banking.level3}</code></pre>
+      <div class="mermaid-view">
+        <div class="diagram-container">
+          <div class="mermaid" set:text={diagrams.banking.level3}></div>
+        </div>
+        <div class="code-container">
+          <pre><code>{diagrams.banking.level3}</code></pre>
+        </div>
       </div>
-      <div class="positions-container">
-        <pre><code></code></pre>
+      <div class="twoD-view">
+        <C4Platform2D client:only="react" allNodes={level3AllNodes} allConnections={level3AllConnections} initialExample="banking" level={3} />
+      </div>
+      <div class="threeD-view">
+        <C4Platform3D client:only="react" allNodes={level3AllNodes} allConnections={level3AllConnections} initialExample="banking" level={3} />
       </div>
     </section>
 
@@ -272,14 +380,22 @@ import { diagrams } from '../data/c4/diagrams';
         Zooms in on a key component to show the classes and interfaces that
         implement it.
       </p>
-      <div class="diagram-container">
-        <div class="mermaid" set:text={diagrams.banking.level4}></div>
+      <div class="excalidraw-view">
+        <C4ExcalidrawViewer client:only="react" allElements={level4AllElements} initialExample="banking" />
       </div>
-      <div class="code-container">
-        <pre><code>{diagrams.banking.level4}</code></pre>
+      <div class="mermaid-view">
+        <div class="diagram-container">
+          <div class="mermaid" set:text={diagrams.banking.level4}></div>
+        </div>
+        <div class="code-container">
+          <pre><code>{diagrams.banking.level4}</code></pre>
+        </div>
       </div>
-      <div class="positions-container">
-        <pre><code></code></pre>
+      <div class="twoD-view">
+        <C4Platform2D client:only="react" allNodes={level4AllNodes} allConnections={level4AllConnections} initialExample="banking" level={4} />
+      </div>
+      <div class="threeD-view">
+        <C4Platform3D client:only="react" allNodes={level4AllNodes} allConnections={level4AllConnections} initialExample="banking" level={4} />
       </div>
     </section>
 
@@ -307,37 +423,89 @@ import { diagrams } from '../data/c4/diagrams';
       logger.info('Initializing Mermaid');
       mermaid.initialize({ startOnLoad: false, theme: 'default' });
 
-      logger.info('Deferring initial diagram render until ELK layout engine is ready');
-      window._elkReady.then(() => {
-        logger.info('Rendering initial diagrams');
-        mermaid.run({ nodes: document.querySelectorAll('.tab-panel.active .mermaid') });
+      const tabs = document.querySelectorAll('.tab-btn');
+      const panels = document.querySelectorAll('.tab-panel');
+      const rendererBtns = document.querySelectorAll('.renderer-btn');
+      const validTabs = ['level1', 'level2', 'level3', 'level4'];
+
+      let currentRenderer = 'mermaid';
+      let currentLevel = 'level1';
+
+      // ── Renderer toggle ──────────────────────────────────────────────────────
+
+      function activateRenderer(renderer) {
+        if (renderer !== 'excalidraw' && renderer !== 'mermaid' && renderer !== '3d' && renderer !== '2d') renderer = 'mermaid';
+        currentRenderer = renderer;
+
+        rendererBtns.forEach(b => b.classList.remove('active'));
+        const activeBtn = document.querySelector('.renderer-btn[data-renderer="' + renderer + '"]');
+        if (activeBtn) activeBtn.classList.add('active');
+
+        const excalidrawViews = document.querySelectorAll('.excalidraw-view');
+        const mermaidViews = document.querySelectorAll('.mermaid-view');
+        const twoDViews = document.querySelectorAll('.twoD-view');
+        const threeDViews = document.querySelectorAll('.threeD-view');
+
+        excalidrawViews.forEach(el => { el.style.display = 'none'; });
+        mermaidViews.forEach(el => { el.style.display = 'none'; });
+        twoDViews.forEach(el => { el.style.display = 'none'; });
+        threeDViews.forEach(el => { el.style.display = 'none'; });
+
+        const zoomCtrl = document.getElementById('zoom-controls');
+
+        if (renderer === 'excalidraw') {
+          excalidrawViews.forEach(el => { el.style.display = 'block'; });
+          if (zoomCtrl) zoomCtrl.style.display = 'none';
+        } else if (renderer === 'mermaid') {
+          mermaidViews.forEach(el => { el.style.display = 'block'; });
+          if (zoomCtrl) zoomCtrl.style.display = '';
+
+          // Render any un-rendered Mermaid diagrams in the active panel
+          const activePanel = document.querySelector('.tab-panel.active');
+          if (activePanel) {
+            const unrendered = Array.from(activePanel.querySelectorAll('.mermaid')).filter(
+              el => !el.querySelector('svg')
+            );
+            if (unrendered.length > 0) {
+              unrendered.forEach(el => el.removeAttribute('data-processed'));
+              window._elkReady.then(() => mermaid.run({ nodes: unrendered }));
+            }
+          }
+        } else if (renderer === '2d') {
+          twoDViews.forEach(el => { el.style.display = 'block'; });
+          if (zoomCtrl) zoomCtrl.style.display = 'none';
+        } else {
+          threeDViews.forEach(el => { el.style.display = 'block'; });
+          if (zoomCtrl) zoomCtrl.style.display = 'none';
+        }
+      }
+
+      rendererBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          const renderer = btn.dataset.renderer;
+          const url = new URL(window.location.href);
+          url.searchParams.set('renderer', renderer);
+          history.pushState(null, '', url.toString());
+          activateRenderer(renderer);
+        });
       });
 
-      // View toggle state – declared first so activateTab can reference it
-      let currentView = 'diagram';
-      let isEditMode = false;
-
-      // Tab switching
-      const buttons = document.querySelectorAll('.tab-btn');
-      const panels = document.querySelectorAll('.tab-panel');
-      const validTabs = ['level1', 'level2', 'level3', 'level4'];
+      // ── Tab switching ─────────────────────────────────────────────────────────
 
       function activateTab(target) {
         if (!validTabs.includes(target)) target = 'level1';
-        logger.info(`Tab switched to: ${target}`);
-
-        buttons.forEach(b => b.classList.remove('active'));
+        currentLevel = target;
+        tabs.forEach(b => b.classList.remove('active'));
         panels.forEach(p => p.classList.remove('active'));
-
-        const activeBtn = document.querySelector(`.tab-btn[data-tab="${target}"]`);
+        const activeBtn = document.querySelector('.tab-btn[data-tab="' + target + '"]');
         if (activeBtn) activeBtn.classList.add('active');
-
         const panel = document.getElementById(target);
         if (panel) {
           panel.classList.add('active');
 
-          // Re-render any diagrams that were not rendered while hidden
-          if (currentView === 'diagram' || currentView === 'edit') {
+          // Render any un-rendered Mermaid diagrams when switching tabs in Mermaid mode
+          if (currentRenderer === 'mermaid') {
             const unrendered = Array.from(panel.querySelectorAll('.mermaid')).filter(
               el => !el.querySelector('svg')
             );
@@ -349,7 +517,7 @@ import { diagrams } from '../data/c4/diagrams';
         }
       }
 
-      buttons.forEach(btn => {
+      tabs.forEach(btn => {
         btn.addEventListener('click', (e) => {
           e.preventDefault();
           const target = btn.dataset.tab;
@@ -358,89 +526,25 @@ import { diagrams } from '../data/c4/diagrams';
         });
       });
 
-      // Activate tab from URL hash on load and on back/forward navigation
       function activateFromHash() {
         const hash = window.location.hash.slice(1) || 'level1';
         activateTab(hash);
       }
 
-      window.addEventListener('hashchange', activateFromHash);
-      activateFromHash();
+      // ── Example switching ─────────────────────────────────────────────────────
 
-      // View toggle (Diagram / Code)
-      const viewBtns = document.querySelectorAll('.view-btn');
-
-      function activateView(view) {
-        logger.info(`View changed to: ${view}`);
-        currentView = view;
-        isEditMode = (view === 'edit');
-        viewBtns.forEach(b => b.classList.remove('active'));
-        const activeViewBtn = document.querySelector(`.view-btn[data-view="${view}"]`);
-        if (activeViewBtn) activeViewBtn.classList.add('active');
-
-        const isDiagramVisible = view === 'diagram' || view === 'edit';
-        document.querySelectorAll('.tab-panel').forEach(panel => {
-          const diagramContainer = panel.querySelector('.diagram-container');
-          const codeContainer = panel.querySelector('.code-container');
-          const posContainer = panel.querySelector('.positions-container');
-          if (diagramContainer) diagramContainer.style.display = isDiagramVisible ? '' : 'none';
-          if (codeContainer) codeContainer.style.display = view === 'code' ? 'block' : 'none';
-          if (posContainer) posContainer.style.display = isEditMode ? 'block' : 'none';
-        });
-
-        // Show/hide zoom controls and update hints
-        const zoomCtrl = document.getElementById('zoom-controls');
-        if (zoomCtrl) zoomCtrl.style.display = view === 'code' ? 'none' : '';
-        const editHint = document.getElementById('edit-hint');
-        const panHint = document.getElementById('pan-hint');
-        if (editHint) editHint.style.display = isEditMode ? '' : 'none';
-        if (panHint) panHint.style.display = isEditMode ? 'none' : '';
-
-        // Update node cursors for current edit mode
-        document.querySelectorAll('.diagram-container').forEach(c => {
-          updateNodeCursors(c.querySelector('.mermaid svg'), isEditMode);
-        });
-
-        // If switching to diagram or edit view, render any unrendered diagrams in the active panel
-        if (isDiagramVisible) {
-          const activePanel = document.querySelector('.tab-panel.active');
-          if (activePanel) {
-            const unrendered = Array.from(activePanel.querySelectorAll('.mermaid')).filter(
-              el => !el.querySelector('svg')
-            );
-            if (unrendered.length > 0) {
-              unrendered.forEach(el => el.removeAttribute('data-processed'));
-              window._elkReady.then(() => mermaid.run({ nodes: unrendered }));
-            }
-            if (isEditMode) updatePositionsPanel(activePanel);
-          }
-        }
-      }
-
-      viewBtns.forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          e.preventDefault();
-          const view = btn.dataset.view;
-          const url = new URL(window.location.href);
-          url.searchParams.set('view', view);
-          history.pushState(null, '', url.toString());
-          activateView(view);
-        });
-      });
-
-      // Example switching
       const exampleBtns = document.querySelectorAll('.example-btn');
 
       function activateExample(key) {
         const example = diagrams[key];
         if (!example) {
-          logger.warn(`Unknown example key: ${key}`);
+          logger.warn('Unknown example key: ' + key);
           return;
         }
-        logger.info(`Example changed to: ${key}`);
+        logger.info('Example changed to: ' + key);
 
         exampleBtns.forEach(b => b.classList.remove('active'));
-        const activeBtn = document.querySelector(`.example-btn[data-example="${key}"]`);
+        const activeBtn = document.querySelector('.example-btn[data-example="' + key + '"]');
         if (activeBtn) activeBtn.classList.add('active');
 
         // Update all mermaid elements and code containers with new diagram source
@@ -450,7 +554,6 @@ import { diagrams } from '../data/c4/diagrams';
           if (!panel) return;
           const mermaidEl = panel.querySelector('.mermaid');
           if (mermaidEl) {
-            // Remove rendered SVG so mermaid re-renders
             mermaidEl.innerHTML = '';
             mermaidEl.removeAttribute('data-processed');
             mermaidEl.textContent = example[level];
@@ -459,8 +562,11 @@ import { diagrams } from '../data/c4/diagrams';
           if (codeEl) codeEl.textContent = example[level];
         });
 
-        // Re-render only the currently visible panel (diagram view only)
-        if (currentView === 'diagram' || currentView === 'edit') {
+        // Fire custom event for React components
+        window.dispatchEvent(new CustomEvent('c4-example-changed', { detail: { example: key } }));
+
+        // Re-render only the currently visible panel (mermaid renderer only)
+        if (currentRenderer === 'mermaid') {
           const activePanel = document.querySelector('.tab-panel.active');
           if (activePanel) {
             const el = activePanel.querySelector('.mermaid');
@@ -480,71 +586,30 @@ import { diagrams } from '../data/c4/diagrams';
         });
       });
 
-      // Activate example and view from URL query params on load
+      // ── Init from URL ─────────────────────────────────────────────────────────
+
       function activateFromQuery() {
         const params = new URLSearchParams(window.location.search);
         const example = params.get('example') || 'banking';
-        const view = params.get('view') || 'diagram';
+        const renderer = params.get('renderer') || 'mermaid';
         activateExample(example);
-        activateView(view);
+        activateRenderer(renderer);
       }
 
       window.addEventListener('popstate', () => {
         activateFromQuery();
         activateFromHash();
       });
+
+      window.addEventListener('hashchange', activateFromHash);
+
       activateFromQuery();
+      activateFromHash();
 
-      // ===== PAN / ZOOM / NODE DRAG =====
-
-      function getPositionsText(svgEl) {
-        if (!svgEl) return '';
-        const positions = {};
-        // C4 stereotype labels rendered by Mermaid use the pattern <<type>>;
-        // skip these to display the human-readable node name instead.
-        const isStereotype = text => text.startsWith('<<') && text.endsWith('>>');
-        // C4 nodes (absolute-coord, g.person-man)
-        svgEl.querySelectorAll('g.person-man').forEach(nodeG => {
-          const r = nodeG.querySelector('rect');
-          if (!r) return;
-          const texts = nodeG.querySelectorAll('text');
-          let label = '';
-          for (const t of texts) {
-            const text = t.textContent.trim();
-            // Skip type stereotype labels like <<person>>, <<system>>, etc.
-            if (text && !isStereotype(text)) { label = text; break; }
-          }
-          positions[label || 'node'] = {
-            x: Math.round(+r.getAttribute('x')),
-            y: Math.round(+r.getAttribute('y'))
-          };
-        });
-        // Class diagram nodes (transform-based, g.node.default).
-        // Mermaid assigns IDs in the format "classId-{ClassName}-{index}" (Mermaid v10+).
-        svgEl.querySelectorAll('.nodes > g.node.default').forEach(nodeG => {
-          const m = (nodeG.getAttribute('transform') || '').match(/translate\(([\d.]+)[,\s]+([\d.]+)\)/);
-          if (!m) return;
-          const idMatch = (nodeG.id || '').match(/classId-(.*?)-\d+$/);
-          const label = idMatch ? idMatch[1] : (nodeG.id || 'node');
-          positions[label] = { x: Math.round(+m[1]), y: Math.round(+m[2]) };
-        });
-        if (Object.keys(positions).length === 0) return '';
-        return JSON.stringify(positions, null, 2);
-      }
-
-      function updatePositionsPanel(panel) {
-        const posEl = panel ? panel.querySelector('.positions-container code') : null;
-        if (!posEl) return;
-        const svgEl = panel.querySelector('.diagram-container .mermaid svg');
-        posEl.textContent = getPositionsText(svgEl);
-      }
+      // ===== PAN / ZOOM =====
 
       const ZOOM_STEP = 0.15;
-      // Maximum zoom-in: 10× original size; maximum zoom-out: 10× original size
       const ZOOM_MAX_FACTOR = 10;
-      // SVG-unit tolerance for matching edge endpoints to node boundaries during drag
-      const EDGE_MATCH_TOLERANCE = 3;
-      // WeakMap: SVG element → { x, y, w, h, ox, oy, ow, oh }
       const vbState = new WeakMap();
 
       function initSvg(svgEl) {
@@ -602,161 +667,13 @@ import { diagrams } from '../data/c4/diagrams';
       }
 
       function getActiveSvg() {
-        const p = document.querySelector('.tab-panel.active');
-        return p ? p.querySelector('.diagram-container .mermaid svg') : null;
+        const activePanel = document.querySelector('.tab-panel.active');
+        if (!activePanel) return null;
+        return activePanel.querySelector('.mermaid svg');
       }
 
-      // Update cursor on draggable nodes based on edit mode.
-      // Mermaid renders all C4 diagram elements (persons, systems, containers)
-      // as <g class="person-man">, and classDiagram classes as <g class="node default">.
-      function updateNodeCursors(svgEl, editMode) {
-        if (!svgEl) return;
-        svgEl.querySelectorAll('g.person-man, g.node.default').forEach(n => {
-          n.style.cursor = editMode ? 'move' : '';
-        });
-      }
+      let panGesture = null;
 
-      // ---- C4 node helpers (absolute-coord nodes) ----
-      function c4Bounds(nodeG) {
-        const r = nodeG.querySelector('rect');
-        if (!r) return null;
-        const x = +r.getAttribute('x'), y = +r.getAttribute('y');
-        const w = +r.getAttribute('width'), h = +r.getAttribute('height');
-        return { x, y, w, h };
-      }
-
-      function moveC4Node(nodeG, dx, dy) {
-        nodeG.querySelectorAll('rect, text, image').forEach(el => {
-          const x = el.getAttribute('x'), y = el.getAttribute('y');
-          if (x !== null) el.setAttribute('x', +x + dx);
-          if (y !== null) el.setAttribute('y', +y + dy);
-        });
-      }
-
-      // Build list of edge elements (and which endpoint) connected to a C4 node.
-      // T is the SVG-unit tolerance for matching edge endpoints to node boundaries.
-      function c4Connections(svgEl, bounds) {
-        const T = EDGE_MATCH_TOLERANCE;
-        const conns = [];
-        svgEl.querySelectorAll('g > line').forEach(line => {
-          const x1 = +line.getAttribute('x1'), y1 = +line.getAttribute('y1');
-          const x2 = +line.getAttribute('x2'), y2 = +line.getAttribute('y2');
-          if (x1 >= bounds.x - T && x1 <= bounds.x + bounds.w + T &&
-              y1 >= bounds.y - T && y1 <= bounds.y + bounds.h + T)
-            conns.push({ el: line, type: 'line-start', ox: x1, oy: y1 });
-          if (x2 >= bounds.x - T && x2 <= bounds.x + bounds.w + T &&
-              y2 >= bounds.y - T && y2 <= bounds.y + bounds.h + T)
-            conns.push({ el: line, type: 'line-end', ox: x2, oy: y2 });
-        });
-        svgEl.querySelectorAll('g > path[d]').forEach(path => {
-          const d = path.getAttribute('d');
-          if (!d) return;
-          const sm = d.match(/^M\s*([\d.]+)[,\s]+([\d.]+)/);
-          if (sm) {
-            const sx = +sm[1], sy = +sm[2];
-            if (sx >= bounds.x - T && sx <= bounds.x + bounds.w + T &&
-                sy >= bounds.y - T && sy <= bounds.y + bounds.h + T)
-              conns.push({ el: path, type: 'path-start', ox: sx, oy: sy, od: d });
-          }
-          // Quadratic Bézier end segment: "Q controlX,controlY endX,endY"
-          const qm = d.match(/Q\s*([\d.]+)[,\s]+([\d.]+)\s+([\d.]+)[,\s]+([\d.]+)\s*$/);
-          if (qm) {
-            const ex = +qm[3], ey = +qm[4];
-            if (ex >= bounds.x - T && ex <= bounds.x + bounds.w + T &&
-                ey >= bounds.y - T && ey <= bounds.y + bounds.h + T)
-              conns.push({ el: path, type: 'path-q-end', ox: ex, oy: ey, ocx: +qm[1], ocy: +qm[2], od: d });
-          }
-          // L segment end: "L ex,ey" at the end of path
-          const lm = d.match(/L\s*([\d.]+)[,\s]+([\d.]+)\s*$/);
-          if (lm) {
-            const ex = +lm[1], ey = +lm[2];
-            if (ex >= bounds.x - T && ex <= bounds.x + bounds.w + T &&
-                ey >= bounds.y - T && ey <= bounds.y + bounds.h + T)
-              conns.push({ el: path, type: 'path-l-end', ox: ex, oy: ey, od: d });
-          }
-        });
-        return conns;
-      }
-
-      // ---- classDiagram node helpers (transform-based nodes) ----
-      function classPos(nodeG) {
-        const m = (nodeG.getAttribute('transform') || '').match(/translate\(([\d.]+)[,\s]+([\d.]+)\)/);
-        return m ? { x: +m[1], y: +m[2] } : null;
-      }
-
-      function moveClassNode(nodeG, dx, dy) {
-        const pos = classPos(nodeG);
-        if (pos) nodeG.setAttribute('transform', `translate(${pos.x + dx}, ${pos.y + dy})`);
-      }
-
-      // Build edge connections for a classDiagram node using closest-node matching
-      function classConnections(svgEl, nodeG) {
-        const nodePos = Array.from(svgEl.querySelectorAll('.nodes > g.node')).map(n => {
-          const m = (n.getAttribute('transform') || '').match(/translate\(([\d.]+)[,\s]+([\d.]+)\)/);
-          return m ? { id: n.id, x: +m[1], y: +m[2] } : null;
-        }).filter(Boolean);
-
-        const conns = [];
-        svgEl.querySelectorAll('.edgePaths path').forEach(path => {
-          const d = path.getAttribute('d');
-          if (!d) return;
-          const sm = d.match(/^M\s*([\d.]+)[,\s]+([\d.]+)/);
-          const lm = d.match(/L([\d.]+)[,\s]+([\d.]+)\s*$/);
-          if (!sm || !lm) return;
-          const sx = +sm[1], sy = +sm[2];
-          const ex = +lm[1], ey = +lm[2];
-
-          // Find the closest node to each endpoint
-          let minD = Infinity, srcNode = null;
-          nodePos.forEach(np => {
-            const dist = Math.hypot(sx - np.x, sy - np.y);
-            if (dist < minD) { minD = dist; srcNode = np; }
-          });
-          minD = Infinity;
-          let dstNode = null;
-          nodePos.forEach(np => {
-            const dist = Math.hypot(ex - np.x, ey - np.y);
-            if (dist < minD) { minD = dist; dstNode = np; }
-          });
-
-          if (srcNode && srcNode.id === nodeG.id)
-            conns.push({ el: path, type: 'path-start', ox: sx, oy: sy, od: d });
-          if (dstNode && dstNode.id === nodeG.id)
-            conns.push({ el: path, type: 'path-l-end', ox: ex, oy: ey, od: d });
-        });
-        return conns;
-      }
-
-      // Apply (dx, dy) delta to a list of edge connections
-      function applyConnDelta(conns, dx, dy) {
-        conns.forEach(c => {
-          if (c.type === 'line-start') {
-            c.el.setAttribute('x1', c.ox + dx);
-            c.el.setAttribute('y1', c.oy + dy);
-          } else if (c.type === 'line-end') {
-            c.el.setAttribute('x2', c.ox + dx);
-            c.el.setAttribute('y2', c.oy + dy);
-          } else if (c.type === 'path-start') {
-            const newD = c.od.replace(/^M\s*([\d.]+)[,\s]+([\d.]+)/, `M ${c.ox + dx},${c.oy + dy}`);
-            c.el.setAttribute('d', newD);
-          } else if (c.type === 'path-q-end') {
-            const newD = c.od.replace(
-              /Q\s*[\d.]+[,\s]+[\d.]+\s+[\d.]+[,\s]+[\d.]+\s*$/,
-              `Q ${c.ocx},${c.ocy} ${c.ox + dx},${c.oy + dy}`
-            );
-            c.el.setAttribute('d', newD);
-          } else if (c.type === 'path-l-end') {
-            const newD = c.od.replace(/L([\d.]+)[,\s]+([\d.]+)\s*$/, `L${c.ox + dx},${c.oy + dy}`);
-            c.el.setAttribute('d', newD);
-          }
-        });
-      }
-
-      // ---- Pan/zoom gesture state ----
-      let panGesture = null; // { svgEl, startX, startY, startVBX, startVBY, scaleX, scaleY }
-      let nodeDrag = null;   // { nodeG, svgEl, isC4, origPos, edges, startX, startY, scaleX, scaleY }
-
-      // ---- Container setup ----
       function setupDiagramContainer(container) {
         if (container.dataset.panZoomSetup) return;
         container.dataset.panZoomSetup = '1';
@@ -764,26 +681,12 @@ import { diagrams } from '../data/c4/diagrams';
         container.addEventListener('mousedown', (e) => {
           const svgEl = container.querySelector('.mermaid svg');
           if (!svgEl || !vbState.has(svgEl)) return;
+          e.preventDefault();
           const s = vbState.get(svgEl);
           const rect = svgEl.getBoundingClientRect();
           const scaleX = s.w / rect.width;
           const scaleY = s.h / rect.height;
-
-          const c4Node = isEditMode ? e.target.closest('g.person-man') : null;
-          const classNode = isEditMode ? e.target.closest('g.node.default') : null;
-
-          if (c4Node || classNode) {
-            e.preventDefault();
-            e.stopPropagation();
-            const nodeG = c4Node || classNode;
-            const isC4 = !!c4Node;
-            const origPos = isC4 ? c4Bounds(nodeG) : classPos(nodeG);
-            const edges = isC4 ? c4Connections(svgEl, origPos) : classConnections(svgEl, nodeG);
-            nodeDrag = { nodeG, svgEl, isC4, origPos, edges, startX: e.clientX, startY: e.clientY, scaleX, scaleY };
-          } else {
-            e.preventDefault();
-            panGesture = { svgEl, startX: e.clientX, startY: e.clientY, startVBX: s.x, startVBY: s.y, scaleX, scaleY };
-          }
+          panGesture = { svgEl, startX: e.clientX, startY: e.clientY, startVBX: s.x, startVBY: s.y, scaleX, scaleY };
         });
 
         container.addEventListener('wheel', (e) => {
@@ -795,7 +698,6 @@ import { diagrams } from '../data/c4/diagrams';
           zoomAt(svgEl, factor, pt.x, pt.y);
         }, { passive: false });
 
-        // Touch: single-finger pan, two-finger pinch zoom
         const touchState = {};
         let lastPinchDist = null;
         container.addEventListener('touchstart', (e) => {
@@ -840,24 +742,8 @@ import { diagrams } from '../data/c4/diagrams';
         }, { passive: true });
       }
 
-      // Global mousemove: handle pan and node drag
       document.addEventListener('mousemove', (e) => {
-        if (nodeDrag) {
-          const { nodeG, isC4, origPos, edges, startX, startY, scaleX, scaleY } = nodeDrag;
-          const totalDx = (e.clientX - startX) * scaleX;
-          const totalDy = (e.clientY - startY) * scaleY;
-          if (isC4) {
-            const rect = nodeG.querySelector('rect');
-            if (rect) {
-              const curX = +rect.getAttribute('x'), curY = +rect.getAttribute('y');
-              moveC4Node(nodeG, origPos.x + totalDx - curX, origPos.y + totalDy - curY);
-            }
-          } else {
-            const pos = classPos(nodeG);
-            if (pos) moveClassNode(nodeG, origPos.x + totalDx - pos.x, origPos.y + totalDy - pos.y);
-          }
-          applyConnDelta(edges, totalDx, totalDy);
-        } else if (panGesture) {
+        if (panGesture) {
           const { svgEl, startX, startY, startVBX, startVBY, scaleX, scaleY } = panGesture;
           const s = vbState.get(svgEl);
           if (s) {
@@ -869,15 +755,9 @@ import { diagrams } from '../data/c4/diagrams';
       });
 
       document.addEventListener('mouseup', () => {
-        if (nodeDrag) {
-          const activePanel = document.querySelector('.tab-panel.active');
-          if (activePanel) updatePositionsPanel(activePanel);
-        }
-        nodeDrag = null;
         panGesture = null;
       });
 
-      // ---- Zoom control buttons ----
       document.getElementById('zoom-in')?.addEventListener('click', () => {
         logger.info('Zoom in');
         const svg = getActiveSvg();
@@ -900,8 +780,6 @@ import { diagrams } from '../data/c4/diagrams';
         if (svg) resetZoom(svg);
       });
 
-      // ---- Auto-setup containers via MutationObserver ----
-      // When Mermaid adds/replaces an SVG inside a .mermaid element, initialize it
       document.querySelectorAll('.mermaid').forEach(mermaidEl => {
         const container = mermaidEl.closest('.diagram-container');
         if (!container) return;
@@ -910,14 +788,18 @@ import { diagrams } from '../data/c4/diagrams';
           const svg = mermaidEl.querySelector('svg');
           if (svg && !vbState.has(svg)) {
             initSvg(svg);
-            updateNodeCursors(svg, isEditMode);
-            if (isEditMode) {
-              const panel = mermaidEl.closest('.tab-panel');
-              if (panel) updatePositionsPanel(panel);
-            }
           }
         });
         observer.observe(mermaidEl, { childList: true });
+      });
+
+      // Initial mermaid render (deferred until ELK ready) - only for active panel
+      logger.info('Deferring initial diagram render until ELK layout engine is ready');
+      window._elkReady.then(() => {
+        if (currentRenderer === 'mermaid') {
+          logger.info('Rendering initial diagrams');
+          mermaid.run({ nodes: document.querySelectorAll('.tab-panel.active .mermaid') });
+        }
       });
     </script>
     </div>

@@ -8,40 +8,40 @@ test.describe('C4 diagram page', () => {
 
   test('displays all four tab links', async ({ page }) => {
     await page.goto('/Tooda/c4');
-    await expect(page.getByRole('link', { name: 'Level 1 – Context' })).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Level 2 – Container' })).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Level 3 – Component' })).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Level 4 – Code' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Level 1 \u2013 Context' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Level 2 \u2013 Container' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Level 3 \u2013 Component' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Level 4 \u2013 Code' })).toBeVisible();
   });
 
   test('Level 1 panel is active by default', async ({ page }) => {
     await page.goto('/Tooda/c4');
-    await expect(page.getByRole('link', { name: 'Level 1 – Context' })).toHaveClass(/active/);
+    await expect(page.getByRole('link', { name: 'Level 1 \u2013 Context' })).toHaveClass(/active/);
     await expect(page.locator('#level1')).toHaveClass(/active/);
   });
 
   test('clicking Level 2 tab activates its panel', async ({ page }) => {
     await page.goto('/Tooda/c4');
-    await page.getByRole('link', { name: 'Level 2 – Container' }).click();
+    await page.getByRole('link', { name: 'Level 2 \u2013 Container' }).click();
     await expect(page.locator('#level2')).toHaveClass(/active/);
     await expect(page.locator('#level1')).not.toHaveClass(/active/);
   });
 
   test('clicking Level 3 tab activates its panel', async ({ page }) => {
     await page.goto('/Tooda/c4');
-    await page.getByRole('link', { name: 'Level 3 – Component' }).click();
+    await page.getByRole('link', { name: 'Level 3 \u2013 Component' }).click();
     await expect(page.locator('#level3')).toHaveClass(/active/);
   });
 
   test('clicking Level 4 tab activates its panel', async ({ page }) => {
     await page.goto('/Tooda/c4');
-    await page.getByRole('link', { name: 'Level 4 – Code' }).click();
+    await page.getByRole('link', { name: 'Level 4 \u2013 Code' }).click();
     await expect(page.locator('#level4')).toHaveClass(/active/);
   });
 
   test('Level 4 diagram renders without errors', async ({ page }) => {
     await page.goto('/Tooda/c4');
-    await page.getByRole('link', { name: 'Level 4 – Code' }).click();
+    await page.getByRole('link', { name: 'Level 4 \u2013 Code' }).click();
     await page.waitForSelector('#level4 .mermaid svg', { state: 'visible' });
     await expect(page.locator('#level4 .mermaid')).not.toContainText('Syntax error');
   });
@@ -94,61 +94,6 @@ test.describe('C4 diagram page', () => {
     await expect(page.locator('#level1 .mermaid')).not.toContainText('Syntax error');
   });
 
-  test('displays Diagram and Code view toggle links', async ({ page }) => {
-    await page.goto('/Tooda/c4');
-    await expect(page.getByRole('link', { name: 'Diagram', exact: true })).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Code', exact: true })).toBeVisible();
-  });
-
-  test('Diagram view is active by default', async ({ page }) => {
-    await page.goto('/Tooda/c4');
-    await expect(page.getByRole('link', { name: 'Diagram', exact: true })).toHaveClass(/active/);
-    await expect(page.getByRole('link', { name: 'Code', exact: true })).not.toHaveClass(/active/);
-  });
-
-  test('diagram is visible and code is hidden by default', async ({ page }) => {
-    await page.goto('/Tooda/c4');
-    await expect(page.locator('#level1 .diagram-container')).toBeVisible();
-    await expect(page.locator('#level1 .code-container')).toBeHidden();
-  });
-
-  test('clicking Code link shows code and hides diagram', async ({ page }) => {
-    await page.goto('/Tooda/c4');
-    await page.getByRole('link', { name: 'Code', exact: true }).click();
-    await expect(page.getByRole('link', { name: 'Code', exact: true })).toHaveClass(/active/);
-    await expect(page.locator('#level1 .code-container')).toBeVisible();
-    await expect(page.locator('#level1 .diagram-container')).toBeHidden();
-  });
-
-  test('code container displays Mermaid source text', async ({ page }) => {
-    await page.goto('/Tooda/c4');
-    await page.getByRole('link', { name: 'Code', exact: true }).click();
-    await expect(page.locator('#level1 .code-container code')).toContainText('C4Context');
-  });
-
-  test('clicking Diagram link restores diagram and hides code', async ({ page }) => {
-    await page.goto('/Tooda/c4');
-    await page.getByRole('link', { name: 'Code', exact: true }).click();
-    await page.getByRole('link', { name: 'Diagram', exact: true }).click();
-    await expect(page.locator('#level1 .diagram-container')).toBeVisible();
-    await expect(page.locator('#level1 .code-container')).toBeHidden();
-  });
-
-  test('code container updates when switching examples', async ({ page }) => {
-    await page.goto('/Tooda/c4');
-    await page.getByRole('link', { name: 'Code', exact: true }).click();
-    await page.getByRole('link', { name: 'E-Commerce' }).click();
-    await expect(page.locator('#level1 .code-container code')).toContainText('E-Commerce Platform');
-  });
-
-  test('code view persists when switching tabs', async ({ page }) => {
-    await page.goto('/Tooda/c4');
-    await page.getByRole('link', { name: 'Code', exact: true }).click();
-    await page.getByRole('link', { name: 'Level 2 – Container' }).click();
-    await expect(page.locator('#level2 .code-container')).toBeVisible();
-    await expect(page.locator('#level2 .diagram-container')).toBeHidden();
-  });
-
   test('navigating to ?example=ecommerce activates E-Commerce example', async ({ page }) => {
     await page.goto('/Tooda/c4?example=ecommerce');
     await expect(page.getByRole('link', { name: 'E-Commerce' })).toHaveClass(/active/);
@@ -167,43 +112,6 @@ test.describe('C4 diagram page', () => {
     await expect(page).toHaveURL(/example=ecommerce/);
   });
 
-  test('clicking Code link updates URL query parameter', async ({ page }) => {
-    await page.goto('/Tooda/c4');
-    await page.getByRole('link', { name: 'Code', exact: true }).click();
-    await expect(page).toHaveURL(/view=code/);
-  });
-
-  test('navigating to ?view=code activates Code view', async ({ page }) => {
-    await page.goto('/Tooda/c4?view=code');
-    await expect(page.getByRole('link', { name: 'Code', exact: true })).toHaveClass(/active/);
-    await expect(page.locator('#level1 .code-container')).toBeVisible();
-  });
-
-  test('displays Edit view toggle link', async ({ page }) => {
-    await page.goto('/Tooda/c4');
-    await expect(page.getByRole('link', { name: 'Edit', exact: true })).toBeVisible();
-  });
-
-  test('clicking Edit link activates Edit view and shows diagram', async ({ page }) => {
-    await page.goto('/Tooda/c4');
-    await page.getByRole('link', { name: 'Edit', exact: true }).click();
-    await expect(page.getByRole('link', { name: 'Edit', exact: true })).toHaveClass(/active/);
-    await expect(page.locator('#level1 .diagram-container')).toBeVisible();
-    await expect(page.locator('#level1 .code-container')).toBeHidden();
-  });
-
-  test('clicking Edit link updates URL query parameter', async ({ page }) => {
-    await page.goto('/Tooda/c4');
-    await page.getByRole('link', { name: 'Edit', exact: true }).click();
-    await expect(page).toHaveURL(/view=edit/);
-  });
-
-  test('navigating to ?view=edit activates Edit view', async ({ page }) => {
-    await page.goto('/Tooda/c4?view=edit');
-    await expect(page.getByRole('link', { name: 'Edit', exact: true })).toHaveClass(/active/);
-    await expect(page.locator('#level1 .diagram-container')).toBeVisible();
-  });
-
   test('displays zoom control buttons', async ({ page }) => {
     await page.goto('/Tooda/c4');
     await expect(page.getByRole('button', { name: 'Zoom in' })).toBeVisible();
@@ -211,21 +119,15 @@ test.describe('C4 diagram page', () => {
     await expect(page.getByRole('button', { name: 'Reset zoom' })).toBeVisible();
   });
 
-  test('zoom controls are hidden in code view', async ({ page }) => {
+  test('zoom controls are visible in mermaid renderer', async ({ page }) => {
     await page.goto('/Tooda/c4');
-    await page.getByRole('link', { name: 'Code', exact: true }).click();
+    await expect(page.locator('#zoom-controls')).toBeVisible();
+  });
+
+  test('zoom controls are hidden in excalidraw renderer', async ({ page }) => {
+    await page.goto('/Tooda/c4');
+    await page.locator('.renderer-btn[data-renderer="excalidraw"]').click();
     await expect(page.locator('#zoom-controls')).toBeHidden();
-  });
-
-  test('zoom controls are visible in diagram view', async ({ page }) => {
-    await page.goto('/Tooda/c4');
-    await expect(page.locator('#zoom-controls')).toBeVisible();
-  });
-
-  test('zoom controls are visible in edit view', async ({ page }) => {
-    await page.goto('/Tooda/c4');
-    await page.getByRole('link', { name: 'Edit', exact: true }).click();
-    await expect(page.locator('#zoom-controls')).toBeVisible();
   });
 
   test('zoom in button changes diagram viewBox', async ({ page }) => {
@@ -247,67 +149,9 @@ test.describe('C4 diagram page', () => {
     expect(restoredViewBox).toBe(origViewBox);
   });
 
-  test('edit mode shows drag hint and hides pan hint', async ({ page }) => {
-    await page.goto('/Tooda/c4');
-    await page.getByRole('link', { name: 'Edit', exact: true }).click();
-    await expect(page.locator('#edit-hint')).toBeVisible();
-    await expect(page.locator('#pan-hint')).toBeHidden();
-  });
-
-  test('diagram view shows pan hint and hides drag hint', async ({ page }) => {
+  test('diagram view shows pan hint', async ({ page }) => {
     await page.goto('/Tooda/c4');
     await expect(page.locator('#pan-hint')).toBeVisible();
-    await expect(page.locator('#edit-hint')).toBeHidden();
-  });
-
-  test('positions container is hidden by default (diagram view)', async ({ page }) => {
-    await page.goto('/Tooda/c4');
-    await expect(page.locator('#level1 .positions-container')).toBeHidden();
-  });
-
-  test('positions container is hidden in code view', async ({ page }) => {
-    await page.goto('/Tooda/c4');
-    await page.getByRole('link', { name: 'Code', exact: true }).click();
-    await expect(page.locator('#level1 .positions-container')).toBeHidden();
-  });
-
-  test('positions container is visible in edit view', async ({ page }) => {
-    await page.goto('/Tooda/c4');
-    await page.getByRole('link', { name: 'Edit', exact: true }).click();
-    await expect(page.locator('#level1 .positions-container')).toBeVisible();
-  });
-
-  test('positions container displays node position JSON in edit view', async ({ page }) => {
-    await page.goto('/Tooda/c4');
-    await page.getByRole('link', { name: 'Edit', exact: true }).click();
-    await page.waitForSelector('#level1 .mermaid svg', { state: 'visible' });
-    await expect(page.locator('#level1 .positions-container code')).toContainText('"x"');
-    await expect(page.locator('#level1 .positions-container code')).toContainText('"y"');
-    // Node names should appear, not type stereotype labels
-    await expect(page.locator('#level1 .positions-container code')).not.toContainText('<<person>>');
-  });
-
-  test('positions container is visible for level 4 class diagram in edit view', async ({ page }) => {
-    await page.goto('/Tooda/c4');
-    await page.getByRole('link', { name: 'Level 4 – Code' }).click();
-    await page.getByRole('link', { name: 'Edit', exact: true }).click();
-    await page.waitForSelector('#level4 .mermaid svg', { state: 'visible' });
-    await expect(page.locator('#level4 .positions-container')).toBeVisible();
-  });
-
-  test('positions container hides when switching from edit to diagram view', async ({ page }) => {
-    await page.goto('/Tooda/c4');
-    await page.getByRole('link', { name: 'Edit', exact: true }).click();
-    await expect(page.locator('#level1 .positions-container')).toBeVisible();
-    await page.getByRole('link', { name: 'Diagram', exact: true }).click();
-    await expect(page.locator('#level1 .positions-container')).toBeHidden();
-  });
-
-  test('positions container is visible when switching between levels in edit view', async ({ page }) => {
-    await page.goto('/Tooda/c4');
-    await page.getByRole('link', { name: 'Edit', exact: true }).click();
-    await page.getByRole('link', { name: 'Level 2 – Container' }).click();
-    await expect(page.locator('#level2 .positions-container')).toBeVisible();
   });
 
   test('clicking Tooda example activates its link', async ({ page }) => {
@@ -331,8 +175,50 @@ test.describe('C4 diagram page', () => {
   });
 
   test('Tooda example code view displays C4Context', async ({ page }) => {
-    await page.goto('/Tooda/c4?example=tooda&view=code');
+    await page.goto('/Tooda/c4?example=tooda');
     await expect(page.locator('#level1 .code-container code')).toContainText('C4Context');
   });
 
+  // \u2500\u2500 Renderer toggle tests \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+
+  test('displays Excalidraw, Mermaid, 2D, and 3D renderer toggle buttons', async ({ page }) => {
+    await page.goto('/Tooda/c4');
+    await expect(page.getByRole('link', { name: /Excalidraw/ })).toBeVisible();
+    await expect(page.getByRole('link', { name: /Mermaid/ })).toBeVisible();
+    await expect(page.getByRole('link', { name: /2D/ })).toBeVisible();
+    await expect(page.getByRole('link', { name: /3D/ })).toBeVisible();
+  });
+
+  test('Mermaid renderer is active by default', async ({ page }) => {
+    await page.goto('/Tooda/c4');
+    await expect(page.locator('.renderer-btn[data-renderer="mermaid"]')).toHaveClass(/active/);
+  });
+
+  test('Mermaid diagram renders in Level 1 by default', async ({ page }) => {
+    await page.goto('/Tooda/c4');
+    await page.waitForSelector('#level1 .mermaid svg', { state: 'visible', timeout: 15000 });
+    await expect(page.locator('#level1 .mermaid')).not.toContainText('Syntax error');
+  });
+
+  test('clicking Excalidraw renderer shows Excalidraw view in Level 1', async ({ page }) => {
+    await page.goto('/Tooda/c4');
+    await page.locator('.renderer-btn[data-renderer="excalidraw"]').click();
+    await expect(page.locator('.renderer-btn[data-renderer="excalidraw"]')).toHaveClass(/active/);
+    await expect(page.locator('#level1 .excalidraw-view')).toBeVisible();
+    await expect(page.locator('#level1 .mermaid-view')).toBeHidden();
+  });
+
+  test('clicking 2D renderer shows 2D view', async ({ page }) => {
+    await page.goto('/Tooda/c4');
+    await page.locator('.renderer-btn[data-renderer="2d"]').click();
+    await expect(page.locator('.renderer-btn[data-renderer="2d"]')).toHaveClass(/active/);
+    await expect(page.locator('#level1 .twoD-view')).toBeVisible();
+  });
+
+  test('clicking 3D renderer shows 3D view', async ({ page }) => {
+    await page.goto('/Tooda/c4');
+    await page.locator('.renderer-btn[data-renderer="3d"]').click();
+    await expect(page.locator('.renderer-btn[data-renderer="3d"]')).toHaveClass(/active/);
+    await expect(page.locator('#level1 .threeD-view')).toBeVisible();
+  });
 });

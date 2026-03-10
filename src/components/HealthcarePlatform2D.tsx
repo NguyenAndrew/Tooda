@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { Connection } from '../utils/excalidrawToMermaid';
 import { LEVEL_NODES } from '../data/healthcare/nodes';
+import type { DiagramNode } from '../data/healthcare/nodes';
 
 /** Box dimensions (SVG units). */
 const BOX_W = 140;
@@ -19,6 +20,7 @@ interface Props {
   level: 1 | 2 | 3 | 4;
   /** Directed connections derived from Excalidraw arrow bindings. */
   connections: Connection[];
+  nodes?: DiagramNode[];
 }
 
 /**
@@ -39,10 +41,10 @@ interface Props {
  * `connections` prop, keeping Excalidraw as the single source of truth for
  * which boxes are connected.
  */
-export default function HealthcarePlatform2D({ level, connections }: Props) {
+export default function HealthcarePlatform2D({ level, connections, nodes: nodesProp }: Props) {
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
 
-  const nodes = LEVEL_NODES[level];
+  const nodes = nodesProp ?? LEVEL_NODES[level];
 
   // Map Excalidraw element ID → node index for O(1) lookups.
   const idToIndex = new Map<string, number>(

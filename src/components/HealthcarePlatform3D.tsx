@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import { createLogger } from '../utils/logger';
 import type { Connection } from '../utils/excalidrawToMermaid';
 import { LEVEL_NODES } from '../data/healthcare/nodes';
+import type { DiagramNode } from '../data/healthcare/nodes';
 
 const logger = createLogger('HealthcarePlatform3D');
 
@@ -23,9 +24,10 @@ interface Props {
   level: 1 | 2 | 3 | 4;
   /** Directed connections derived from Excalidraw arrow bindings. */
   connections: Connection[];
+  nodes?: DiagramNode[];
 }
 
-export default function HealthcarePlatform3D({ level, connections }: Props) {
+export default function HealthcarePlatform3D({ level, connections, nodes: nodesProp }: Props) {
   const mountRef = useRef<HTMLDivElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
   const labelRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -34,7 +36,7 @@ export default function HealthcarePlatform3D({ level, connections }: Props) {
     const container = mountRef.current;
     if (!container) return;
 
-    const nodes = LEVEL_NODES[level];
+    const nodes = nodesProp ?? LEVEL_NODES[level];
     logger.info(`Initializing 3D healthcare diagram for level ${level}`);
 
     // Build a map from Excalidraw element ID → node index for O(1) lookups.
@@ -316,9 +318,9 @@ export default function HealthcarePlatform3D({ level, connections }: Props) {
         container.removeChild(renderer.domElement);
       }
     };
-  }, [level, connections]);
+  }, [level, connections, nodesProp]);
 
-  const nodes = LEVEL_NODES[level];
+  const nodes = nodesProp ?? LEVEL_NODES[level];
 
   return (
     <div className="relative w-full" style={{ height: 'clamp(280px, 55vh, 500px)' }}>
