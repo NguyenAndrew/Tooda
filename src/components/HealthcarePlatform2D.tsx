@@ -2,20 +2,18 @@ import { useState } from 'react';
 import type { Connection } from '../utils/excalidrawToMermaid';
 import { LEVEL_NODES } from '../data/healthcare/nodes';
 
-/** Number of node columns in the grid layout. */
-const COLS = 4;
-
 /** Box dimensions (SVG units). */
 const BOX_W = 140;
 const BOX_H = 56;
 
-/** Center-to-center spacing between boxes. */
+/** Centre-to-centre spacing: horizontal between nodes in the same layer,
+ *  vertical between layers. */
 const H_STEP = 180;
 const V_STEP = 130;
 
 /** Padding from SVG edge to the outermost node centre. */
 const PAD_X = 80;
-const PAD_Y = 60;
+const PAD_Y = 70;
 
 interface Props {
   level: 1 | 2 | 3 | 4;
@@ -26,7 +24,17 @@ interface Props {
 /**
  * Custom 2-D SVG diagram for the Healthcare Platform.
  *
- * Nodes are laid out in a grid; connections are drawn as straight arrows.
+ * Nodes are positioned using a Sugiyama-style layered layout:
+ *   1. Longest-path layering assigns every node to a layer (top-to-bottom
+ *      topological depth).
+ *   2. A barycenter heuristic reorders nodes within each layer so that
+ *      inter-layer edges cross as rarely as possible.
+ *   3. Arrows that span exactly one layer are drawn as straight lines
+ *      clipped to box edges — they never pass through an intermediate box
+ *      because adjacent-layer boxes occupy different y-bands.
+ *   4. Long edges (spanning two or more layers) are routed orthogonally
+ *      through the inter-layer lanes so they bypass every intermediate box.
+ *
  * The arrow bindings are taken directly from the Excalidraw elements via the
  * `connections` prop, keeping Excalidraw as the single source of truth for
  * which boxes are connected.
@@ -48,33 +56,103 @@ export default function HealthcarePlatform2D({ level, connections }: Props) {
     return fi !== undefined && ti !== undefined ? [[fi, ti] as [number, number]] : [];
   });
 
-  // ── Grid layout ─────────────────────────────────────────────────────────────
+  // ── Build adjacency lists ────────────────────────────────────────────────────
 
-  const numCols = Math.min(COLS, nodes.length);
-  const numRows = Math.ceil(nodes.length / numCols);
+  const outEdges: number[][] = nodes.map(() => []);
+  const inEdges: number[][] = nodes.map(() => []);
+  for (const [fi, ti] of connectionPairs) {
+    outEdges[fi].push(ti);
+    inEdges[ti].push(fi);
+  }
 
-  const svgW = PAD_X * 2 + (numCols - 1) * H_STEP;
-  const svgH = PAD_Y * 2 + (numRows - 1) * V_STEP;
+  // ── Longest-path layering ────────────────────────────────────────────────────
+  // Each node's layer equals the length of the longest path from any source
+  // node to it.  This guarantees every edge goes strictly forward (down).
 
-  const positions = nodes.map((_, i) => {
-    const row = Math.floor(i / numCols);
-    const col = i % numCols;
-    // Centre the last (partial) row horizontally.
-    const rowStart = row * numCols;
-    const rowCount = Math.min(numCols, nodes.length - rowStart);
-    const rowOffset = ((numCols - rowCount) * H_STEP) / 2;
-    return {
-      cx: PAD_X + col * H_STEP + rowOffset,
-      cy: PAD_Y + row * V_STEP,
-    };
-  });
+  const nodeLayers = new Array<number>(nodes.length).fill(0);
 
-  // ── Arrow edge clipping ──────────────────────────────────────────────────────
+  // Topological order via Kahn's algorithm.
+  const inDegree = nodes.map((_, i) => inEdges[i].length);
+  const topoQueue: number[] = [];
+  for (let i = 0; i < nodes.length; i++) {
+    if (inDegree[i] === 0) topoQueue.push(i);
+  }
+  const topoOrder: number[] = [];
+  const tempDeg = [...inDegree];
+  let qi = 0;
+  while (qi < topoQueue.length) {
+    const node = topoQueue[qi++];
+    topoOrder.push(node);
+    for (const next of outEdges[node]) {
+      if (--tempDeg[next] === 0) topoQueue.push(next);
+    }
+  }
+
+  // Propagate layer depths.
+  for (const node of topoOrder) {
+    for (const next of outEdges[node]) {
+      nodeLayers[next] = Math.max(nodeLayers[next], nodeLayers[node] + 1);
+    }
+  }
+
+  const numLayers = Math.max(...nodeLayers, 0) + 1;
+
+  // ── Barycenter ordering within layers ────────────────────────────────────────
+  // Group nodes by layer in their natural (index) order, then sort each layer
+  // by the average position of predecessors in the layer above.  This
+  // minimises the number of edge crossings between adjacent layers.
+
+  const layerNodes: number[][] = Array.from({ length: numLayers }, () => []);
+  for (let i = 0; i < nodes.length; i++) {
+    layerNodes[nodeLayers[i]].push(i);
+  }
+
+  for (let l = 1; l < numLayers; l++) {
+    const layer = layerNodes[l];
+    // Compute barycenters before sorting so indexOf calls use the current order.
+    const barycenters = new Map<number, number>();
+    for (const node of layer) {
+      const preds = inEdges[node].filter(p => nodeLayers[p] === l - 1);
+      if (preds.length === 0) {
+        barycenters.set(node, Infinity);
+      } else {
+        const avg =
+          preds.reduce((s, p) => s + layerNodes[l - 1].indexOf(p), 0) /
+          preds.length;
+        barycenters.set(node, avg);
+      }
+    }
+    layer.sort((a, b) => barycenters.get(a)! - barycenters.get(b)!);
+  }
+
+  // ── Position computation ─────────────────────────────────────────────────────
+  // Layers are stacked top-to-bottom; nodes within a layer are spread
+  // left-to-right and centred relative to the widest layer.
+
+  const maxNodesInLayer = Math.max(...layerNodes.map(l => l.length), 1);
+  const svgW = PAD_X * 2 + (maxNodesInLayer - 1) * H_STEP;
+  const svgH = PAD_Y * 2 + (numLayers - 1) * V_STEP;
+
+  const positions: { cx: number; cy: number }[] = new Array(nodes.length);
+  for (let l = 0; l < numLayers; l++) {
+    const layerSize = layerNodes[l].length;
+    const layerWidth = (layerSize - 1) * H_STEP;
+    const totalWidth = (maxNodesInLayer - 1) * H_STEP;
+    const xOffset = (totalWidth - layerWidth) / 2; // centre this layer
+    for (let pos = 0; pos < layerSize; pos++) {
+      const nodeIdx = layerNodes[l][pos];
+      positions[nodeIdx] = {
+        cx: PAD_X + xOffset + pos * H_STEP,
+        cy: PAD_Y + l * V_STEP,
+      };
+    }
+  }
+
+  // ── Arrow routing ────────────────────────────────────────────────────────────
 
   /**
-   * Return the point on the box boundary at (cx, cy) where a ray from (cx, cy)
-   * toward (tx, ty) first exits the box.  Used to start/end arrows at box edges
-   * rather than centres.
+   * Return the point on the box boundary at (cx, cy) where a ray from
+   * (cx, cy) toward (tx, ty) first exits the box.
    */
   function clipToBox(cx: number, cy: number, tx: number, ty: number) {
     const dx = tx - cx;
@@ -89,6 +167,59 @@ export default function HealthcarePlatform2D({ level, connections }: Props) {
     if (dy < 0) ts.push(-hh / dy);
     const t = Math.min(...ts);
     return { x: cx + t * dx, y: cy + t * dy };
+  }
+
+  /**
+   * Build the SVG path `d` attribute for a single connection.
+   *
+   * • 1-layer span: straight line clipped to both box edges.  Adjacent-layer
+   *   boxes live in separate horizontal bands so the segment never crosses an
+   *   intermediate box.
+   * • 2+-layer span (long edge): an orthogonal detour routed through the
+   *   inter-layer lanes avoids every intermediate box.
+   */
+  function routeArrow(fi: number, ti: number): string {
+    const fp = positions[fi];
+    const tp = positions[ti];
+    const fl = nodeLayers[fi];
+    const tl = nodeLayers[ti];
+
+    if (tl - fl === 1) {
+      // ── Adjacent-layer: straight clipped line ─────────────────────────────
+      const start = clipToBox(fp.cx, fp.cy, tp.cx, tp.cy);
+      const end   = clipToBox(tp.cx, tp.cy, fp.cx, fp.cy);
+      return `M ${start.x} ${start.y} L ${end.x} ${end.y}`;
+    }
+
+    // ── Long edge: orthogonal detour ─────────────────────────────────────────
+    // Find the rightmost right-edge of every box in the intermediate layers.
+    let maxIntRight = fp.cx + BOX_W / 2;
+    for (let l = fl + 1; l < tl; l++) {
+      for (const n of layerNodes[l]) {
+        maxIntRight = Math.max(maxIntRight, positions[n].cx + BOX_W / 2);
+      }
+    }
+    // The detour lane sits just to the right of all intermediate boxes,
+    // but must stay within the SVG canvas.
+    const detourX = Math.min(maxIntRight + H_STEP / 4, svgW - PAD_X / 2);
+
+    // Horizontal lanes sit midway between adjacent layers.
+    const topLaneY    = fp.cy + V_STEP / 2; // below source layer
+    const bottomLaneY = tp.cy - V_STEP / 2; // above target layer
+
+    const startY = fp.cy + BOX_H / 2; // exit source from bottom
+    const endY   = tp.cy - BOX_H / 2; // enter target from top
+
+    // Path: down from source → right to detour lane → down to target band
+    //       → left to target x → into target.
+    return (
+      `M ${fp.cx} ${startY} ` +
+      `L ${fp.cx} ${topLaneY} ` +
+      `L ${detourX} ${topLaneY} ` +
+      `L ${detourX} ${bottomLaneY} ` +
+      `L ${tp.cx} ${bottomLaneY} ` +
+      `L ${tp.cx} ${endY}`
+    );
   }
 
   const MARKER_ID = `arrow2d-l${level}`;
@@ -118,25 +249,17 @@ export default function HealthcarePlatform2D({ level, connections }: Props) {
         <rect width={svgW} height={svgH} fill="#1e293b" rx="12" />
 
         {/* Arrows — drawn before boxes so boxes render on top */}
-        {connectionPairs.map(([fi, ti], ci) => {
-          const fp = positions[fi];
-          const tp = positions[ti];
-          const start = clipToBox(fp.cx, fp.cy, tp.cx, tp.cy);
-          const end = clipToBox(tp.cx, tp.cy, fp.cx, fp.cy);
-          return (
-            <line
-              key={ci}
-              x1={start.x}
-              y1={start.y}
-              x2={end.x}
-              y2={end.y}
-              stroke="#94a3b8"
-              strokeWidth="1.5"
-              strokeOpacity="0.7"
-              markerEnd={`url(#${MARKER_ID})`}
-            />
-          );
-        })}
+        {connectionPairs.map(([fi, ti], ci) => (
+          <path
+            key={ci}
+            d={routeArrow(fi, ti)}
+            fill="none"
+            stroke="#94a3b8"
+            strokeWidth="1.5"
+            strokeOpacity="0.7"
+            markerEnd={`url(#${MARKER_ID})`}
+          />
+        ))}
 
         {/* Boxes */}
         {nodes.map((node, i) => {
