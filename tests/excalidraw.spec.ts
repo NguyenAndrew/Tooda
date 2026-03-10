@@ -105,10 +105,11 @@ test.describe('Excalidraw example page', () => {
 
   // ── Renderer toggle tests ─────────────────────────────────────────────────
 
-  test('displays Excalidraw, Mermaid, and 3D renderer toggle buttons', async ({ page }) => {
+  test('displays Excalidraw, Mermaid, 2D, and 3D renderer toggle buttons', async ({ page }) => {
     await page.goto('/Tooda/excalidraw');
     await expect(page.getByRole('link', { name: /Excalidraw/ })).toBeVisible();
     await expect(page.getByRole('link', { name: /Mermaid/ })).toBeVisible();
+    await expect(page.getByRole('link', { name: /2D/ })).toBeVisible();
     await expect(page.getByRole('link', { name: /3D/ })).toBeVisible();
   });
 
@@ -116,6 +117,7 @@ test.describe('Excalidraw example page', () => {
     await page.goto('/Tooda/excalidraw');
     await expect(page.locator('.renderer-btn[data-renderer="excalidraw"]')).toHaveClass(/active/);
     await expect(page.locator('.renderer-btn[data-renderer="mermaid"]')).not.toHaveClass(/active/);
+    await expect(page.locator('.renderer-btn[data-renderer="2d"]')).not.toHaveClass(/active/);
     await expect(page.locator('.renderer-btn[data-renderer="3d"]')).not.toHaveClass(/active/);
   });
 
@@ -123,6 +125,7 @@ test.describe('Excalidraw example page', () => {
     await page.goto('/Tooda/excalidraw');
     await expect(page.locator('#level1 .excalidraw-view')).toBeVisible();
     await expect(page.locator('#level1 .mermaid-view')).toBeHidden();
+    await expect(page.locator('#level1 .twoD-view')).toBeHidden();
     await expect(page.locator('#level1 .threeD-view')).toBeHidden();
   });
 
@@ -192,6 +195,55 @@ test.describe('Excalidraw example page', () => {
     await page.locator('.renderer-btn[data-renderer="excalidraw"]').click();
     await expect(page.locator('#level1 .excalidraw-view')).toBeVisible();
     await expect(page.locator('#level1 .threeD-view')).toBeHidden();
+  });
+
+  test('clicking 2D renderer button activates 2D view and hides Excalidraw view', async ({ page }) => {
+    await page.goto('/Tooda/excalidraw');
+    await page.locator('.renderer-btn[data-renderer="2d"]').click();
+    await expect(page.locator('.renderer-btn[data-renderer="2d"]')).toHaveClass(/active/);
+    await expect(page.locator('.renderer-btn[data-renderer="excalidraw"]')).not.toHaveClass(/active/);
+    await expect(page.locator('#level1 .excalidraw-view')).toBeHidden();
+    await expect(page.locator('#level1 .mermaid-view')).toBeHidden();
+    await expect(page.locator('#level1 .threeD-view')).toBeHidden();
+  });
+
+  test('2D view is visible and Excalidraw view is hidden after switching to 2D renderer', async ({ page }) => {
+    await page.goto('/Tooda/excalidraw');
+    await page.locator('.renderer-btn[data-renderer="2d"]').click();
+    await expect(page.locator('#level1 .twoD-view')).toBeVisible();
+    await expect(page.locator('#level1 .excalidraw-view')).toBeHidden();
+  });
+
+  test('2D diagram SVG renders in Level 1 after switching to 2D renderer', async ({ page }) => {
+    await page.goto('/Tooda/excalidraw');
+    await page.locator('.renderer-btn[data-renderer="2d"]').click();
+    await page.waitForSelector('#level1 [data-testid="two-d-diagram-level1"]', { state: 'visible', timeout: 15000 });
+    await expect(page.locator('#level1 [data-testid="two-d-diagram-level1"]')).toBeVisible();
+  });
+
+  test('2D renderer is activated when ?renderer=2d is in the URL', async ({ page }) => {
+    await page.goto('/Tooda/excalidraw?renderer=2d');
+    await expect(page.locator('.renderer-btn[data-renderer="2d"]')).toHaveClass(/active/);
+    await expect(page.locator('#level1 .twoD-view')).toBeVisible();
+    await expect(page.locator('#level1 .excalidraw-view')).toBeHidden();
+  });
+
+  test('switching from 2D back to Excalidraw renderer restores Excalidraw view', async ({ page }) => {
+    await page.goto('/Tooda/excalidraw');
+    await page.locator('.renderer-btn[data-renderer="2d"]').click();
+    await page.locator('.renderer-btn[data-renderer="excalidraw"]').click();
+    await expect(page.locator('#level1 .excalidraw-view')).toBeVisible();
+    await expect(page.locator('#level1 .twoD-view')).toBeHidden();
+  });
+
+  // ── 2D diagram uses Excalidraw as source of truth for connections ────────────
+
+  test('2D diagram in Level 1 contains node labels from Excalidraw', async ({ page }) => {
+    await page.goto('/Tooda/excalidraw?renderer=2d');
+    await page.waitForSelector('#level1 [data-testid="two-d-diagram-level1"]', { state: 'visible', timeout: 15000 });
+    const svgText = await page.locator('#level1 [data-testid="two-d-diagram-level1"]').textContent();
+    expect(svgText).toContain('Patient');
+    expect(svgText).toContain('Doctor');
   });
 
   test('Mermaid renderer is activated when ?renderer=mermaid is in the URL', async ({ page }) => {
@@ -281,6 +333,20 @@ test.describe('Export PNG button', () => {
     await page.goto('/Tooda/excalidraw');
     await page.locator('.renderer-btn[data-renderer="3d"]').click();
     await expect(page.locator('#export-png-container')).toBeHidden();
+  });
+
+  test('Export PNG button is hidden when 2D renderer is active', async ({ page }) => {
+    await page.goto('/Tooda/excalidraw');
+    await page.locator('.renderer-btn[data-renderer="2d"]').click();
+    await expect(page.locator('#export-png-container')).toBeHidden();
+  });
+
+  test('Export PNG button is visible again after switching from 2D back to Excalidraw', async ({ page }) => {
+    await page.goto('/Tooda/excalidraw');
+    await page.locator('.renderer-btn[data-renderer="2d"]').click();
+    await page.locator('.renderer-btn[data-renderer="excalidraw"]').click();
+    await expect(page.locator('#export-png-container')).toBeVisible();
+    await expect(page.getByTestId('export-png-btn')).toBeVisible();
   });
 
   test('Export PNG button is visible again after switching from 3D back to Excalidraw', async ({ page }) => {
