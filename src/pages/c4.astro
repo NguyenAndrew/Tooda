@@ -1,5 +1,12 @@
 ---
-import { diagrams } from '../data/c4/diagrams';
+import ExcalidrawViewer from '../components/ExcalidrawViewer';
+import {
+  diagrams,
+  bankingLevel1Elements, bankingLevel2Elements, bankingLevel3Elements, bankingLevel4Elements,
+  ecommerceLevel1Elements, ecommerceLevel2Elements, ecommerceLevel3Elements, ecommerceLevel4Elements,
+  ridesharingLevel1Elements, ridesharingLevel2Elements, ridesharingLevel3Elements, ridesharingLevel4Elements,
+  toodaLevel1Elements, toodaLevel2Elements, toodaLevel3Elements, toodaLevel4Elements,
+} from '../data/c4/diagrams';
 ---
 <!doctype html>
 <html lang="en">
@@ -178,6 +185,11 @@ import { diagrams } from '../data/c4/diagrams';
         @apply break-words whitespace-pre-wrap font-mono text-sm leading-relaxed text-slate-200;
       }
 
+      .excalidraw-wrapper {
+        @apply overflow-hidden rounded-xl;
+        height: 600px;
+      }
+
       .export-png-btn {
         @apply inline-block cursor-pointer rounded-lg border border-slate-700 bg-slate-800 px-5 py-2 text-[0.95rem] text-slate-400 no-underline transition-all duration-200;
       }
@@ -210,6 +222,7 @@ import { diagrams } from '../data/c4/diagrams';
     </div>
 
     <div class="view-toggle">
+      <a href="?view=excalidraw" class="view-btn" data-view="excalidraw" aria-label="Excalidraw view">&#9999;&#65039; Excalidraw</a>
       <a href="?view=diagram" class="view-btn active" data-view="diagram">Diagram</a>
       <a href="?view=code" class="view-btn" data-view="code">Code</a>
       <a href="?view=edit" class="view-btn" data-view="edit">Edit</a>
@@ -237,6 +250,18 @@ import { diagrams } from '../data/c4/diagrams';
         Shows the system in context: who uses it and which external systems it
         interacts with.
       </p>
+      <div class="excalidraw-wrapper" data-example="banking" style="display:none">
+        <ExcalidrawViewer client:only="react" elements={bankingLevel1Elements} />
+      </div>
+      <div class="excalidraw-wrapper" data-example="ecommerce" style="display:none">
+        <ExcalidrawViewer client:only="react" elements={ecommerceLevel1Elements} />
+      </div>
+      <div class="excalidraw-wrapper" data-example="ridesharing" style="display:none">
+        <ExcalidrawViewer client:only="react" elements={ridesharingLevel1Elements} />
+      </div>
+      <div class="excalidraw-wrapper" data-example="tooda" style="display:none">
+        <ExcalidrawViewer client:only="react" elements={toodaLevel1Elements} />
+      </div>
       <div class="diagram-container">
         <div class="mermaid" set:text={diagrams.banking.level1}></div>
       </div>
@@ -254,6 +279,18 @@ import { diagrams } from '../data/c4/diagrams';
         Zooms in on the system to show the containers (applications and data
         stores) that make it up.
       </p>
+      <div class="excalidraw-wrapper" data-example="banking" style="display:none">
+        <ExcalidrawViewer client:only="react" elements={bankingLevel2Elements} />
+      </div>
+      <div class="excalidraw-wrapper" data-example="ecommerce" style="display:none">
+        <ExcalidrawViewer client:only="react" elements={ecommerceLevel2Elements} />
+      </div>
+      <div class="excalidraw-wrapper" data-example="ridesharing" style="display:none">
+        <ExcalidrawViewer client:only="react" elements={ridesharingLevel2Elements} />
+      </div>
+      <div class="excalidraw-wrapper" data-example="tooda" style="display:none">
+        <ExcalidrawViewer client:only="react" elements={toodaLevel2Elements} />
+      </div>
       <div class="diagram-container">
         <div class="mermaid" set:text={diagrams.banking.level2}></div>
       </div>
@@ -271,6 +308,18 @@ import { diagrams } from '../data/c4/diagrams';
         Zooms in on a key container to show the components (services and
         controllers) inside it.
       </p>
+      <div class="excalidraw-wrapper" data-example="banking" style="display:none">
+        <ExcalidrawViewer client:only="react" elements={bankingLevel3Elements} />
+      </div>
+      <div class="excalidraw-wrapper" data-example="ecommerce" style="display:none">
+        <ExcalidrawViewer client:only="react" elements={ecommerceLevel3Elements} />
+      </div>
+      <div class="excalidraw-wrapper" data-example="ridesharing" style="display:none">
+        <ExcalidrawViewer client:only="react" elements={ridesharingLevel3Elements} />
+      </div>
+      <div class="excalidraw-wrapper" data-example="tooda" style="display:none">
+        <ExcalidrawViewer client:only="react" elements={toodaLevel3Elements} />
+      </div>
       <div class="diagram-container">
         <div class="mermaid" set:text={diagrams.banking.level3}></div>
       </div>
@@ -288,6 +337,18 @@ import { diagrams } from '../data/c4/diagrams';
         Zooms in on a key component to show the classes and interfaces that
         implement it.
       </p>
+      <div class="excalidraw-wrapper" data-example="banking" style="display:none">
+        <ExcalidrawViewer client:only="react" elements={bankingLevel4Elements} />
+      </div>
+      <div class="excalidraw-wrapper" data-example="ecommerce" style="display:none">
+        <ExcalidrawViewer client:only="react" elements={ecommerceLevel4Elements} />
+      </div>
+      <div class="excalidraw-wrapper" data-example="ridesharing" style="display:none">
+        <ExcalidrawViewer client:only="react" elements={ridesharingLevel4Elements} />
+      </div>
+      <div class="excalidraw-wrapper" data-example="tooda" style="display:none">
+        <ExcalidrawViewer client:only="react" elements={toodaLevel4Elements} />
+      </div>
       <div class="diagram-container">
         <div class="mermaid" set:text={diagrams.banking.level4}></div>
       </div>
@@ -397,11 +458,16 @@ import { diagrams } from '../data/c4/diagrams';
         const activeViewBtn = document.querySelector(`.view-btn[data-view="${view}"]`);
         if (activeViewBtn) activeViewBtn.classList.add('active');
 
+        const isExcalidraw = view === 'excalidraw';
         const isDiagramVisible = view === 'diagram' || view === 'edit';
         document.querySelectorAll('.tab-panel').forEach(panel => {
+          const excalidrawWrappers = panel.querySelectorAll('.excalidraw-wrapper');
           const diagramContainer = panel.querySelector('.diagram-container');
           const codeContainer = panel.querySelector('.code-container');
           const posContainer = panel.querySelector('.positions-container');
+          excalidrawWrappers.forEach(w => {
+            w.style.display = (isExcalidraw && w.dataset.example === currentExample) ? '' : 'none';
+          });
           if (diagramContainer) diagramContainer.style.display = isDiagramVisible ? '' : 'none';
           if (codeContainer) codeContainer.style.display = view === 'code' ? 'block' : 'none';
           if (posContainer) posContainer.style.display = isEditMode ? 'block' : 'none';
@@ -409,9 +475,9 @@ import { diagrams } from '../data/c4/diagrams';
 
         // Show/hide zoom controls and update hints
         const zoomCtrl = document.getElementById('zoom-controls');
-        if (zoomCtrl) zoomCtrl.style.display = view === 'code' ? 'none' : '';
+        if (zoomCtrl) zoomCtrl.style.display = (view === 'code' || isExcalidraw) ? 'none' : '';
         const exportContainer = document.getElementById('export-png-container');
-        if (exportContainer) exportContainer.style.display = view === 'code' ? 'none' : '';
+        if (exportContainer) exportContainer.style.display = (view === 'code' || isExcalidraw) ? 'none' : '';
         const editHint = document.getElementById('edit-hint');
         const panHint = document.getElementById('pan-hint');
         if (editHint) editHint.style.display = isEditMode ? '' : 'none';
@@ -479,6 +545,12 @@ import { diagrams } from '../data/c4/diagrams';
           }
           const codeEl = panel.querySelector('.code-container code');
           if (codeEl) codeEl.textContent = example[level];
+
+          // Show/hide excalidraw wrappers for the new example
+          panel.querySelectorAll('.excalidraw-wrapper').forEach(w => {
+            const isVisible = currentView === 'excalidraw' && w.dataset.example === key;
+            w.style.display = isVisible ? '' : 'none';
+          });
         });
 
         // Re-render only the currently visible panel (diagram view only)
