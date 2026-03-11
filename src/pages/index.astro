@@ -7,14 +7,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Tooda – Tool to help make and maintain diagrams for architecture and design" />
     <title>Tooda</title>
+    <script is:inline>
+      (function () {
+        const stored = localStorage.getItem('theme');
+        const theme = stored === 'light' ? 'light' : 'dark';
+        document.documentElement.classList.toggle('dark', theme === 'dark');
+      })();
+    </script>
     <style>
+      :root {
+        --bg-color: #f8fafc;
+        --grad1: rgba(99,102,241,0.12);
+        --grad2: rgba(139,92,246,0.08);
+        --grad3: rgba(56,189,248,0.06);
+        --grid-line: rgba(99,102,241,0.03);
+      }
+
+      :root.dark {
+        --bg-color: #0f172a;
+        --grad1: rgba(99,102,241,0.25);
+        --grad2: rgba(139,92,246,0.15);
+        --grad3: rgba(56,189,248,0.12);
+        --grid-line: rgba(99,102,241,0.06);
+      }
+
       /* Animated gradient background */
       body {
-        background-color: #0f172a;
+        background-color: var(--bg-color);
         background-image:
-          radial-gradient(ellipse 80% 60% at 50% -10%, rgba(99,102,241,0.25) 0%, transparent 70%),
-          radial-gradient(ellipse 50% 40% at 90% 80%, rgba(139,92,246,0.15) 0%, transparent 60%),
-          radial-gradient(ellipse 40% 40% at 10% 90%, rgba(56,189,248,0.12) 0%, transparent 60%);
+          radial-gradient(ellipse 80% 60% at 50% -10%, var(--grad1) 0%, transparent 70%),
+          radial-gradient(ellipse 50% 40% at 90% 80%, var(--grad2) 0%, transparent 60%),
+          radial-gradient(ellipse 40% 40% at 10% 90%, var(--grad3) 0%, transparent 60%);
+        @apply min-h-dvh font-sans text-slate-900 dark:text-slate-50;
       }
 
       /* Subtle animated grid */
@@ -23,8 +47,8 @@
         position: fixed;
         inset: 0;
         background-image:
-          linear-gradient(rgba(99,102,241,0.06) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(99,102,241,0.06) 1px, transparent 1px);
+          linear-gradient(var(--grid-line) 1px, transparent 1px),
+          linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
         background-size: 60px 60px;
         pointer-events: none;
         z-index: 0;
@@ -57,7 +81,7 @@
 
       /* CTA card styles */
       .feature-card {
-        @apply relative overflow-hidden rounded-2xl border border-slate-700/60 bg-slate-800/60 p-6 text-left backdrop-blur-sm transition-all duration-300;
+        @apply relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white/70 p-6 text-left backdrop-blur-sm transition-all duration-300 dark:border-slate-700/60 dark:bg-slate-800/60;
       }
 
       /* Hover effects are gated on (hover: hover) so that iOS Safari's
@@ -65,7 +89,7 @@
          which would move elements mid-gesture and prevent navigation. */
       @media (hover: hover) {
         .feature-card:hover {
-          @apply -translate-y-1 border-indigo-500/50 shadow-lg shadow-indigo-500/10;
+          @apply -translate-y-1 border-indigo-400/50 shadow-lg shadow-indigo-500/10 dark:border-indigo-500/50;
         }
 
         .feature-card:hover::before {
@@ -96,16 +120,35 @@
 
       /* GitHub link */
       .github-link {
-        @apply inline-flex items-center gap-2 rounded-lg border border-slate-700 px-4 py-2 text-sm text-slate-400 no-underline transition-all duration-200 active:scale-95 active:duration-75 hover:border-slate-500 hover:text-slate-200;
+        @apply inline-flex items-center gap-2 rounded-lg border border-slate-300 px-4 py-2 text-sm text-slate-600 no-underline transition-all duration-200 active:scale-95 active:duration-75 hover:border-slate-400 hover:text-slate-800 dark:border-slate-700 dark:text-slate-400 dark:hover:border-slate-500 dark:hover:text-slate-200;
+      }
+
+      /* Theme toggle button */
+      .theme-toggle-btn {
+        @apply fixed right-4 top-4 z-50 flex h-10 w-10 items-center justify-center rounded-full border border-slate-300 bg-white/80 text-slate-600 shadow-md backdrop-blur-sm transition-all duration-200 hover:border-indigo-400 hover:text-slate-900 dark:border-slate-700 dark:bg-slate-800/80 dark:text-slate-300 dark:hover:border-indigo-500/50 dark:hover:text-slate-50;
       }
     </style>
   </head>
-  <body class="min-h-dvh font-sans text-slate-50">
+  <body class="min-h-dvh font-sans">
+    <!-- Theme toggle button -->
+    <button id="theme-toggle" type="button" aria-label="Switch to light mode" class="theme-toggle-btn">
+      <!-- Sun icon – shown in dark mode to switch to light -->
+      <svg class="hidden size-5 dark:block" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+        <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+      </svg>
+      <!-- Moon icon – shown in light mode to switch to dark -->
+      <svg class="block size-5 dark:hidden" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+      </svg>
+    </button>
     <main class="mx-auto max-w-5xl px-6 py-20 text-center">
 
       <!-- Badge -->
       <div class="mb-8 flex justify-center">
-        <span class="badge-float inline-flex items-center gap-2 rounded-full border border-indigo-500/40 bg-indigo-500/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-indigo-300">
+        <span class="badge-float inline-flex items-center gap-2 rounded-full border border-indigo-500/40 bg-indigo-500/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-indigo-600 dark:text-indigo-300">
           ✦ Architecture &amp; Design Diagrams
         </span>
       </div>
@@ -116,10 +159,10 @@
       </h1>
 
       <!-- Tagline -->
-      <p class="mx-auto mb-4 max-w-[52ch] text-[clamp(1.1rem,2.5vw,1.35rem)] leading-relaxed text-slate-300">
+      <p class="mx-auto mb-4 max-w-[52ch] text-[clamp(1.1rem,2.5vw,1.35rem)] leading-relaxed text-slate-600 dark:text-slate-300">
         Visualize, explore, and share your system architecture — all in the browser, no install required.
       </p>
-      <p class="mx-auto mb-14 max-w-[44ch] text-base text-slate-500">
+      <p class="mx-auto mb-14 max-w-[44ch] text-base text-slate-500 dark:text-slate-500">
         Powered by Mermaid C4 and Excalidraw. Open-source.
       </p>
 
@@ -129,8 +172,8 @@
         <!-- C4 Diagrams card -->
         <div class="feature-card sm:col-span-2 lg:col-span-1">
           <div class="mb-3 text-3xl">🏗️</div>
-          <h2 class="mb-1 text-lg font-bold text-slate-100">C4 Diagrams</h2>
-          <p class="mb-4 text-sm leading-relaxed text-slate-400">Interactive C4 architecture diagrams powered by Mermaid. Explore real-world system designs.</p>
+          <h2 class="mb-1 text-lg font-bold text-slate-800 dark:text-slate-100">C4 Diagrams</h2>
+          <p class="mb-4 text-sm leading-relaxed text-slate-600 dark:text-slate-400">Interactive C4 architecture diagrams powered by Mermaid. Explore real-world system designs.</p>
           <div class="flex flex-wrap gap-2">
             <a href="/Tooda/c4?example=banking" class="cta-primary">🏦 Online Banking →</a>
           </div>
@@ -146,24 +189,24 @@
         <!-- Excalidraw card -->
         <div class="feature-card">
           <div class="mb-3 text-3xl">✏️</div>
-          <h2 class="mb-1 text-lg font-bold text-slate-100">Freehand Diagrams</h2>
-          <p class="mb-4 text-sm leading-relaxed text-slate-400">Sketch and annotate architecture freely with Excalidraw's hand-drawn aesthetic, or switch to Mermaid — both powered by a single source of truth.</p>
+          <h2 class="mb-1 text-lg font-bold text-slate-800 dark:text-slate-100">Freehand Diagrams</h2>
+          <p class="mb-4 text-sm leading-relaxed text-slate-600 dark:text-slate-400">Sketch and annotate architecture freely with Excalidraw's hand-drawn aesthetic, or switch to Mermaid — both powered by a single source of truth.</p>
           <a href="/Tooda/excalidraw" class="cta-primary">🏥 Healthcare (Excalidraw / Mermaid) →</a>
         </div>
 
         <!-- API Explorer card -->
         <div class="feature-card">
           <div class="mb-3 text-3xl">🔌</div>
-          <h2 class="mb-1 text-lg font-bold text-slate-100">API Explorer</h2>
-          <p class="mb-4 text-sm leading-relaxed text-slate-400">Inspect and test API endpoints interactively, right from the browser.</p>
+          <h2 class="mb-1 text-lg font-bold text-slate-800 dark:text-slate-100">API Explorer</h2>
+          <p class="mb-4 text-sm leading-relaxed text-slate-600 dark:text-slate-400">Inspect and test API endpoints interactively, right from the browser.</p>
           <a href="/Tooda/api" class="cta-primary">⚡ API Explorer →</a>
         </div>
 
         <!-- Features card -->
         <div class="feature-card sm:col-span-2 lg:col-span-2">
           <div class="mb-3 text-3xl">🔮</div>
-          <h2 class="mb-1 text-lg font-bold text-slate-100">Explore Features</h2>
-          <p class="mb-4 text-sm leading-relaxed text-slate-400">See everything Tooda has to offer in an interactive 3D visualization.</p>
+          <h2 class="mb-1 text-lg font-bold text-slate-800 dark:text-slate-100">Explore Features</h2>
+          <p class="mb-4 text-sm leading-relaxed text-slate-600 dark:text-slate-400">See everything Tooda has to offer in an interactive 3D visualization.</p>
           <div class="flex flex-wrap gap-2">
             <a href="/Tooda/features" class="cta-primary">🔮 View All Features →</a>
           </div>
@@ -172,8 +215,8 @@
         <!-- Slide Deck card -->
         <div class="feature-card">
           <div class="mb-3 text-3xl">🎞️</div>
-          <h2 class="mb-1 text-lg font-bold text-slate-100">Slide Deck</h2>
-          <p class="mb-4 text-sm leading-relaxed text-slate-400">A guided overview of Tooda — what it is, how it works, and how to get started, presented as an interactive slide deck.</p>
+          <h2 class="mb-1 text-lg font-bold text-slate-800 dark:text-slate-100">Slide Deck</h2>
+          <p class="mb-4 text-sm leading-relaxed text-slate-600 dark:text-slate-400">A guided overview of Tooda — what it is, how it works, and how to get started, presented as an interactive slide deck.</p>
           <a href="/Tooda/slideshow" class="cta-primary">🎞️ View Slide Deck →</a>
         </div>
 
@@ -190,5 +233,16 @@
       </div>
 
     </main>
+    <script>
+      const btn = document.getElementById('theme-toggle');
+      if (btn) {
+        btn.setAttribute('aria-label', document.documentElement.classList.contains('dark') ? 'Switch to light mode' : 'Switch to dark mode');
+        btn.addEventListener('click', function () {
+          const isDark = document.documentElement.classList.toggle('dark');
+          localStorage.setItem('theme', isDark ? 'dark' : 'light');
+          btn.setAttribute('aria-label', isDark ? 'Switch to light mode' : 'Switch to dark mode');
+        });
+      }
+    </script>
   </body>
 </html>

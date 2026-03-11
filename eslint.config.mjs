@@ -80,6 +80,7 @@ export default [
           'tab-btn',
           'tab-panel',
           'tabs',
+          'theme-toggle-btn',
           'threeD-view',
           'threeD-wrapper',
           'title-glow',
