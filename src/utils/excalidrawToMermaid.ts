@@ -340,7 +340,7 @@ function generateClassDiagram(els: readonly RawEl[]): string {
   const lines: string[] = ['classDiagram', '  direction TB', ''];
 
   for (const box of classBoxes) {
-    const rawLabel = labelByContainer[box.id] ?? '';
+    const rawLabel = labelByContainer[box.id]!;
     const labelLines = rawLabel.split('\n');
     // The separator line contains box-drawing dashes (─) or hyphens
     const separatorIdx = labelLines.findIndex((l) => /[─-]{3,}/.test(l));
@@ -448,7 +448,7 @@ function generateFlowchart(els: readonly RawEl[]): string {
   // Emit one node declaration per box
   const mermaidIdByElementId: Record<string, string> = {};
   for (const box of nodeBoxes) {
-    const rawLabel = labelByContainer[box.id] ?? '';
+    const rawLabel = labelByContainer[box.id]!;
     const name = extractNodeName(rawLabel);
     const mId = toMermaidId(box.id);
     mermaidIdByElementId[box.id] = mId;
