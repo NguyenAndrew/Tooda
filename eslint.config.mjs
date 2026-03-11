@@ -35,6 +35,7 @@ export default [
           'example-btn',
           'examples',
           'excalidraw-view',
+          'excalidraw-wrapper',
           'export-png-btn',
           'feature-card',
           'feature-grid',
