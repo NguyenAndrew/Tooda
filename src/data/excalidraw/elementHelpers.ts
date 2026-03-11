@@ -28,8 +28,7 @@ export function makeBox(id: string, x: number, y: number, w: number, h: number, 
 }
 
 export function makeArrow(id: string, fromId: string, toId: string, x: number, y: number, dx: number, dy: number, label?: string) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const elements: any[] = [
+  return [
     {
       id, type: 'arrow' as const,
       x, y, width: Math.abs(dx), height: Math.abs(dy), angle: 0,
@@ -45,9 +44,7 @@ export function makeArrow(id: string, fromId: string, toId: string, x: number, y
       endBinding: { elementId: toId, focus: 0, gap: 1 },
       startArrowhead: null, endArrowhead: 'arrow' as const, elbowed: false,
     },
-  ];
-  if (label) {
-    elements.push({
+    ...(label ? [{
       id: id + '-label', type: 'text' as const,
       x: x + dx / 2 - 60, y: y + dy / 2 - 12, width: 120, height: 20, angle: 0,
       strokeColor: '#1e1e1e', backgroundColor: '#ffffff' as const,
@@ -58,9 +55,8 @@ export function makeArrow(id: string, fromId: string, toId: string, x: number, y
       text: label, fontSize: 12, fontFamily: 1 as const,
       textAlign: 'center' as const, verticalAlign: 'middle' as const,
       containerId: id, originalText: label, autoResize: true, lineHeight: 1.25 as const,
-    });
-  }
-  return elements;
+    }] : []),
+  ];
 }
 
 export function makeTitle(id: string, text: string, w: number) {
