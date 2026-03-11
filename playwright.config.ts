@@ -16,6 +16,11 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'] },
     },
     {
+      name: 'Desktop Chrome',
+      use: { ...devices['Desktop Chrome'] },
+      testMatch: '**/desktop-chrome.spec.ts',
+    },
+    {
       name: 'iPhone 13',
       use: {
         ...devices['iPhone 13'],
