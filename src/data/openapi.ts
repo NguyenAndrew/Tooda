@@ -59,10 +59,10 @@ export const openapiSpec = {
                   title: 'Online Banking System',
                   description:
                     'An Online Banking System illustrated across all 4 levels of the C4 model.',
-                  level1: 'C4Context\n  title System Context – Online Banking System\n  ...',
-                  level2: 'C4Container\n  title Container – Online Banking System\n  ...',
-                  level3: 'C4Component\n  title Component – API Application\n  ...',
-                  level4: 'classDiagram\n  direction TB\n  ...',
+                  level1: [{ id: '...', type: 'rectangle', x: 0, y: 0, width: 200, height: 60 }],
+                  level2: [{ id: '...', type: 'rectangle', x: 0, y: 0, width: 200, height: 60 }],
+                  level3: [{ id: '...', type: 'rectangle', x: 0, y: 0, width: 200, height: 60 }],
+                  level4: [{ id: '...', type: 'rectangle', x: 0, y: 0, width: 200, height: 60 }],
                 },
               },
             },
@@ -86,10 +86,10 @@ export const openapiSpec = {
                   title: 'E-Commerce Platform',
                   description:
                     'An E-Commerce Platform illustrated across all 4 levels of the C4 model.',
-                  level1: 'C4Context\n  title System Context – E-Commerce Platform\n  ...',
-                  level2: 'C4Container\n  title Container – E-Commerce Platform\n  ...',
-                  level3: 'C4Component\n  title Component – Order Service\n  ...',
-                  level4: 'classDiagram\n  direction TB\n  ...',
+                  level1: [{ id: '...', type: 'rectangle', x: 0, y: 0, width: 200, height: 60 }],
+                  level2: [{ id: '...', type: 'rectangle', x: 0, y: 0, width: 200, height: 60 }],
+                  level3: [{ id: '...', type: 'rectangle', x: 0, y: 0, width: 200, height: 60 }],
+                  level4: [{ id: '...', type: 'rectangle', x: 0, y: 0, width: 200, height: 60 }],
                 },
               },
             },
@@ -113,10 +113,10 @@ export const openapiSpec = {
                   title: 'Ride-Sharing App',
                   description:
                     'A Ride-Sharing App illustrated across all 4 levels of the C4 model.',
-                  level1: 'C4Context\n  title System Context – Ride-Sharing App\n  ...',
-                  level2: 'C4Container\n  title Container – Ride-Sharing App\n  ...',
-                  level3: 'C4Component\n  title Component – API Server\n  ...',
-                  level4: 'classDiagram\n  direction TB\n  ...',
+                  level1: [{ id: '...', type: 'rectangle', x: 0, y: 0, width: 200, height: 60 }],
+                  level2: [{ id: '...', type: 'rectangle', x: 0, y: 0, width: 200, height: 60 }],
+                  level3: [{ id: '...', type: 'rectangle', x: 0, y: 0, width: 200, height: 60 }],
+                  level4: [{ id: '...', type: 'rectangle', x: 0, y: 0, width: 200, height: 60 }],
                 },
               },
             },
@@ -376,7 +376,7 @@ export const openapiSpec = {
       C4Diagram: {
         type: 'object',
         description:
-          'An architecture diagram described across four C4 model levels using Mermaid syntax.',
+          'An architecture diagram described across four C4 model levels using Excalidraw elements.',
         required: ['title', 'description', 'level1', 'level2', 'level3', 'level4'],
         properties: {
           title: {
@@ -391,24 +391,24 @@ export const openapiSpec = {
               'An Online Banking System illustrated across all 4 levels of the C4 model.',
           },
           level1: {
-            type: 'string',
+            $ref: '#/components/schemas/ExcalidrawElementArray',
             description:
-              'Mermaid C4Context diagram source (System Context level).',
+              'Excalidraw elements for the System Context level.',
           },
           level2: {
-            type: 'string',
+            $ref: '#/components/schemas/ExcalidrawElementArray',
             description:
-              'Mermaid C4Container diagram source (Container level).',
+              'Excalidraw elements for the Container level.',
           },
           level3: {
-            type: 'string',
+            $ref: '#/components/schemas/ExcalidrawElementArray',
             description:
-              'Mermaid C4Component diagram source (Component level).',
+              'Excalidraw elements for the Component level.',
           },
           level4: {
-            type: 'string',
+            $ref: '#/components/schemas/ExcalidrawElementArray',
             description:
-              'Mermaid class diagram source (Code level).',
+              'Excalidraw elements for the Code level.',
           },
         },
       },
