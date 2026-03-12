@@ -149,7 +149,10 @@ export function extractConnections(elements: readonly unknown[]): Connection[] {
 export function lintExcalidrawDiagram(elements: readonly unknown[]): DiagramLintError[] {
   const els = elements as readonly RawEl[];
   const knownIds = new Set(els.map((el) => el.id));
+  const elMap = new Map<string, RawEl>(els.map((el) => [el.id, el]));
   const errors: DiagramLintError[] = [];
+  /** Tolerance for floating-point equality when comparing coordinates. */
+  const COORDINATE_TOLERANCE = 0.5;
 
   for (const el of els) {
     if (el.type !== 'arrow') continue;
@@ -161,6 +164,19 @@ export function lintExcalidrawDiagram(elements: readonly unknown[]): DiagramLint
         elementId: el.id,
         message: `Arrow startBinding references unknown element "${el.startBinding.elementId}"`,
       });
+    } else {
+      // Verify the arrow does not originate from the center of its source box.
+      const fromEl = elMap.get(el.startBinding.elementId);
+      if (fromEl?.width !== undefined && fromEl?.height !== undefined) {
+        const boxCx = fromEl.x + fromEl.width / 2;
+        const boxCy = fromEl.y + fromEl.height / 2;
+        if (Math.abs(el.x - boxCx) < COORDINATE_TOLERANCE && Math.abs(el.y - boxCy) < COORDINATE_TOLERANCE) {
+          errors.push({
+            elementId: el.id,
+            message: 'Arrow originates from the center of its source box; use box-boundary coordinates',
+          });
+        }
+      }
     }
 
     if (!el.endBinding?.elementId) {
@@ -170,6 +186,22 @@ export function lintExcalidrawDiagram(elements: readonly unknown[]): DiagramLint
         elementId: el.id,
         message: `Arrow endBinding references unknown element "${el.endBinding.elementId}"`,
       });
+    } else {
+      // Verify the arrow does not terminate at the center of its target box.
+      const toEl = elMap.get(el.endBinding.elementId);
+      if (toEl?.width !== undefined && toEl?.height !== undefined && el.points?.length) {
+        const lastPt = el.points[el.points.length - 1];
+        const endX = el.x + lastPt[0];
+        const endY = el.y + lastPt[1];
+        const boxCx = toEl.x + toEl.width / 2;
+        const boxCy = toEl.y + toEl.height / 2;
+        if (Math.abs(endX - boxCx) < COORDINATE_TOLERANCE && Math.abs(endY - boxCy) < COORDINATE_TOLERANCE) {
+          errors.push({
+            elementId: el.id,
+            message: 'Arrow terminates at the center of its target box; use box-boundary coordinates',
+          });
+        }
+      }
     }
   }
 

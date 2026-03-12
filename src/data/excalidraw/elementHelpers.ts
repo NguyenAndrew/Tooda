@@ -74,6 +74,31 @@ export function makeTitle(id: string, text: string, w: number) {
   };
 }
 
+/**
+ * Return the point on a box perimeter that lies along the direction (dx, dy)
+ * from the box center.  Used to route arrow endpoints to box boundaries so
+ * that arrows do not appear to originate from the middle of a shape.
+ *
+ * @param cx  Center x of the box.
+ * @param cy  Center y of the box.
+ * @param w   Width of the box.
+ * @param h   Height of the box.
+ * @param dx  Horizontal component of the direction vector.
+ * @param dy  Vertical component of the direction vector.
+ */
+export function boxBoundaryPoint(
+  cx: number, cy: number,
+  w: number, h: number,
+  dx: number, dy: number,
+): [number, number] {
+  if (dx === 0 && dy === 0) return [cx, cy];
+  // Scale factor needed to reach the nearest horizontal vs vertical wall
+  const tx = dx !== 0 ? (w / 2) / Math.abs(dx) : Infinity;
+  const ty = dy !== 0 ? (h / 2) / Math.abs(dy) : Infinity;
+  const t = Math.min(tx, ty);
+  return [cx + dx * t, cy + dy * t];
+}
+
 // ── Sugiyama layout ───────────────────────────────────────────────────────────
 
 export interface LayoutNode {
@@ -207,7 +232,15 @@ export function computeLayout(
     elements.push(...makeBox(n.id, bx[n.id], by_[n.id], n.width ?? DEFAULT_W, n.height ?? DEFAULT_H, n.label, n.color));
   }
   for (const e of edges) {
-    elements.push(...makeArrow(e.id, e.from, e.to, cx[e.from], cy[e.from], cx[e.to] - cx[e.from], cy[e.to] - cy[e.from], e.label));
+    const ddx = cx[e.to] - cx[e.from];
+    const ddy = cy[e.to] - cy[e.from];
+    const fromW = nodeMap[e.from].width  ?? DEFAULT_W;
+    const fromH = nodeMap[e.from].height ?? DEFAULT_H;
+    const toW   = nodeMap[e.to].width    ?? DEFAULT_W;
+    const toH   = nodeMap[e.to].height   ?? DEFAULT_H;
+    const [startX, startY] = boxBoundaryPoint(cx[e.from], cy[e.from], fromW, fromH,  ddx,  ddy);
+    const [endX,   endY  ] = boxBoundaryPoint(cx[e.to],   cy[e.to],   toW,   toH,  -ddx, -ddy);
+    elements.push(...makeArrow(e.id, e.from, e.to, startX, startY, endX - startX, endY - startY, e.label));
   }
   return elements;
 }
