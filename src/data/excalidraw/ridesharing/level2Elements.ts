@@ -1,28 +1,34 @@
-import { makeBox, makeArrow, makeTitle } from '../elementHelpers';
+import { makeTitle, computeLayout } from '../elementHelpers';
 
 export const ridesharingLevel2Elements = [
   makeTitle('title', 'Container – Ride-Sharing App', 760),
-  ...makeBox('l2-rider', 40, 100, 180, 60, 'Rider', '#bfdbfe'),
-  ...makeBox('l2-driver', 40, 200, 180, 60, 'Driver', '#bfdbfe'),
-  ...makeBox('l2-maps', 40, 320, 180, 60, 'Maps & Routing API', '#f1f5f9'),
-  ...makeBox('l2-payment', 40, 420, 180, 60, 'Payment Gateway', '#f1f5f9'),
-  ...makeBox('l2-sms', 40, 520, 180, 60, 'SMS Provider', '#f1f5f9'),
-  ...makeBox('l2-riderApp', 280, 100, 200, 60, 'Rider App', '#ddd6fe'),
-  ...makeBox('l2-driverApp', 280, 200, 200, 60, 'Driver App', '#ddd6fe'),
-  ...makeBox('l2-apiServer', 520, 100, 200, 60, 'API Server', '#ddd6fe'),
-  ...makeBox('l2-locationService', 520, 200, 200, 60, 'Location Service', '#ddd6fe'),
-  ...makeBox('l2-db', 280, 320, 200, 60, 'Database', '#fde68a'),
-  ...makeBox('l2-cache', 520, 320, 200, 60, 'Cache', '#fde68a'),
-  // Arrows
-  ...makeArrow('l2-a1', 'l2-rider', 'l2-riderApp', 130, 130, 150, 0, 'Uses'),
-  ...makeArrow('l2-a2', 'l2-driver', 'l2-driverApp', 130, 230, 150, 0, 'Uses'),
-  ...makeArrow('l2-a3', 'l2-riderApp', 'l2-apiServer', 380, 130, 140, 0, 'Calls'),
-  ...makeArrow('l2-a4', 'l2-driverApp', 'l2-apiServer', 380, 230, 140, -100, 'Calls'),
-  ...makeArrow('l2-a5', 'l2-driverApp', 'l2-locationService', 380, 230, 140, 0, 'Sends location updates to'),
-  ...makeArrow('l2-a6', 'l2-apiServer', 'l2-db', 620, 130, -240, 220, 'Reads/writes'),
-  ...makeArrow('l2-a7', 'l2-apiServer', 'l2-cache', 620, 130, 0, 220, 'Reads/writes'),
-  ...makeArrow('l2-a8', 'l2-locationService', 'l2-cache', 620, 230, 0, 120, 'Updates driver positions in'),
-  ...makeArrow('l2-a9', 'l2-apiServer', 'l2-maps', 620, 130, -580, 220, 'Gets routes from'),
-  ...makeArrow('l2-a10', 'l2-apiServer', 'l2-payment', 620, 130, -580, 320, 'Processes fares via'),
-  ...makeArrow('l2-a11', 'l2-apiServer', 'l2-sms', 620, 130, -580, 420, 'Sends notifications via'),
+  ...computeLayout(
+    [
+      { id: 'l2-rider',           label: 'Rider',                  color: '#bfdbfe' },
+      { id: 'l2-driver',          label: 'Driver',                 color: '#bfdbfe' },
+      { id: 'l2-riderApp',        label: 'Rider App',              color: '#ddd6fe' },
+      { id: 'l2-driverApp',       label: 'Driver App',             color: '#ddd6fe' },
+      { id: 'l2-apiServer',       label: 'API Server',             color: '#ddd6fe' },
+      { id: 'l2-locationService', label: 'Location Service',       color: '#ddd6fe' },
+      { id: 'l2-db',              label: 'Database',               color: '#fde68a' },
+      { id: 'l2-cache',           label: 'Cache',                  color: '#fde68a' },
+      { id: 'l2-maps',            label: 'Maps & Routing API',     color: '#f1f5f9' },
+      { id: 'l2-payment',         label: 'Payment Gateway',        color: '#f1f5f9' },
+      { id: 'l2-sms',             label: 'SMS Provider',           color: '#f1f5f9' },
+    ],
+    [
+      { id: 'l2-a1',  from: 'l2-rider',           to: 'l2-riderApp',        label: 'Uses' },
+      { id: 'l2-a2',  from: 'l2-driver',           to: 'l2-driverApp',       label: 'Uses' },
+      { id: 'l2-a3',  from: 'l2-riderApp',         to: 'l2-apiServer',       label: 'Calls' },
+      { id: 'l2-a4',  from: 'l2-driverApp',        to: 'l2-apiServer',       label: 'Calls' },
+      { id: 'l2-a5',  from: 'l2-driverApp',        to: 'l2-locationService', label: 'Sends location updates to' },
+      { id: 'l2-a6',  from: 'l2-apiServer',        to: 'l2-db',              label: 'Reads/writes' },
+      { id: 'l2-a7',  from: 'l2-apiServer',        to: 'l2-cache',           label: 'Reads/writes' },
+      { id: 'l2-a8',  from: 'l2-locationService',  to: 'l2-cache',           label: 'Updates driver positions in' },
+      { id: 'l2-a9',  from: 'l2-apiServer',        to: 'l2-maps',            label: 'Gets routes from' },
+      { id: 'l2-a10', from: 'l2-apiServer',        to: 'l2-payment',         label: 'Processes fares via' },
+      { id: 'l2-a11', from: 'l2-apiServer',        to: 'l2-sms',             label: 'Sends notifications via' },
+    ],
+  ),
 ];
+

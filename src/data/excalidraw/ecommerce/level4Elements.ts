@@ -1,22 +1,23 @@
-import { makeBox, makeArrow } from '../elementHelpers';
+import { computeLayout } from '../elementHelpers';
 
 export const ecommerceLevel4Elements = [
-  ...makeBox('l4-ctrl', 40, 80, 220, 120,
-    'OrderController\n─────────────────\n+createOrder(req, res) void\n+getOrder(req, res) void\n+listOrders(req, res) void', '#bfdbfe'),
-  ...makeBox('l4-svc', 300, 80, 220, 140,
-    'OrderService\n─────────────────\n-orderRepository: OrderRepository\n-paymentClient: PaymentClient\n-eventPublisher: EventPublisher\n+createOrder(customerId: string, items: OrderItem[]) Promise~Order~\n+getOrder(orderId: string) Promise~Order~', '#bbf7d0'),
-  ...makeBox('l4-repo', 560, 80, 220, 120,
-    'OrderRepository\n─────────────────\n-db: DatabaseConnection\n+save(order: Order) Promise~Order~\n+findById(orderId: string) Promise~Order~\n+findByCustomer(customerId: string) Promise~Order[]~', '#fde68a'),
-  ...makeBox('l4-payment', 40, 280, 220, 100,
-    'PaymentClient\n─────────────────\n-apiKey: string\n+charge(amount: number, token: string) Promise~PaymentResult~', '#f3e8ff'),
-  ...makeBox('l4-order', 300, 280, 220, 100,
-    'Order\n─────────────────\n+id: string\n+customerId: string\n+status: string\n+total: number\n+createdAt: Date', '#fce7f3'),
-  ...makeBox('l4-item', 560, 280, 220, 100,
-    'OrderItem\n─────────────────\n+productId: string\n+quantity: number\n+unitPrice: number', '#bfdbfe'),
-  // Arrows
-  ...makeArrow('l4-a1', 'l4-ctrl', 'l4-svc', 260, 140, 40, 0, 'uses'),
-  ...makeArrow('l4-a2', 'l4-svc', 'l4-repo', 520, 140, 40, 0, 'uses'),
-  ...makeArrow('l4-a3', 'l4-svc', 'l4-payment', 410, 140, -260, 200, 'uses'),
-  ...makeArrow('l4-a4', 'l4-repo', 'l4-order', 670, 140, -260, 200, 'returns'),
-  ...makeArrow('l4-a5', 'l4-order', 'l4-item', 410, 330, 260, 0, 'contains'),
+  ...computeLayout(
+    [
+      { id: 'l4-ctrl',     label: 'OrderController\n─────────────────\n+createOrder(req, res) void\n+getOrder(req, res) void\n+listOrders(req, res) void',                                                                                                                              color: '#bfdbfe', width: 220, height: 120 },
+      { id: 'l4-svc',     label: 'OrderService\n─────────────────\n-orderRepository: OrderRepository\n-paymentClient: PaymentClient\n-eventPublisher: EventPublisher\n+createOrder(customerId: string, items: OrderItem[]) Promise~Order~\n+getOrder(orderId: string) Promise~Order~',  color: '#bbf7d0', width: 220, height: 140 },
+      { id: 'l4-repo',    label: 'OrderRepository\n─────────────────\n-db: DatabaseConnection\n+save(order: Order) Promise~Order~\n+findById(orderId: string) Promise~Order~\n+findByCustomer(customerId: string) Promise~Order[]~',                                                    color: '#fde68a', width: 220, height: 120 },
+      { id: 'l4-payment', label: 'PaymentClient\n─────────────────\n-apiKey: string\n+charge(amount: number, token: string) Promise~PaymentResult~',                                                                                                                                    color: '#f3e8ff', width: 220, height: 100 },
+      { id: 'l4-order',   label: 'Order\n─────────────────\n+id: string\n+customerId: string\n+status: string\n+total: number\n+createdAt: Date',                                                                                                                                       color: '#fce7f3', width: 220, height: 100 },
+      { id: 'l4-item',    label: 'OrderItem\n─────────────────\n+productId: string\n+quantity: number\n+unitPrice: number',                                                                                                                                                             color: '#bfdbfe', width: 220, height: 100 },
+    ],
+    [
+      { id: 'l4-a1', from: 'l4-ctrl', to: 'l4-svc',     label: 'uses' },
+      { id: 'l4-a2', from: 'l4-svc',  to: 'l4-repo',    label: 'uses' },
+      { id: 'l4-a3', from: 'l4-svc',  to: 'l4-payment', label: 'uses' },
+      { id: 'l4-a4', from: 'l4-repo', to: 'l4-order',   label: 'returns' },
+      { id: 'l4-a5', from: 'l4-order', to: 'l4-item',   label: 'contains' },
+    ],
+    { hStep: 260, vGap: 60 },
+  ),
 ];
+
