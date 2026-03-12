@@ -100,6 +100,14 @@ export interface Connection {
   to: string;
 }
 
+/** A lint error reported by {@link lintExcalidrawDiagram}. */
+export interface DiagramLintError {
+  /** Excalidraw element ID of the offending element. */
+  elementId: string;
+  /** Human-readable description of the problem. */
+  message: string;
+}
+
 /**
  * Extract the directed connections (arrows) from a set of Excalidraw elements.
  *
@@ -121,6 +129,51 @@ export function extractConnections(elements: readonly unknown[]): Connection[] {
     }
   }
   return connections;
+}
+
+/**
+ * Lint an Excalidraw element array for Sugiyama-style diagram compatibility.
+ *
+ * Sugiyama-style layout (Mermaid's `flowchart TB` via Dagre) requires every
+ * arrow to be bound at both ends so that the layout engine can build a proper
+ * directed acyclic graph.  This function reports any arrow element that is
+ * missing a `startBinding`, missing an `endBinding`, or whose binding points
+ * to an element ID that does not exist in the same element array.
+ *
+ * Calling this on every diagram at lint time ensures that no arrow is silently
+ * dropped by {@link extractConnections} or {@link excalidrawToMermaid}.
+ *
+ * @param elements  The raw Excalidraw element array (any level file export).
+ * @returns         An array of lint errors; empty when the diagram is clean.
+ */
+export function lintExcalidrawDiagram(elements: readonly unknown[]): DiagramLintError[] {
+  const els = elements as readonly RawEl[];
+  const knownIds = new Set(els.map((el) => el.id));
+  const errors: DiagramLintError[] = [];
+
+  for (const el of els) {
+    if (el.type !== 'arrow') continue;
+
+    if (!el.startBinding?.elementId) {
+      errors.push({ elementId: el.id, message: 'Arrow is missing startBinding' });
+    } else if (!knownIds.has(el.startBinding.elementId)) {
+      errors.push({
+        elementId: el.id,
+        message: `Arrow startBinding references unknown element "${el.startBinding.elementId}"`,
+      });
+    }
+
+    if (!el.endBinding?.elementId) {
+      errors.push({ elementId: el.id, message: 'Arrow is missing endBinding' });
+    } else if (!knownIds.has(el.endBinding.elementId)) {
+      errors.push({
+        elementId: el.id,
+        message: `Arrow endBinding references unknown element "${el.endBinding.elementId}"`,
+      });
+    }
+  }
+
+  return errors;
 }
 
 /**

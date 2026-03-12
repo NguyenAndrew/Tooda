@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { extractConnections, excalidrawToMermaid } from './excalidrawToMermaid';
+import { extractConnections, excalidrawToMermaid, lintExcalidrawDiagram } from './excalidrawToMermaid';
 import type { LevelMeta } from './excalidrawToMermaid';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -855,5 +855,104 @@ describe('excalidrawToMermaid – flowchart additional branches', () => {
     const result = excalidrawToMermaid(els, meta);
     // No node declaration should be emitted
     expect(result).not.toContain('n["');
+  });
+});
+
+// ── lintExcalidrawDiagram ─────────────────────────────────────────────────────
+
+describe('lintExcalidrawDiagram', () => {
+  it('returns no errors for an empty element list', () => {
+    expect(lintExcalidrawDiagram([])).toEqual([]);
+  });
+
+  it('returns no errors when all arrows are fully bound', () => {
+    const els = [
+      rect('b1'),
+      rect('b2'),
+      arrow('a1', 'b1', 'b2'),
+    ];
+    expect(lintExcalidrawDiagram(els)).toEqual([]);
+  });
+
+  it('ignores non-arrow elements', () => {
+    const els = [rect('r1'), textIn('t1', 'r1', 'Node')];
+    expect(lintExcalidrawDiagram(els)).toEqual([]);
+  });
+
+  it('reports an error when startBinding is null', () => {
+    const els = [
+      rect('b1'),
+      { id: 'a1', type: 'arrow', x: 0, y: 0, startBinding: null, endBinding: { elementId: 'b1' } },
+    ];
+    const errors = lintExcalidrawDiagram(els);
+    expect(errors).toHaveLength(1);
+    expect(errors[0]).toEqual({ elementId: 'a1', message: 'Arrow is missing startBinding' });
+  });
+
+  it('reports an error when endBinding is null', () => {
+    const els = [
+      rect('b1'),
+      { id: 'a1', type: 'arrow', x: 0, y: 0, startBinding: { elementId: 'b1' }, endBinding: null },
+    ];
+    const errors = lintExcalidrawDiagram(els);
+    expect(errors).toHaveLength(1);
+    expect(errors[0]).toEqual({ elementId: 'a1', message: 'Arrow is missing endBinding' });
+  });
+
+  it('reports an error when startBinding.elementId is empty string', () => {
+    const els = [
+      rect('b1'),
+      { id: 'a1', type: 'arrow', x: 0, y: 0, startBinding: { elementId: '' }, endBinding: { elementId: 'b1' } },
+    ];
+    const errors = lintExcalidrawDiagram(els);
+    expect(errors).toHaveLength(1);
+    expect(errors[0]).toEqual({ elementId: 'a1', message: 'Arrow is missing startBinding' });
+  });
+
+  it('reports an error when startBinding references an unknown element', () => {
+    const els = [
+      rect('b1'),
+      arrow('a1', 'missing-id', 'b1'),
+    ];
+    const errors = lintExcalidrawDiagram(els);
+    expect(errors).toHaveLength(1);
+    expect(errors[0]).toEqual({
+      elementId: 'a1',
+      message: 'Arrow startBinding references unknown element "missing-id"',
+    });
+  });
+
+  it('reports an error when endBinding references an unknown element', () => {
+    const els = [
+      rect('b1'),
+      arrow('a1', 'b1', 'missing-id'),
+    ];
+    const errors = lintExcalidrawDiagram(els);
+    expect(errors).toHaveLength(1);
+    expect(errors[0]).toEqual({
+      elementId: 'a1',
+      message: 'Arrow endBinding references unknown element "missing-id"',
+    });
+  });
+
+  it('reports two errors for a fully unbound arrow', () => {
+    const els = [freeArrow('a1')];
+    const errors = lintExcalidrawDiagram(els);
+    expect(errors).toHaveLength(2);
+    expect(errors[0]).toEqual({ elementId: 'a1', message: 'Arrow is missing startBinding' });
+    expect(errors[1]).toEqual({ elementId: 'a1', message: 'Arrow is missing endBinding' });
+  });
+
+  it('reports errors for multiple arrows', () => {
+    const els = [
+      rect('b1'),
+      rect('b2'),
+      arrow('a1', 'b1', 'b2'),        // valid
+      freeArrow('a2'),                 // both bindings missing
+      arrow('a3', 'ghost', 'b2'),     // unknown start
+    ];
+    const errors = lintExcalidrawDiagram(els);
+    // a2: missing start + end; a3: unknown start
+    expect(errors).toHaveLength(3);
   });
 });
