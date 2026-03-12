@@ -1,0 +1,47 @@
+import type { DiagramNode } from '../../healthcare/nodes';
+
+export const LEVEL_NODES: Record<number, DiagramNode[]> = {
+  1: [
+    { label: 'Rider',             icon: '🧑', color: 0x3b82f6, description: 'A rider who requests and pays for rides.',                                 excalidrawId: 'l1-rider'       },
+    { label: 'Driver',            icon: '🚗', color: 0x3b82f6, description: 'A driver who accepts trips and receives payouts.',                         excalidrawId: 'l1-driver'      },
+    { label: 'Ride-Sharing App',  icon: '🛺', color: 0x22c55e, description: 'Matches riders with nearby drivers and handles payments.',                 excalidrawId: 'l1-ridesharing' },
+    { label: 'Maps & Routing API',icon: '🗺️', color: 0x64748b, description: 'Provides route calculations and ETAs.',                                   excalidrawId: 'l1-maps'        },
+    { label: 'Payment Gateway',   icon: '💳', color: 0x64748b, description: 'Processes fare payments from riders.',                                     excalidrawId: 'l1-payment'     },
+    { label: 'SMS Provider',      icon: '📲', color: 0x64748b, description: 'Sends SMS notifications to riders and drivers.',                           excalidrawId: 'l1-sms'         },
+  ],
+  2: [
+    { label: 'Rider',             icon: '🧑', color: 0x3b82f6, description: 'A rider who requests and pays for rides.',                                 excalidrawId: 'l2-rider'           },
+    { label: 'Driver',            icon: '🚗', color: 0x3b82f6, description: 'A driver who accepts trips and receives payouts.',                         excalidrawId: 'l2-driver'          },
+    { label: 'Rider App',         icon: '📱', color: 0x8b5cf6, description: 'Mobile app for riders to request and track trips.',                        excalidrawId: 'l2-riderApp'        },
+    { label: 'Driver App',        icon: '🚗', color: 0x8b5cf6, description: 'Mobile app for drivers to accept trips and update location.',              excalidrawId: 'l2-driverApp'       },
+    { label: 'API Server',        icon: '🔀', color: 0x8b5cf6, description: 'Provides the core ride-sharing API.',                                      excalidrawId: 'l2-apiServer'       },
+    { label: 'Location Service',  icon: '📍', color: 0x8b5cf6, description: 'Tracks real-time driver positions.',                                       excalidrawId: 'l2-locationService' },
+    { label: 'Database',          icon: '🗄️', color: 0xf59e0b, description: 'Stores trip data, user accounts, and billing records.',                    excalidrawId: 'l2-db'              },
+    { label: 'Cache',             icon: '⚡', color: 0xf59e0b, description: 'Stores driver positions for low-latency matching.',                         excalidrawId: 'l2-cache'           },
+    { label: 'Maps & Routing API',icon: '🗺️', color: 0x64748b, description: 'Provides route calculations and ETAs.',                                   excalidrawId: 'l2-maps'            },
+    { label: 'Payment Gateway',   icon: '💳', color: 0x64748b, description: 'Processes fare payments from riders.',                                     excalidrawId: 'l2-payment'         },
+    { label: 'SMS Provider',      icon: '📲', color: 0x64748b, description: 'Sends SMS notifications to riders and drivers.',                           excalidrawId: 'l2-sms'             },
+  ],
+  3: [
+    { label: 'Rider App',             icon: '📱', color: 0x64748b, description: 'The rider-facing mobile app.',                                         excalidrawId: 'l3-riderApp'            },
+    { label: 'Driver App',            icon: '🚗', color: 0x64748b, description: 'The driver-facing mobile app.',                                        excalidrawId: 'l3-driverApp'           },
+    { label: 'Trip Controller',       icon: '🎮', color: 0x0ea5e9, description: 'Handles trip request and completion API calls.',                       excalidrawId: 'l3-tripController'      },
+    { label: 'Trip Service',          icon: '⚙️', color: 0x0ea5e9, description: 'Orchestrates trip lifecycle: request, match, and complete.',           excalidrawId: 'l3-tripService'         },
+    { label: 'Matching Service',      icon: '🔍', color: 0x0ea5e9, description: 'Finds the nearest available driver for a trip.',                       excalidrawId: 'l3-matchingService'     },
+    { label: 'Payment Service',       icon: '💳', color: 0x0ea5e9, description: 'Charges the rider and pays out the driver.',                           excalidrawId: 'l3-paymentService'      },
+    { label: 'Notification Service',  icon: '📲', color: 0x0ea5e9, description: 'Sends SMS updates to riders and drivers.',                             excalidrawId: 'l3-notificationService' },
+    { label: 'Trip Repository',       icon: '📦', color: 0x0ea5e9, description: 'Persists trip data to the database.',                                  excalidrawId: 'l3-tripRepository'      },
+    { label: 'Database',              icon: '🗄️', color: 0xf59e0b, description: 'Stores trip records, user accounts, and billing data.',                excalidrawId: 'l3-db'                  },
+    { label: 'Cache',                 icon: '⚡', color: 0xf59e0b, description: 'Stores real-time driver locations.',                                    excalidrawId: 'l3-cache'               },
+    { label: 'Payment Gateway',       icon: '💳', color: 0x64748b, description: 'External payment processor.',                                          excalidrawId: 'l3-payment'             },
+    { label: 'SMS Provider',          icon: '📮', color: 0x64748b, description: 'External SMS infrastructure.',                                         excalidrawId: 'l3-sms'                 },
+  ],
+  4: [
+    { label: 'TripController',  icon: '🎮', color: 0x3b82f6, description: 'Exposes REST endpoints for requesting and completing trips.',                excalidrawId: 'l4-ctrl'     },
+    { label: 'TripService',     icon: '⚙️', color: 0x22c55e, description: 'Orchestrates trip request, driver matching, and fare collection.',          excalidrawId: 'l4-svc'      },
+    { label: 'MatchingService', icon: '🔍', color: 0xf59e0b, description: 'Finds the nearest available driver using cached locations.',                 excalidrawId: 'l4-matching' },
+    { label: 'TripRepository',  icon: '📦', color: 0xa855f7, description: 'Abstracts database access for trip records.',                               excalidrawId: 'l4-repo'     },
+    { label: 'Trip',            icon: '🛺', color: 0xec4899, description: 'Entity representing a single ride.',                                        excalidrawId: 'l4-trip'     },
+    { label: 'Location',        icon: '📍', color: 0x3b82f6, description: 'Value object representing a GPS coordinate.',                               excalidrawId: 'l4-location' },
+  ],
+};

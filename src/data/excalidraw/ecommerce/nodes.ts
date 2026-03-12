@@ -1,0 +1,45 @@
+import type { DiagramNode } from '../../healthcare/nodes';
+
+export const LEVEL_NODES: Record<number, DiagramNode[]> = {
+  1: [
+    { label: 'Customer',            icon: '👤', color: 0x3b82f6, description: 'A customer who browses products and places orders.',                   excalidrawId: 'l1-customer'  },
+    { label: 'Seller',              icon: '🏪', color: 0x3b82f6, description: 'A seller who lists products and manages inventory.',                   excalidrawId: 'l1-seller'    },
+    { label: 'E-Commerce Platform', icon: '🛒', color: 0x22c55e, description: 'Provides product browsing, ordering, and fulfilment features.',        excalidrawId: 'l1-ecommerce' },
+    { label: 'Payment Gateway',     icon: '💳', color: 0x64748b, description: 'Processes card payments on behalf of the platform.',                   excalidrawId: 'l1-payment'   },
+    { label: 'Shipping Provider',   icon: '🚚', color: 0x64748b, description: 'Dispatches and tracks physical orders.',                               excalidrawId: 'l1-shipping'  },
+    { label: 'E-mail System',       icon: '📧', color: 0x64748b, description: 'Sends order confirmations and notifications to customers.',             excalidrawId: 'l1-email'     },
+  ],
+  2: [
+    { label: 'Customer',          icon: '👤', color: 0x3b82f6, description: 'A customer who browses products and places orders.',                     excalidrawId: 'l2-customer'       },
+    { label: 'Seller',            icon: '🏪', color: 0x3b82f6, description: 'A seller who lists products and manages inventory.',                     excalidrawId: 'l2-seller'         },
+    { label: 'Web Application',   icon: '🌐', color: 0x8b5cf6, description: 'Delivers the storefront and seller dashboard.',                          excalidrawId: 'l2-webApp'         },
+    { label: 'Mobile App',        icon: '📱', color: 0x8b5cf6, description: 'Provides shopping access on mobile devices.',                            excalidrawId: 'l2-mobileApp'      },
+    { label: 'API Gateway',       icon: '🔀', color: 0x8b5cf6, description: 'Routes requests to downstream services.',                                excalidrawId: 'l2-apiGateway'     },
+    { label: 'Product Service',   icon: '📦', color: 0x8b5cf6, description: 'Manages product catalogue and inventory.',                               excalidrawId: 'l2-productService' },
+    { label: 'Order Service',     icon: '🛒', color: 0x8b5cf6, description: 'Processes and fulfils customer orders.',                                 excalidrawId: 'l2-orderService'   },
+    { label: 'Database',          icon: '🗄️', color: 0xf59e0b, description: 'Stores products, orders, and customer data.',                            excalidrawId: 'l2-db'             },
+    { label: 'Message Queue',     icon: '📨', color: 0x8b5cf6, description: 'Decouples order events from payment and shipping.',                      excalidrawId: 'l2-queue'          },
+    { label: 'Payment Gateway',   icon: '💳', color: 0x64748b, description: 'Processes card payments on behalf of the platform.',                     excalidrawId: 'l2-payment'        },
+    { label: 'Shipping Provider', icon: '🚚', color: 0x64748b, description: 'Dispatches and tracks physical orders.',                                 excalidrawId: 'l2-shipping'       },
+    { label: 'E-mail System',     icon: '📧', color: 0x64748b, description: 'Sends order confirmations and notifications.',                           excalidrawId: 'l2-email'          },
+  ],
+  3: [
+    { label: 'API Gateway',       icon: '🔀', color: 0x64748b, description: 'Routes requests to the Order Service.',                                  excalidrawId: 'l3-apiGateway'      },
+    { label: 'Order Controller',  icon: '🎮', color: 0x0ea5e9, description: 'Handles order API requests.',                                            excalidrawId: 'l3-orderController'  },
+    { label: 'Order Service',     icon: '⚙️', color: 0x0ea5e9, description: 'Business logic for creating and tracking orders.',                       excalidrawId: 'l3-orderService'     },
+    { label: 'Payment Client',    icon: '💳', color: 0x0ea5e9, description: 'Charges customers via the Payment Gateway.',                             excalidrawId: 'l3-paymentClient'    },
+    { label: 'Shipping Client',   icon: '🚚', color: 0x0ea5e9, description: 'Dispatches orders via the Shipping Provider.',                           excalidrawId: 'l3-shippingClient'   },
+    { label: 'Order Repository',  icon: '📦', color: 0x0ea5e9, description: 'Persists order data to the database.',                                   excalidrawId: 'l3-orderRepository'  },
+    { label: 'Event Publisher',   icon: '📨', color: 0x0ea5e9, description: 'Publishes order events to the message queue.',                           excalidrawId: 'l3-eventPublisher'   },
+    { label: 'Database',          icon: '🗄️', color: 0xf59e0b, description: 'Stores order records.',                                                  excalidrawId: 'l3-db'               },
+    { label: 'Message Queue',     icon: '📮', color: 0x64748b, description: 'Carries order events to downstream consumers.',                          excalidrawId: 'l3-queue'            },
+  ],
+  4: [
+    { label: 'OrderController', icon: '🎮', color: 0x3b82f6, description: 'Exposes REST endpoints for creating and retrieving orders.',               excalidrawId: 'l4-ctrl'    },
+    { label: 'OrderService',    icon: '⚙️', color: 0x22c55e, description: 'Business logic for order creation and fulfilment.',                        excalidrawId: 'l4-svc'     },
+    { label: 'OrderRepository', icon: '📦', color: 0xf59e0b, description: 'Abstracts database access for order data.',                                excalidrawId: 'l4-repo'    },
+    { label: 'PaymentClient',   icon: '💳', color: 0xa855f7, description: 'Charges customers via the external Payment Gateway.',                      excalidrawId: 'l4-payment' },
+    { label: 'Order',           icon: '🛒', color: 0xec4899, description: 'Entity representing a customer order.',                                    excalidrawId: 'l4-order'   },
+    { label: 'OrderItem',       icon: '📄', color: 0x3b82f6, description: 'Entity representing a single line item within an order.',                  excalidrawId: 'l4-item'    },
+  ],
+};
