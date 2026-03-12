@@ -5,6 +5,7 @@ import {
   ecommerceLevel1Elements, ecommerceLevel2Elements, ecommerceLevel3Elements, ecommerceLevel4Elements,
   ridesharingLevel1Elements, ridesharingLevel2Elements, ridesharingLevel3Elements, ridesharingLevel4Elements,
   toodaLevel1Elements, toodaLevel2Elements, toodaLevel3Elements, toodaLevel4Elements,
+  mermaidDiagrams,
 } from '../data/c4/diagrams';
 ---
 <!doctype html>
@@ -151,6 +152,30 @@ import {
         height: 600px;
       }
 
+      .mermaid-wrapper {
+        @apply hidden overflow-hidden rounded-xl bg-white p-6;
+      }
+
+      .mermaid-wrapper .mermaid {
+        @apply flex justify-center;
+      }
+
+      .renderer-toggle {
+        @apply mb-4 flex flex-wrap justify-center gap-2 px-4;
+      }
+
+      .renderer-btn {
+        @apply inline-block cursor-pointer rounded-lg border border-slate-300 bg-slate-100 px-5 py-2 text-[0.95rem] text-slate-600 no-underline transition-all duration-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400;
+      }
+
+      .renderer-btn:hover {
+        @apply bg-slate-200 text-slate-900 dark:bg-slate-700 dark:text-slate-50;
+      }
+
+      .renderer-btn.active {
+        @apply border-transparent bg-gradient-to-br from-violet-500 to-sky-400 text-white;
+      }
+
       /* Theme toggle button */
       .theme-toggle-btn {
         @apply fixed right-4 top-4 z-50 flex h-10 w-10 items-center justify-center rounded-full border border-slate-300 bg-white/80 text-slate-600 shadow-md backdrop-blur-sm transition-all duration-200 hover:border-indigo-400 hover:text-slate-900 dark:border-slate-700 dark:bg-slate-800/80 dark:text-slate-300 dark:hover:border-indigo-500/50 dark:hover:text-slate-50;
@@ -184,6 +209,11 @@ import {
       <a href="/Tooda/c4?example=tooda" class="example-btn" data-example="tooda">Tooda</a>
     </div>
 
+    <div class="renderer-toggle">
+      <a href="?renderer=excalidraw" class="renderer-btn active" data-renderer="excalidraw">&#9999;&#65039; Excalidraw</a>
+      <a href="?renderer=mermaid" class="renderer-btn" data-renderer="mermaid">&#128202; Mermaid</a>
+    </div>
+
     <div class="tabs">
       <a href="#level1" class="tab-btn active" data-tab="level1">Level 1 – Context</a>
       <a href="#level2" class="tab-btn" data-tab="level2">Level 2 – Container</a>
@@ -197,17 +227,37 @@ import {
         Shows the system in context: who uses it and which external systems it
         interacts with.
       </p>
-      <div class="excalidraw-wrapper" data-example="banking">
-        <ExcalidrawViewer client:only="react" elements={bankingLevel1Elements} />
+      <div class="example-content" data-example="banking">
+        <div class="excalidraw-view excalidraw-wrapper">
+          <ExcalidrawViewer client:only="react" elements={bankingLevel1Elements} />
+        </div>
+        <div class="mermaid-view mermaid-wrapper">
+          <div class="mermaid" set:text={mermaidDiagrams.banking.level1}></div>
+        </div>
       </div>
-      <div class="excalidraw-wrapper" data-example="ecommerce" style="display:none">
-        <ExcalidrawViewer client:only="react" elements={ecommerceLevel1Elements} />
+      <div class="example-content" data-example="ecommerce" style="display:none">
+        <div class="excalidraw-view excalidraw-wrapper">
+          <ExcalidrawViewer client:only="react" elements={ecommerceLevel1Elements} />
+        </div>
+        <div class="mermaid-view mermaid-wrapper">
+          <div class="mermaid" set:text={mermaidDiagrams.ecommerce.level1}></div>
+        </div>
       </div>
-      <div class="excalidraw-wrapper" data-example="ridesharing" style="display:none">
-        <ExcalidrawViewer client:only="react" elements={ridesharingLevel1Elements} />
+      <div class="example-content" data-example="ridesharing" style="display:none">
+        <div class="excalidraw-view excalidraw-wrapper">
+          <ExcalidrawViewer client:only="react" elements={ridesharingLevel1Elements} />
+        </div>
+        <div class="mermaid-view mermaid-wrapper">
+          <div class="mermaid" set:text={mermaidDiagrams.ridesharing.level1}></div>
+        </div>
       </div>
-      <div class="excalidraw-wrapper" data-example="tooda" style="display:none">
-        <ExcalidrawViewer client:only="react" elements={toodaLevel1Elements} />
+      <div class="example-content" data-example="tooda" style="display:none">
+        <div class="excalidraw-view excalidraw-wrapper">
+          <ExcalidrawViewer client:only="react" elements={toodaLevel1Elements} />
+        </div>
+        <div class="mermaid-view mermaid-wrapper">
+          <div class="mermaid" set:text={mermaidDiagrams.tooda.level1}></div>
+        </div>
       </div>
     </section>
 
@@ -217,17 +267,37 @@ import {
         Zooms in on the system to show the containers (applications and data
         stores) that make it up.
       </p>
-      <div class="excalidraw-wrapper" data-example="banking">
-        <ExcalidrawViewer client:only="react" elements={bankingLevel2Elements} />
+      <div class="example-content" data-example="banking">
+        <div class="excalidraw-view excalidraw-wrapper">
+          <ExcalidrawViewer client:only="react" elements={bankingLevel2Elements} />
+        </div>
+        <div class="mermaid-view mermaid-wrapper">
+          <div class="mermaid" set:text={mermaidDiagrams.banking.level2}></div>
+        </div>
       </div>
-      <div class="excalidraw-wrapper" data-example="ecommerce" style="display:none">
-        <ExcalidrawViewer client:only="react" elements={ecommerceLevel2Elements} />
+      <div class="example-content" data-example="ecommerce" style="display:none">
+        <div class="excalidraw-view excalidraw-wrapper">
+          <ExcalidrawViewer client:only="react" elements={ecommerceLevel2Elements} />
+        </div>
+        <div class="mermaid-view mermaid-wrapper">
+          <div class="mermaid" set:text={mermaidDiagrams.ecommerce.level2}></div>
+        </div>
       </div>
-      <div class="excalidraw-wrapper" data-example="ridesharing" style="display:none">
-        <ExcalidrawViewer client:only="react" elements={ridesharingLevel2Elements} />
+      <div class="example-content" data-example="ridesharing" style="display:none">
+        <div class="excalidraw-view excalidraw-wrapper">
+          <ExcalidrawViewer client:only="react" elements={ridesharingLevel2Elements} />
+        </div>
+        <div class="mermaid-view mermaid-wrapper">
+          <div class="mermaid" set:text={mermaidDiagrams.ridesharing.level2}></div>
+        </div>
       </div>
-      <div class="excalidraw-wrapper" data-example="tooda" style="display:none">
-        <ExcalidrawViewer client:only="react" elements={toodaLevel2Elements} />
+      <div class="example-content" data-example="tooda" style="display:none">
+        <div class="excalidraw-view excalidraw-wrapper">
+          <ExcalidrawViewer client:only="react" elements={toodaLevel2Elements} />
+        </div>
+        <div class="mermaid-view mermaid-wrapper">
+          <div class="mermaid" set:text={mermaidDiagrams.tooda.level2}></div>
+        </div>
       </div>
     </section>
 
@@ -237,17 +307,37 @@ import {
         Zooms in on a key container to show the components (services and
         controllers) inside it.
       </p>
-      <div class="excalidraw-wrapper" data-example="banking">
-        <ExcalidrawViewer client:only="react" elements={bankingLevel3Elements} />
+      <div class="example-content" data-example="banking">
+        <div class="excalidraw-view excalidraw-wrapper">
+          <ExcalidrawViewer client:only="react" elements={bankingLevel3Elements} />
+        </div>
+        <div class="mermaid-view mermaid-wrapper">
+          <div class="mermaid" set:text={mermaidDiagrams.banking.level3}></div>
+        </div>
       </div>
-      <div class="excalidraw-wrapper" data-example="ecommerce" style="display:none">
-        <ExcalidrawViewer client:only="react" elements={ecommerceLevel3Elements} />
+      <div class="example-content" data-example="ecommerce" style="display:none">
+        <div class="excalidraw-view excalidraw-wrapper">
+          <ExcalidrawViewer client:only="react" elements={ecommerceLevel3Elements} />
+        </div>
+        <div class="mermaid-view mermaid-wrapper">
+          <div class="mermaid" set:text={mermaidDiagrams.ecommerce.level3}></div>
+        </div>
       </div>
-      <div class="excalidraw-wrapper" data-example="ridesharing" style="display:none">
-        <ExcalidrawViewer client:only="react" elements={ridesharingLevel3Elements} />
+      <div class="example-content" data-example="ridesharing" style="display:none">
+        <div class="excalidraw-view excalidraw-wrapper">
+          <ExcalidrawViewer client:only="react" elements={ridesharingLevel3Elements} />
+        </div>
+        <div class="mermaid-view mermaid-wrapper">
+          <div class="mermaid" set:text={mermaidDiagrams.ridesharing.level3}></div>
+        </div>
       </div>
-      <div class="excalidraw-wrapper" data-example="tooda" style="display:none">
-        <ExcalidrawViewer client:only="react" elements={toodaLevel3Elements} />
+      <div class="example-content" data-example="tooda" style="display:none">
+        <div class="excalidraw-view excalidraw-wrapper">
+          <ExcalidrawViewer client:only="react" elements={toodaLevel3Elements} />
+        </div>
+        <div class="mermaid-view mermaid-wrapper">
+          <div class="mermaid" set:text={mermaidDiagrams.tooda.level3}></div>
+        </div>
       </div>
     </section>
 
@@ -257,33 +347,115 @@ import {
         Zooms in on a key component to show the classes and interfaces that
         implement it.
       </p>
-      <div class="excalidraw-wrapper" data-example="banking">
-        <ExcalidrawViewer client:only="react" elements={bankingLevel4Elements} />
+      <div class="example-content" data-example="banking">
+        <div class="excalidraw-view excalidraw-wrapper">
+          <ExcalidrawViewer client:only="react" elements={bankingLevel4Elements} />
+        </div>
+        <div class="mermaid-view mermaid-wrapper">
+          <div class="mermaid" set:text={mermaidDiagrams.banking.level4}></div>
+        </div>
       </div>
-      <div class="excalidraw-wrapper" data-example="ecommerce" style="display:none">
-        <ExcalidrawViewer client:only="react" elements={ecommerceLevel4Elements} />
+      <div class="example-content" data-example="ecommerce" style="display:none">
+        <div class="excalidraw-view excalidraw-wrapper">
+          <ExcalidrawViewer client:only="react" elements={ecommerceLevel4Elements} />
+        </div>
+        <div class="mermaid-view mermaid-wrapper">
+          <div class="mermaid" set:text={mermaidDiagrams.ecommerce.level4}></div>
+        </div>
       </div>
-      <div class="excalidraw-wrapper" data-example="ridesharing" style="display:none">
-        <ExcalidrawViewer client:only="react" elements={ridesharingLevel4Elements} />
+      <div class="example-content" data-example="ridesharing" style="display:none">
+        <div class="excalidraw-view excalidraw-wrapper">
+          <ExcalidrawViewer client:only="react" elements={ridesharingLevel4Elements} />
+        </div>
+        <div class="mermaid-view mermaid-wrapper">
+          <div class="mermaid" set:text={mermaidDiagrams.ridesharing.level4}></div>
+        </div>
       </div>
-      <div class="excalidraw-wrapper" data-example="tooda" style="display:none">
-        <ExcalidrawViewer client:only="react" elements={toodaLevel4Elements} />
+      <div class="example-content" data-example="tooda" style="display:none">
+        <div class="excalidraw-view excalidraw-wrapper">
+          <ExcalidrawViewer client:only="react" elements={toodaLevel4Elements} />
+        </div>
+        <div class="mermaid-view mermaid-wrapper">
+          <div class="mermaid" set:text={mermaidDiagrams.tooda.level4}></div>
+        </div>
       </div>
     </section>
 
+    <script src="/Tooda/mermaid.min.js" is:inline></script>
+    <script type="module">
+      const { default: elkLayouts } = await import('/Tooda/mermaid-layout-elk.esm.min.mjs');
+      mermaid.registerLayoutLoaders(elkLayouts);
+      window._resolveElk();
+    </script>
     <script is:inline>
+      // ELK layout engine is loaded asynchronously; all mermaid.run() calls wait for it.
+      window._elkReady = new Promise(resolve => { window._resolveElk = resolve; });
+
+      mermaid.initialize({ startOnLoad: false, theme: 'default' });
+
       let currentExample = 'banking';
       let currentTab = 'level1';
+      let currentRenderer = 'excalidraw';
 
       const validTabs = ['level1', 'level2', 'level3', 'level4'];
       const validExamples = ['banking', 'ecommerce', 'ridesharing', 'tooda'];
+
+      // ---- Mermaid rendering helper ----
+      function renderMermaidInContent(content) {
+        var unrendered = Array.from(content.querySelectorAll('.mermaid')).filter(
+          function (el) { return !el.querySelector('svg'); }
+        );
+        if (unrendered.length > 0) {
+          unrendered.forEach(function (el) { el.removeAttribute('data-processed'); });
+          window._elkReady.then(function () { mermaid.run({ nodes: unrendered }); });
+        }
+      }
+
+      // ---- Renderer toggle ----
+      const rendererBtns = document.querySelectorAll('.renderer-btn');
+
+      function activateRenderer(renderer) {
+        if (renderer !== 'excalidraw' && renderer !== 'mermaid') renderer = 'excalidraw';
+        currentRenderer = renderer;
+
+        rendererBtns.forEach(function (b) { b.classList.remove('active'); });
+        var activeBtn = document.querySelector('.renderer-btn[data-renderer="' + renderer + '"]');
+        if (activeBtn) activeBtn.classList.add('active');
+
+        document.querySelectorAll('.excalidraw-view').forEach(function (el) { el.style.display = 'none'; });
+        document.querySelectorAll('.mermaid-view').forEach(function (el) { el.style.display = 'none'; });
+
+        if (renderer === 'excalidraw') {
+          document.querySelectorAll('.excalidraw-view').forEach(function (el) { el.style.display = ''; });
+        } else {
+          document.querySelectorAll('.mermaid-view').forEach(function (el) { el.style.display = ''; });
+
+          // Render any un-rendered Mermaid diagrams in the active panel / example
+          var activePanel = document.querySelector('.tab-panel.active');
+          if (activePanel) {
+            var activeContent = activePanel.querySelector('.example-content[data-example="' + currentExample + '"]');
+            if (activeContent) renderMermaidInContent(activeContent);
+          }
+        }
+      }
+
+      rendererBtns.forEach(function (btn) {
+        btn.addEventListener('click', function (e) {
+          e.preventDefault();
+          var renderer = btn.dataset.renderer;
+          var url = new URL(window.location.href);
+          url.searchParams.set('renderer', renderer);
+          history.pushState(null, '', url.toString());
+          activateRenderer(renderer);
+        });
+      });
 
       // ---- Tab switching ----
       const tabButtons = document.querySelectorAll('.tab-btn');
       const tabPanels = document.querySelectorAll('.tab-panel');
 
-      function updateExcalidrawVisibility(panel) {
-        panel.querySelectorAll('.excalidraw-wrapper').forEach(function (w) {
+      function updateExampleVisibility(panel) {
+        panel.querySelectorAll('.example-content').forEach(function (w) {
           w.style.display = (w.dataset.example === currentExample) ? '' : 'none';
         });
       }
@@ -301,7 +473,13 @@ import {
         var panel = document.getElementById(target);
         if (panel) {
           panel.classList.add('active');
-          updateExcalidrawVisibility(panel);
+          updateExampleVisibility(panel);
+
+          // Render Mermaid diagrams when switching tabs in Mermaid mode
+          if (currentRenderer === 'mermaid') {
+            var activeContent = panel.querySelector('.example-content[data-example="' + currentExample + '"]');
+            if (activeContent) renderMermaidInContent(activeContent);
+          }
         }
       }
 
@@ -333,8 +511,17 @@ import {
         if (activeBtn) activeBtn.classList.add('active');
 
         document.querySelectorAll('.tab-panel').forEach(function (panel) {
-          updateExcalidrawVisibility(panel);
+          updateExampleVisibility(panel);
         });
+
+        // Render Mermaid diagrams for the newly selected example if in Mermaid mode
+        if (currentRenderer === 'mermaid') {
+          var activePanel = document.querySelector('.tab-panel.active');
+          if (activePanel) {
+            var activeContent = activePanel.querySelector('.example-content[data-example="' + key + '"]');
+            if (activeContent) renderMermaidInContent(activeContent);
+          }
+        }
       }
 
       exampleBtns.forEach(function (btn) {
@@ -352,7 +539,9 @@ import {
       function init() {
         var params = new URLSearchParams(window.location.search);
         var example = params.get('example') || 'banking';
+        var renderer = params.get('renderer') || 'excalidraw';
         activateExample(example);
+        activateRenderer(renderer);
         activateFromHash();
       }
 

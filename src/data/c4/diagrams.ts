@@ -1,3 +1,19 @@
+/**
+ * C4 Diagram Examples – single source of truth
+ *
+ * The Excalidraw element sets are the canonical representation of each
+ * example system.  They encode the full visual model: node positions,
+ * sizes, labels, arrow bindings, and relationship labels.
+ *
+ * Mermaid diagram strings are *derived* from those elements by the
+ * `excalidrawToMermaid` converter using the `flowchart` type, which
+ * generates `flowchart TB` syntax rendered by Mermaid's built-in Dagre
+ * engine (a Sugiyama-style layered layout) without requiring ELK.
+ */
+
+import { excalidrawToMermaid, extractConnections } from '../../utils/excalidrawToMermaid';
+import type { LevelMeta } from '../../utils/excalidrawToMermaid';
+
 import { bankingLevel1Elements } from '../excalidraw/banking/level1Elements';
 import { bankingLevel2Elements } from '../excalidraw/banking/level2Elements';
 import { bankingLevel3Elements } from '../excalidraw/banking/level3Elements';
@@ -21,6 +37,14 @@ export {
   ridesharingLevel1Elements, ridesharingLevel2Elements, ridesharingLevel3Elements, ridesharingLevel4Elements,
   toodaLevel1Elements, toodaLevel2Elements, toodaLevel3Elements, toodaLevel4Elements,
 };
+
+// ── Level metadata ────────────────────────────────────────────────────────────
+// All levels use the flowchart type so that structural information encoded in
+// the Excalidraw elements is rendered by Mermaid's built-in Dagre engine.
+
+const levelMeta: LevelMeta = { diagramType: 'flowchart' };
+
+// ── Diagram catalogue ─────────────────────────────────────────────────────────
 
 export const diagrams = {
   banking: {
@@ -54,5 +78,66 @@ export const diagrams = {
     level2: toodaLevel2Elements,
     level3: toodaLevel3Elements,
     level4: toodaLevel4Elements,
+  },
+};
+
+// ── Derived Mermaid diagrams ───────────────────────────────────────────────────
+// These strings are computed at build time from the Excalidraw elements above.
+
+export const mermaidDiagrams = {
+  banking: {
+    level1: excalidrawToMermaid(bankingLevel1Elements, levelMeta),
+    level2: excalidrawToMermaid(bankingLevel2Elements, levelMeta),
+    level3: excalidrawToMermaid(bankingLevel3Elements, levelMeta),
+    level4: excalidrawToMermaid(bankingLevel4Elements, levelMeta),
+  },
+  ecommerce: {
+    level1: excalidrawToMermaid(ecommerceLevel1Elements, levelMeta),
+    level2: excalidrawToMermaid(ecommerceLevel2Elements, levelMeta),
+    level3: excalidrawToMermaid(ecommerceLevel3Elements, levelMeta),
+    level4: excalidrawToMermaid(ecommerceLevel4Elements, levelMeta),
+  },
+  ridesharing: {
+    level1: excalidrawToMermaid(ridesharingLevel1Elements, levelMeta),
+    level2: excalidrawToMermaid(ridesharingLevel2Elements, levelMeta),
+    level3: excalidrawToMermaid(ridesharingLevel3Elements, levelMeta),
+    level4: excalidrawToMermaid(ridesharingLevel4Elements, levelMeta),
+  },
+  tooda: {
+    level1: excalidrawToMermaid(toodaLevel1Elements, levelMeta),
+    level2: excalidrawToMermaid(toodaLevel2Elements, levelMeta),
+    level3: excalidrawToMermaid(toodaLevel3Elements, levelMeta),
+    level4: excalidrawToMermaid(toodaLevel4Elements, levelMeta),
+  },
+};
+
+// ── Derived connections ────────────────────────────────────────────────────────
+// Connections are derived from the Excalidraw arrows so that consumers can use
+// Excalidraw as the source of truth for which boxes are connected.
+
+export const levelConnections = {
+  banking: {
+    level1: extractConnections(bankingLevel1Elements),
+    level2: extractConnections(bankingLevel2Elements),
+    level3: extractConnections(bankingLevel3Elements),
+    level4: extractConnections(bankingLevel4Elements),
+  },
+  ecommerce: {
+    level1: extractConnections(ecommerceLevel1Elements),
+    level2: extractConnections(ecommerceLevel2Elements),
+    level3: extractConnections(ecommerceLevel3Elements),
+    level4: extractConnections(ecommerceLevel4Elements),
+  },
+  ridesharing: {
+    level1: extractConnections(ridesharingLevel1Elements),
+    level2: extractConnections(ridesharingLevel2Elements),
+    level3: extractConnections(ridesharingLevel3Elements),
+    level4: extractConnections(ridesharingLevel4Elements),
+  },
+  tooda: {
+    level1: extractConnections(toodaLevel1Elements),
+    level2: extractConnections(toodaLevel2Elements),
+    level3: extractConnections(toodaLevel3Elements),
+    level4: extractConnections(toodaLevel4Elements),
   },
 };
