@@ -132,6 +132,27 @@ export function extractConnections(elements: readonly unknown[]): Connection[] {
 }
 
 /**
+ * Return true when two line segments properly intersect (cross in their
+ * respective interiors, not merely at a shared endpoint).
+ *
+ * Uses the standard parametric cross-product formulation: segments
+ * (p1→p2) and (p3→p4) intersect when both parameters t and u lie in
+ * the open interval (0, 1).
+ */
+function segmentsProperlyIntersect(
+  x1: number, y1: number, x2: number, y2: number,
+  x3: number, y3: number, x4: number, y4: number,
+): boolean {
+  const d1x = x2 - x1, d1y = y2 - y1;
+  const d2x = x4 - x3, d2y = y4 - y3;
+  const cross = d1x * d2y - d1y * d2x;
+  if (Math.abs(cross) < 1e-10) return false; // parallel / collinear
+  const t = ((x3 - x1) * d2y - (y3 - y1) * d2x) / cross;
+  const u = ((x3 - x1) * d1y - (y3 - y1) * d1x) / cross;
+  return t > 0 && t < 1 && u > 0 && u < 1;
+}
+
+/**
  * Lint an Excalidraw element array for Sugiyama-style diagram compatibility.
  *
  * Sugiyama-style layout (Mermaid's `flowchart TB` via Dagre) requires every
@@ -140,8 +161,16 @@ export function extractConnections(elements: readonly unknown[]): Connection[] {
  * missing a `startBinding`, missing an `endBinding`, or whose binding points
  * to an element ID that does not exist in the same element array.
  *
+ * It also verifies that arrow endpoints are placed on box boundaries rather
+ * than at box centres, and that no two arrows visually intersect (cross in
+ * their interiors).  Intersecting arrows indicate a layout ordering problem
+ * that should be fixed by reordering the node declarations passed to
+ * {@link computeLayout} so the barycentric heuristic can produce a
+ * crossing-free assignment.
+ *
  * Calling this on every diagram at lint time ensures that no arrow is silently
- * dropped by {@link extractConnections} or {@link excalidrawToMermaid}.
+ * dropped by {@link extractConnections} or {@link excalidrawToMermaid}, and
+ * that the visual diagram is free of crossing edges.
  *
  * @param elements  The raw Excalidraw element array (any level file export).
  * @returns         An array of lint errors; empty when the diagram is clean.
@@ -205,6 +234,52 @@ export function lintExcalidrawDiagram(elements: readonly unknown[]): DiagramLint
     }
   }
 
+  // ── Intersection check ────────────────────────────────────────────────────
+  // Build a flat list of arrow segments for pairwise intersection testing.
+  interface ArrowSeg {
+    id: string;
+    x1: number; y1: number;
+    x2: number; y2: number;
+    startId: string | undefined;
+    endId: string | undefined;
+  }
+  const arrowSegs: ArrowSeg[] = [];
+  for (const el of els) {
+    if (el.type !== 'arrow' || !el.points?.length) continue;
+    const last = el.points[el.points.length - 1];
+    arrowSegs.push({
+      id: el.id,
+      x1: el.x,           y1: el.y,
+      x2: el.x + last[0], y2: el.y + last[1],
+      startId: el.startBinding?.elementId,
+      endId:   el.endBinding?.elementId,
+    });
+  }
+
+  const reported = new Set<string>();
+  for (let i = 0; i < arrowSegs.length; i++) {
+    for (let j = i + 1; j < arrowSegs.length; j++) {
+      const a = arrowSegs[i];
+      const b = arrowSegs[j];
+      // Skip arrow pairs that share a source or target box — those
+      // fan-in / fan-out connections converge on the same node and
+      // cannot be meaningfully separated in a layered layout.
+      const sharedEndpoint =
+        a.startId === b.startId || a.startId === b.endId ||
+        a.endId   === b.startId || a.endId   === b.endId;
+      if (sharedEndpoint) continue;
+      if (segmentsProperlyIntersect(a.x1, a.y1, a.x2, a.y2, b.x1, b.y1, b.x2, b.y2)) {
+        if (!reported.has(a.id)) {
+          errors.push({
+            elementId: a.id,
+            message: `Arrow intersects with arrow "${b.id}"; reorder node declarations to fix the layout`,
+          });
+          reported.add(a.id);
+        }
+      }
+    }
+  }
+
   return errors;
 }
 
@@ -236,7 +311,8 @@ export interface DiagramFixResult {
   elements: unknown[];
   /**
    * Errors that remain after auto-fixing, i.e. issues that require manual
-   * intervention (missing bindings, dangling binding references, etc.).
+   * intervention (missing bindings, dangling binding references, crossing
+   * arrows, etc.).
    */
   remainingErrors: DiagramLintError[];
 }
@@ -257,6 +333,9 @@ export interface DiagramFixResult {
  * **Unfixable issues** (returned in `remainingErrors`)
  * - Missing `startBinding` or `endBinding`
  * - Binding that references an element ID not present in the array
+ * - Two arrows that visually intersect (crossing edges) — these require
+ *   reordering node declarations in the source data file so the Sugiyama
+ *   barycentric heuristic produces a crossing-free layout.
  *
  * The input array is not mutated; a new array is returned.
  *
@@ -374,9 +453,54 @@ export function fixExcalidrawDiagram(elements: readonly unknown[]): DiagramFixRe
     return patched;
   });
 
+  // ── Intersection check (unfixable) ───────────────────────────────────────
+  // After all per-arrow fixes, run a pairwise intersection test on the fixed
+  // elements.  Crossing arrows require manual node reordering and cannot be
+  // resolved by coordinate patching, so any crossing pairs are appended to
+  // remainingErrors.
+  interface ArrowSeg {
+    id: string;
+    x1: number; y1: number;
+    x2: number; y2: number;
+    startId: string | undefined;
+    endId: string | undefined;
+  }
+  const fixedEls = fixed as readonly RawEl[];
+  const arrowSegs: ArrowSeg[] = [];
+  for (const el of fixedEls) {
+    if (el.type !== 'arrow' || !el.points?.length) continue;
+    const last = el.points[el.points.length - 1];
+    arrowSegs.push({
+      id: el.id,
+      x1: el.x,           y1: el.y,
+      x2: el.x + last[0], y2: el.y + last[1],
+      startId: el.startBinding?.elementId,
+      endId:   el.endBinding?.elementId,
+    });
+  }
+  const reported = new Set<string>();
+  for (let i = 0; i < arrowSegs.length; i++) {
+    for (let j = i + 1; j < arrowSegs.length; j++) {
+      const a = arrowSegs[i];
+      const b = arrowSegs[j];
+      const sharedEndpoint =
+        a.startId === b.startId || a.startId === b.endId ||
+        a.endId   === b.startId || a.endId   === b.endId;
+      if (sharedEndpoint) continue;
+      if (segmentsProperlyIntersect(a.x1, a.y1, a.x2, a.y2, b.x1, b.y1, b.x2, b.y2)) {
+        if (!reported.has(a.id)) {
+          remainingErrors.push({
+            elementId: a.id,
+            message: `Arrow intersects with arrow "${b.id}"; reorder node declarations to fix the layout`,
+          });
+          reported.add(a.id);
+        }
+      }
+    }
+  }
+
   return { elements: fixed, remainingErrors };
 }
-
 
 /**
  * Convert an array of Excalidraw elements into a Mermaid diagram string.

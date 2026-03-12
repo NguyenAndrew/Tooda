@@ -1177,4 +1177,81 @@ describe('fixExcalidrawDiagram', () => {
     // Should not throw; fix is a no-op (center returned as-is by boxBoundaryPoint).
     expect(() => fixExcalidrawDiagram([boxA, arr, boxB])).not.toThrow();
   });
+
+  it('reports an intersection error as unfixable', () => {
+    // Two crossing arrows (X-shape) cannot be fixed by the fixer — they
+    // require manual node reordering in the source data.
+    function makeBox(id: string, x: number, y: number) {
+      return { id, type: 'rectangle', x, y, width: 200, height: 60 };
+    }
+    const boxA = makeBox('box-a', 40,  100);
+    const boxB = makeBox('box-b', 280, 100);
+    const boxC = makeBox('box-c', 40,  260);
+    const boxD = makeBox('box-d', 280, 260);
+    const arrAD = {
+      id: 'arr-ad', type: 'arrow',
+      x: 140, y: 160,
+      points: [[0, 0], [240, 100]] as [number, number][],
+      startBinding: { elementId: 'box-a' },
+      endBinding:   { elementId: 'box-d' },
+    };
+    const arrBC = {
+      id: 'arr-bc', type: 'arrow',
+      x: 380, y: 160,
+      points: [[0, 0], [-240, 100]] as [number, number][],
+      startBinding: { elementId: 'box-b' },
+      endBinding:   { elementId: 'box-c' },
+    };
+    const els = [boxA, boxB, boxC, boxD, arrAD, arrBC];
+
+    // Verify the original has an intersection error.
+    expect(lintExcalidrawDiagram(els).some(e => e.message.includes('intersects with arrow'))).toBe(true);
+
+    const { remainingErrors } = fixExcalidrawDiagram(els);
+
+    // The intersection error is unfixable and must be reported.
+    expect(remainingErrors.some(e => e.message.includes('intersects with arrow'))).toBe(true);
+  });
+
+  it('reports an intersecting arrow only once even when it crosses multiple other arrows', () => {
+    function makeBox(id: string, x: number, y: number) {
+      return { id, type: 'rectangle', x, y, width: 200, height: 60 };
+    }
+    // Layer 0 (y=100): boxA (left), boxB (center), boxC (right)
+    // Layer 1 (y=260): boxD (left), boxE (center), boxF (right)
+    const boxA = makeBox('box-a', 40,  100);
+    const boxB = makeBox('box-b', 280, 100);
+    const boxC = makeBox('box-c', 520, 100);
+    const boxD = makeBox('box-d', 40,  260);
+    const boxE = makeBox('box-e', 280, 260);
+    const boxF = makeBox('box-f', 520, 260);
+    // arr-af: left-to-right diagonal (crosses arr-bd AND arr-ce).
+    // Must appear in remainingErrors exactly once.
+    const arrAf = {
+      id: 'arr-af', type: 'arrow',
+      x: 140, y: 160,
+      points: [[0, 0], [480, 100]] as [number, number][],
+      startBinding: { elementId: 'box-a' },
+      endBinding:   { elementId: 'box-f' },
+    };
+    const arrBd = {
+      id: 'arr-bd', type: 'arrow',
+      x: 380, y: 160,
+      points: [[0, 0], [-240, 100]] as [number, number][],
+      startBinding: { elementId: 'box-b' },
+      endBinding:   { elementId: 'box-d' },
+    };
+    const arrCe = {
+      id: 'arr-ce', type: 'arrow',
+      x: 620, y: 160,
+      points: [[0, 0], [-240, 100]] as [number, number][],
+      startBinding: { elementId: 'box-c' },
+      endBinding:   { elementId: 'box-e' },
+    };
+    const els = [boxA, boxB, boxC, boxD, boxE, boxF, arrAf, arrBd, arrCe];
+
+    const { remainingErrors } = fixExcalidrawDiagram(els);
+    const afErrors = remainingErrors.filter(e => e.elementId === 'arr-af');
+    expect(afErrors).toHaveLength(1);
+  });
 });
