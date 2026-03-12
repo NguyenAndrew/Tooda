@@ -10,6 +10,7 @@
     "lint": "eslint src/ --max-warnings 0 && npm run lint:api && npm run lint:diagrams",
     "lint:api": "node --experimental-strip-types scripts/lint-openapi.mjs",
     "lint:diagrams": "vitest run src/data/c4/diagrams.lint.test.ts",
+    "lint:diagrams:fix": "vitest run src/data/c4/diagrams.fix.test.ts",
     "postinstall": "npm run install:playwright",
     "install:playwright": "npx playwright install --with-deps chromium",
     "test": "npm run lint && playwright test",
