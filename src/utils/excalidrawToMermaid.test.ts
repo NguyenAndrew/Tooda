@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { extractConnections, excalidrawToMermaid, lintExcalidrawDiagram } from './excalidrawToMermaid';
+import { extractConnections, excalidrawToMermaid, lintExcalidrawDiagram, fixExcalidrawDiagram } from './excalidrawToMermaid';
 import type { LevelMeta } from './excalidrawToMermaid';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -954,5 +954,227 @@ describe('lintExcalidrawDiagram', () => {
     const errors = lintExcalidrawDiagram(els);
     // a2: missing start + end; a3: unknown start
     expect(errors).toHaveLength(3);
+  });
+
+  it('skips the center-origin check when the source element has no dimensions', () => {
+    // A text node has no width/height – the center-origin check must be skipped.
+    const src = { id: 'src', type: 'text', x: 0, y: 0 };
+    const dst = rect('dst', 0, 100, 200, 60);
+    const arr = arrow('a1', 'src', 'dst', [[0, 0], [0, 130]]);
+    const errors = lintExcalidrawDiagram([src, arr, dst]);
+    expect(errors).toEqual([]);
+  });
+});
+
+// ── fixExcalidrawDiagram ──────────────────────────────────────────────────────
+
+describe('fixExcalidrawDiagram', () => {
+  it('returns elements unchanged and no errors for a clean diagram', () => {
+    const boxA = rect('box-a', 0, 0, 200, 60);
+    const boxB = rect('box-b', 0, 200, 200, 60);
+    // Arrow from bottom edge of boxA (100, 60) to top edge of boxB (100, 200)
+    const arr = arrow('arr-1', 'box-a', 'box-b', [[0, 0], [0, 140]]);
+    arr.x = 100; arr.y = 60;
+    const els = [boxA, arr, boxB];
+
+    const { elements: fixed, remainingErrors } = fixExcalidrawDiagram(els);
+
+    expect(remainingErrors).toEqual([]);
+    expect(lintExcalidrawDiagram(fixed)).toEqual([]);
+  });
+
+  it('fixes an arrow that originates from the center of its source box', () => {
+    const boxA = rect('box-a', 0, 0, 200, 60);
+    const boxB = rect('box-b', 0, 200, 200, 60);
+    // Arrow starting at the centre of boxA (100, 30) → violates lint rule
+    const arr = {
+      id: 'arr-1', type: 'arrow',
+      x: 100, y: 30,
+      points: [[0, 0], [0, 200]] as [number, number][],
+      startBinding: { elementId: 'box-a' },
+      endBinding: { elementId: 'box-b' },
+    };
+    const els = [boxA, arr, boxB];
+
+    // Verify the original has a lint error
+    expect(lintExcalidrawDiagram(els).some(e => e.message.includes('originates from the center'))).toBe(true);
+
+    const { elements: fixed, remainingErrors } = fixExcalidrawDiagram(els);
+
+    expect(remainingErrors).toEqual([]);
+    expect(lintExcalidrawDiagram(fixed)).toEqual([]);
+  });
+
+  it('fixes an arrow that terminates at the center of its target box', () => {
+    const boxA = rect('box-a', 0, 0, 200, 60);
+    const boxB = rect('box-b', 0, 200, 200, 60);
+    // Arrow ending at the centre of boxB (100, 230) → violates lint rule
+    const arr = {
+      id: 'arr-1', type: 'arrow',
+      x: 100, y: 60,
+      points: [[0, 0], [0, 170]] as [number, number][],
+      startBinding: { elementId: 'box-a' },
+      endBinding: { elementId: 'box-b' },
+    };
+    const els = [boxA, arr, boxB];
+
+    // Verify the original has a lint error
+    expect(lintExcalidrawDiagram(els).some(e => e.message.includes('terminates at the center'))).toBe(true);
+
+    const { elements: fixed, remainingErrors } = fixExcalidrawDiagram(els);
+
+    expect(remainingErrors).toEqual([]);
+    expect(lintExcalidrawDiagram(fixed)).toEqual([]);
+  });
+
+  it('reports a missing startBinding as an unfixable error', () => {
+    const boxB = rect('box-b', 0, 200, 200, 60);
+    const arr = freeArrow('arr-1');
+    const els = [boxB, arr];
+
+    const { remainingErrors } = fixExcalidrawDiagram(els);
+
+    expect(remainingErrors.some(e => e.message === 'Arrow is missing startBinding')).toBe(true);
+  });
+
+  it('reports a missing endBinding as an unfixable error', () => {
+    const boxA = rect('box-a', 0, 0, 200, 60);
+    const arr = { id: 'arr-1', type: 'arrow', x: 0, y: 0, startBinding: { elementId: 'box-a' }, endBinding: null };
+    const els = [boxA, arr];
+
+    const { remainingErrors } = fixExcalidrawDiagram(els);
+
+    expect(remainingErrors.some(e => e.message === 'Arrow is missing endBinding')).toBe(true);
+  });
+
+  it('reports a dangling startBinding as an unfixable error', () => {
+    const boxB = rect('box-b', 0, 200, 200, 60);
+    const arr = arrow('arr-1', 'ghost', 'box-b');
+    const els = [boxB, arr];
+
+    const { remainingErrors } = fixExcalidrawDiagram(els);
+
+    expect(remainingErrors.some(e => e.message.includes('unknown element "ghost"'))).toBe(true);
+  });
+
+  it('reports a dangling endBinding as an unfixable error', () => {
+    const boxA = rect('box-a', 0, 0, 200, 60);
+    const arr = arrow('arr-1', 'box-a', 'ghost');
+    const els = [boxA, arr];
+
+    const { remainingErrors } = fixExcalidrawDiagram(els);
+
+    expect(remainingErrors.some(e => e.message.includes('unknown element "ghost"'))).toBe(true);
+  });
+
+  it('does not mutate the original elements array', () => {
+    const boxA = rect('box-a', 0, 0, 200, 60);
+    const boxB = rect('box-b', 0, 200, 200, 60);
+    const arr = {
+      id: 'arr-1', type: 'arrow',
+      x: 100, y: 30,
+      points: [[0, 0], [0, 200]] as [number, number][],
+      startBinding: { elementId: 'box-a' },
+      endBinding: { elementId: 'box-b' },
+    };
+    const els = [boxA, arr, boxB];
+    const originalX = arr.x;
+    const originalY = arr.y;
+
+    fixExcalidrawDiagram(els);
+
+    expect(arr.x).toBe(originalX);
+    expect(arr.y).toBe(originalY);
+  });
+
+  it('handles an arrow with no points property without throwing', () => {
+    const boxA = rect('box-a', 0, 0, 200, 60);
+    const boxB = rect('box-b', 0, 200, 200, 60);
+    // Arrow without `points` (edge case – not a center-origin issue, just no points).
+    const arr = {
+      id: 'arr-1', type: 'arrow',
+      x: 0, y: 0,
+      startBinding: { elementId: 'box-a' },
+      endBinding: { elementId: 'box-b' },
+    };
+    const { remainingErrors } = fixExcalidrawDiagram([boxA, arr, boxB]);
+    expect(remainingErrors).toEqual([]);
+  });
+
+  it('handles a source element with no dimensions (skips center-origin check)', () => {
+    // Text node has no width/height – fix should skip the center-origin check.
+    const src = { id: 'src', type: 'text', x: 100, y: 100 };
+    const boxB = rect('box-b', 0, 200, 200, 60);
+    const arr = arrow('arr-1', 'src', 'box-b', [[0, 0], [0, 160]]);
+    arr.x = 100; arr.y = 100;
+
+    const { remainingErrors } = fixExcalidrawDiagram([src, arr, boxB]);
+    expect(remainingErrors).toEqual([]);
+  });
+
+  it('handles a target element with no dimensions (skips center-terminus check)', () => {
+    const boxA = rect('box-a', 0, 0, 200, 60);
+    // Text node has no width/height – fix should skip the center-terminus check.
+    const dst = { id: 'dst', type: 'text', x: 100, y: 300 };
+    const arr = arrow('arr-1', 'box-a', 'dst', [[0, 0], [0, 240]]);
+    arr.x = 100; arr.y = 60;
+
+    const { remainingErrors } = fixExcalidrawDiagram([boxA, arr, dst]);
+    expect(remainingErrors).toEqual([]);
+  });
+
+  it('fixes a center-origin arrow pointing straight down (dx=0)', () => {
+    // Arrow going straight down – dx=0, so boxBoundaryPoint must use ty only.
+    const boxA = rect('box-a', 0, 0, 200, 60);
+    const boxB = rect('box-b', 0, 200, 200, 60);
+    // Arrow origin at boxA center (100, 30), pointing straight down to boxB center (100, 230)
+    const arr = {
+      id: 'arr-1', type: 'arrow',
+      x: 100, y: 30,
+      points: [[0, 0], [0, 200]] as [number, number][],
+      startBinding: { elementId: 'box-a' },
+      endBinding: { elementId: 'box-b' },
+    };
+
+    const { elements: fixed, remainingErrors } = fixExcalidrawDiagram([boxA, arr, boxB]);
+    expect(remainingErrors).toEqual([]);
+    expect(lintExcalidrawDiagram(fixed)).toEqual([]);
+  });
+
+  it('fixes a center-terminus arrow arriving straight right (dy=0 on target side)', () => {
+    // Arrow going straight right – dy=0 on the target side.
+    const boxA = rect('box-a', 0, 0, 200, 60);
+    const boxB = rect('box-b', 300, 0, 200, 60);
+    // Arrow origin at boxA right edge (200, 30), ending at boxB center (400, 30)
+    const arr = {
+      id: 'arr-1', type: 'arrow',
+      x: 200, y: 30,
+      points: [[0, 0], [200, 0]] as [number, number][],
+      startBinding: { elementId: 'box-a' },
+      endBinding: { elementId: 'box-b' },
+    };
+
+    const { elements: fixed, remainingErrors } = fixExcalidrawDiagram([boxA, arr, boxB]);
+    expect(remainingErrors).toEqual([]);
+    expect(lintExcalidrawDiagram(fixed)).toEqual([]);
+  });
+
+  it('handles a degenerate zero-length arrow (endpoint equals source center) without throwing', () => {
+    // When an arrow starts at the source box center AND its endpoint is the same
+    // point (zero-length), the direction vector is (0, 0).  boxBoundaryPoint must
+    // return the center unchanged without dividing by zero.
+    const boxA = rect('box-a', 0, 0, 200, 60);
+    const boxB = rect('box-b', 0, 200, 200, 60);
+    const arr = {
+      id: 'arr-1', type: 'arrow',
+      // Start at boxA center (100, 30) with a zero-length vector – triggers dx=0, dy=0.
+      x: 100, y: 30,
+      points: [[0, 0], [0, 0]] as [number, number][],
+      startBinding: { elementId: 'box-a' },
+      endBinding: { elementId: 'box-b' },
+    };
+
+    // Should not throw; fix is a no-op (center returned as-is by boxBoundaryPoint).
+    expect(() => fixExcalidrawDiagram([boxA, arr, boxB])).not.toThrow();
   });
 });
