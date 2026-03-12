@@ -446,7 +446,7 @@ import {
         if (renderer === 'excalidraw') {
           document.querySelectorAll('.excalidraw-view').forEach(function (el) { el.style.display = ''; });
         } else {
-          document.querySelectorAll('.mermaid-view').forEach(function (el) { el.style.display = ''; });
+          document.querySelectorAll('.mermaid-view').forEach(function (el) { el.style.display = 'block'; });
 
           // Render any un-rendered Mermaid diagrams in the active panel / example
           var activePanel = document.querySelector('.tab-panel.active');
