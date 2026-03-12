@@ -17,7 +17,6 @@ export const bankingLevel4Elements = [
       { id: 'l4-a4', from: 'l4-repo', to: 'l4-account',  label: 'returns' },
       { id: 'l4-a5', from: 'l4-repo', to: 'l4-tx',       label: 'returns' },
       { id: 'l4-a6', from: 'l4-mf',   to: 'l4-account',  label: 'returns' },
-      { id: 'l4-a7', from: 'l4-mf',   to: 'l4-tx',       label: 'returns' },
     ],
     { hStep: 260, vGap: 60 },
   ),
