@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useId } from 'react';
 import type { Connection } from '../utils/excalidrawToMermaid';
 import type { DiagramNode } from '../data/healthcare/nodes';
 
@@ -42,6 +42,7 @@ interface Props {
  */
 export default function HealthcarePlatform2D({ nodes, connections }: Props) {
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
+  const uid = useId();
 
   // Map Excalidraw element ID → node index for O(1) lookups.
   const idToIndex = new Map<string, number>(
@@ -223,7 +224,7 @@ export default function HealthcarePlatform2D({ nodes, connections }: Props) {
     return `M ${startX} ${startY} C ${cp1x} ${cp1y} ${cp2x} ${cp2y} ${endX} ${endY}`;
   }
 
-  const MARKER_ID = `arrow2d-${nodes.map(n => n.excalidrawId).join('-').slice(0, 16)}`;
+  const MARKER_ID = `arrow2d-${uid.replace(/:/g, '')}`;
 
   return (
     <div className="relative w-full" style={{ minHeight: '200px' }}>
