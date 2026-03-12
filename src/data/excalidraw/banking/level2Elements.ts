@@ -1,22 +1,28 @@
-import { makeBox, makeArrow, makeTitle } from '../elementHelpers';
+import { makeTitle, computeLayout } from '../elementHelpers';
 
 export const bankingLevel2Elements = [
   makeTitle('title', 'Container – Online Banking System', 760),
-  ...makeBox('l2-customer', 40, 100, 200, 60, 'Personal Banking Customer', '#bfdbfe'),
-  ...makeBox('l2-email', 40, 260, 200, 60, 'E-mail System', '#f1f5f9'),
-  ...makeBox('l2-mainframe', 40, 360, 200, 60, 'Mainframe Banking System', '#f1f5f9'),
-  ...makeBox('l2-webApp', 280, 100, 200, 60, 'Web Application', '#ddd6fe'),
-  ...makeBox('l2-spa', 280, 200, 200, 60, 'Single-Page App', '#ddd6fe'),
-  ...makeBox('l2-mobileApp', 280, 300, 200, 60, 'Mobile App', '#ddd6fe'),
-  ...makeBox('l2-apiApp', 520, 200, 200, 60, 'API Application', '#ddd6fe'),
-  ...makeBox('l2-db', 520, 300, 200, 60, 'Database', '#fde68a'),
-  // Arrows
-  ...makeArrow('l2-a1', 'l2-customer', 'l2-webApp', 140, 130, 140, 0, 'Visits'),
-  ...makeArrow('l2-a2', 'l2-customer', 'l2-mobileApp', 140, 130, 140, 170, 'Uses'),
-  ...makeArrow('l2-a3', 'l2-webApp', 'l2-spa', 380, 130, 0, 70, 'Delivers'),
-  ...makeArrow('l2-a4', 'l2-spa', 'l2-apiApp', 380, 230, 140, 0, 'Makes API calls to'),
-  ...makeArrow('l2-a5', 'l2-mobileApp', 'l2-apiApp', 380, 330, 140, -100, 'Makes API calls to'),
-  ...makeArrow('l2-a6', 'l2-apiApp', 'l2-db', 620, 230, 0, 100, 'Reads/writes'),
-  ...makeArrow('l2-a7', 'l2-apiApp', 'l2-email', 620, 230, -580, 60, 'Sends emails using'),
-  ...makeArrow('l2-a8', 'l2-apiApp', 'l2-mainframe', 620, 230, -580, 160, 'Reads/writes account data'),
+  ...computeLayout(
+    [
+      { id: 'l2-customer',   label: 'Personal Banking Customer',  color: '#bfdbfe' },
+      { id: 'l2-webApp',     label: 'Web Application',            color: '#ddd6fe' },
+      { id: 'l2-mobileApp',  label: 'Mobile App',                 color: '#ddd6fe' },
+      { id: 'l2-spa',        label: 'Single-Page App',            color: '#ddd6fe' },
+      { id: 'l2-apiApp',     label: 'API Application',            color: '#ddd6fe' },
+      { id: 'l2-db',         label: 'Database',                   color: '#fde68a' },
+      { id: 'l2-email',      label: 'E-mail System',              color: '#f1f5f9' },
+      { id: 'l2-mainframe',  label: 'Mainframe Banking System',   color: '#f1f5f9' },
+    ],
+    [
+      { id: 'l2-a1', from: 'l2-customer',  to: 'l2-webApp',    label: 'Visits' },
+      { id: 'l2-a2', from: 'l2-customer',  to: 'l2-mobileApp', label: 'Uses' },
+      { id: 'l2-a3', from: 'l2-webApp',    to: 'l2-spa',       label: 'Delivers' },
+      { id: 'l2-a4', from: 'l2-spa',       to: 'l2-apiApp',    label: 'Makes API calls to' },
+      { id: 'l2-a5', from: 'l2-mobileApp', to: 'l2-apiApp',    label: 'Makes API calls to' },
+      { id: 'l2-a6', from: 'l2-apiApp',    to: 'l2-db',        label: 'Reads/writes' },
+      { id: 'l2-a7', from: 'l2-apiApp',    to: 'l2-email',     label: 'Sends emails using' },
+      { id: 'l2-a8', from: 'l2-apiApp',    to: 'l2-mainframe', label: 'Reads/writes account data' },
+    ],
+  ),
 ];
+
