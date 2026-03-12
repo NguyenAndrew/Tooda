@@ -10,6 +10,7 @@ import {
   mermaidDiagrams,
   levelConnections,
 } from '../data/healthcare/diagrams';
+import { LEVEL_NODES } from '../data/healthcare/nodes';
 ---
 <!doctype html>
 <html lang="en">
@@ -249,10 +250,10 @@ import {
         <div class="mermaid" set:text={mermaidDiagrams.level1}></div>
       </div>
       <div class="twoD-wrapper twoD-view">
-        <HealthcarePlatform2D client:only="react" level={1} connections={levelConnections.level1} />
+        <HealthcarePlatform2D client:only="react" nodes={LEVEL_NODES[1]} connections={levelConnections.level1} />
       </div>
       <div class="threeD-wrapper threeD-view">
-        <HealthcarePlatform3D client:only="react" level={1} connections={levelConnections.level1} />
+        <HealthcarePlatform3D client:only="react" nodes={LEVEL_NODES[1]} connections={levelConnections.level1} />
       </div>
     </section>
 
@@ -270,10 +271,10 @@ import {
         <div class="mermaid" set:text={mermaidDiagrams.level2}></div>
       </div>
       <div class="twoD-wrapper twoD-view">
-        <HealthcarePlatform2D client:only="react" level={2} connections={levelConnections.level2} />
+        <HealthcarePlatform2D client:only="react" nodes={LEVEL_NODES[2]} connections={levelConnections.level2} />
       </div>
       <div class="threeD-wrapper threeD-view">
-        <HealthcarePlatform3D client:only="react" level={2} connections={levelConnections.level2} />
+        <HealthcarePlatform3D client:only="react" nodes={LEVEL_NODES[2]} connections={levelConnections.level2} />
       </div>
     </section>
 
@@ -291,10 +292,10 @@ import {
         <div class="mermaid" set:text={mermaidDiagrams.level3}></div>
       </div>
       <div class="twoD-wrapper twoD-view">
-        <HealthcarePlatform2D client:only="react" level={3} connections={levelConnections.level3} />
+        <HealthcarePlatform2D client:only="react" nodes={LEVEL_NODES[3]} connections={levelConnections.level3} />
       </div>
       <div class="threeD-wrapper threeD-view">
-        <HealthcarePlatform3D client:only="react" level={3} connections={levelConnections.level3} />
+        <HealthcarePlatform3D client:only="react" nodes={LEVEL_NODES[3]} connections={levelConnections.level3} />
       </div>
     </section>
 
@@ -311,10 +312,10 @@ import {
         <div class="mermaid" set:text={mermaidDiagrams.level4}></div>
       </div>
       <div class="twoD-wrapper twoD-view">
-        <HealthcarePlatform2D client:only="react" level={4} connections={levelConnections.level4} />
+        <HealthcarePlatform2D client:only="react" nodes={LEVEL_NODES[4]} connections={levelConnections.level4} />
       </div>
       <div class="threeD-wrapper threeD-view">
-        <HealthcarePlatform3D client:only="react" level={4} connections={levelConnections.level4} />
+        <HealthcarePlatform3D client:only="react" nodes={LEVEL_NODES[4]} connections={levelConnections.level4} />
       </div>
     </section>
 

@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { createLogger } from '../utils/logger';
 import type { Connection } from '../utils/excalidrawToMermaid';
-import { LEVEL_NODES } from '../data/healthcare/nodes';
+import type { DiagramNode } from '../data/healthcare/nodes';
 
 const logger = createLogger('HealthcarePlatform3D');
 
@@ -20,12 +20,13 @@ const LABEL_TEXT_STYLE: React.CSSProperties = {
 };
 
 interface Props {
-  level: 1 | 2 | 3 | 4;
+  /** Nodes to render, derived from the diagram's node data. */
+  nodes: DiagramNode[];
   /** Directed connections derived from Excalidraw arrow bindings. */
   connections: Connection[];
 }
 
-export default function HealthcarePlatform3D({ level, connections }: Props) {
+export default function HealthcarePlatform3D({ nodes, connections }: Props) {
   const mountRef = useRef<HTMLDivElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
   const labelRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -34,8 +35,7 @@ export default function HealthcarePlatform3D({ level, connections }: Props) {
     const container = mountRef.current;
     if (!container) return;
 
-    const nodes = LEVEL_NODES[level];
-    logger.info(`Initializing 3D healthcare diagram for level ${level}`);
+    logger.info(`Initializing 3D diagram`);
 
     // Build a map from Excalidraw element ID → node index for O(1) lookups.
     const idToIndex = new Map<string, number>(
@@ -300,11 +300,11 @@ export default function HealthcarePlatform3D({ level, connections }: Props) {
     }
 
     animate();
-    logger.info(`3D healthcare diagram level ${level} started`);
+    logger.info(`3D diagram started`);
 
     // ── Cleanup ────────────────────────────────────────────────────────────────
     return () => {
-      logger.info(`3D healthcare diagram level ${level} unmounted`);
+      logger.info(`3D diagram unmounted`);
       cancelAnimationFrame(animId);
       resizeObserver.disconnect();
       renderer.domElement.removeEventListener('pointermove', updatePointer);
@@ -316,15 +316,13 @@ export default function HealthcarePlatform3D({ level, connections }: Props) {
         container.removeChild(renderer.domElement);
       }
     };
-  }, [level, connections]);
-
-  const nodes = LEVEL_NODES[level];
+  }, [nodes, connections]);
 
   return (
     <div className="relative w-full" style={{ height: 'clamp(280px, 55vh, 500px)' }}>
       <div
         ref={mountRef}
-        data-testid={`three-canvas-container-level${level}`}
+        data-testid={`three-canvas-container`}
         className="size-full"
       />
       {/* Always-visible node labels */}

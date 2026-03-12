@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { Connection } from '../utils/excalidrawToMermaid';
-import { LEVEL_NODES } from '../data/healthcare/nodes';
+import type { DiagramNode } from '../data/healthcare/nodes';
 
 /** Box dimensions (SVG units). */
 const BOX_W = 140;
@@ -16,7 +16,8 @@ const PAD_X = 80;
 const PAD_Y = 70;
 
 interface Props {
-  level: 1 | 2 | 3 | 4;
+  /** Nodes to render, derived from the diagram's node data. */
+  nodes: DiagramNode[];
   /** Directed connections derived from Excalidraw arrow bindings. */
   connections: Connection[];
 }
@@ -39,10 +40,8 @@ interface Props {
  * `connections` prop, keeping Excalidraw as the single source of truth for
  * which boxes are connected.
  */
-export default function HealthcarePlatform2D({ level, connections }: Props) {
+export default function HealthcarePlatform2D({ nodes, connections }: Props) {
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
-
-  const nodes = LEVEL_NODES[level];
 
   // Map Excalidraw element ID → node index for O(1) lookups.
   const idToIndex = new Map<string, number>(
@@ -224,14 +223,14 @@ export default function HealthcarePlatform2D({ level, connections }: Props) {
     return `M ${startX} ${startY} C ${cp1x} ${cp1y} ${cp2x} ${cp2y} ${endX} ${endY}`;
   }
 
-  const MARKER_ID = `arrow2d-l${level}`;
+  const MARKER_ID = `arrow2d-${nodes.map(n => n.excalidrawId).join('-').slice(0, 16)}`;
 
   return (
     <div className="relative w-full" style={{ minHeight: '200px' }}>
       <svg
         viewBox={`0 0 ${svgW} ${svgH}`}
         style={{ width: '100%', height: 'auto', display: 'block' }}
-        data-testid={`two-d-diagram-level${level}`}
+        data-testid={`two-d-diagram`}
       >
         <defs>
           <marker
