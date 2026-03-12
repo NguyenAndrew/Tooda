@@ -5,13 +5,16 @@ export const toodaLevel3Elements = [
   ...computeLayout(
     [
       { id: 'l3-developer',         label: 'Developer / Architect',                        color: '#bfdbfe' },
+      // nodeDragController is declared first so the Sugiyama heuristic
+      // assigns it position 0 in layer 1 — this aligns panZoomController
+      // directly below it in layer 2 and avoids a skip-layer crossing.
+      { id: 'l3-nodeDragController', label: 'Node Drag Controller',                         color: '#e0f2fe' },
       { id: 'l3-diagramData',       label: 'Diagram Data',                                 color: '#e0f2fe' },
       { id: 'l3-tabController',     label: 'Tab Controller',                               color: '#e0f2fe' },
       { id: 'l3-exampleSwitcher',   label: 'Example Switcher',                             color: '#e0f2fe' },
       { id: 'l3-viewToggle',        label: 'View Toggle',                                  color: '#e0f2fe' },
       { id: 'l3-mermaidRenderer',   label: 'Mermaid Renderer',                             color: '#e0f2fe' },
       { id: 'l3-panZoomController', label: 'Pan/Zoom Controller',                          color: '#e0f2fe' },
-      { id: 'l3-nodeDragController', label: 'Node Drag Controller',                         color: '#e0f2fe' },
       { id: 'l3-mermaidLib',        label: 'Mermaid Library',                              color: '#f1f5f9' },
     ],
     [
