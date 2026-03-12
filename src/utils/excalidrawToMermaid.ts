@@ -283,6 +283,225 @@ export function lintExcalidrawDiagram(elements: readonly unknown[]): DiagramLint
   return errors;
 }
 
+// ── Box boundary helper (used by fixExcalidrawDiagram) ───────────────────────
+
+/**
+ * Return the point on a box perimeter that lies along the direction (dx, dy)
+ * from the box center.  Mirrors `boxBoundaryPoint` in elementHelpers.ts so
+ * that this module has no runtime dependency on the data layer.
+ */
+function boxBoundaryPoint(
+  cx: number, cy: number,
+  w: number, h: number,
+  dx: number, dy: number,
+): [number, number] {
+  if (dx === 0 && dy === 0) return [cx, cy];
+  const tx = dx !== 0 ? (w / 2) / Math.abs(dx) : Infinity;
+  const ty = dy !== 0 ? (h / 2) / Math.abs(dy) : Infinity;
+  const t = Math.min(tx, ty);
+  return [cx + dx * t, cy + dy * t];
+}
+
+/**
+ * The result of {@link fixExcalidrawDiagram}: the corrected element array
+ * plus a list of errors that could not be auto-fixed.
+ */
+export interface DiagramFixResult {
+  /** The element array with all auto-fixable issues corrected. */
+  elements: unknown[];
+  /**
+   * Errors that remain after auto-fixing, i.e. issues that require manual
+   * intervention (missing bindings, dangling binding references, crossing
+   * arrows, etc.).
+   */
+  remainingErrors: DiagramLintError[];
+}
+
+/**
+ * Auto-fix an Excalidraw element array so that it passes
+ * {@link lintExcalidrawDiagram}.
+ *
+ * **Fixable issues**
+ * - Arrow originates from the center of its source box → the arrow's `x`/`y`
+ *   origin is moved to the nearest point on the source-box perimeter along
+ *   the direction of the arrow, and `points[0]` is adjusted to keep the
+ *   absolute endpoint unchanged.
+ * - Arrow terminates at the center of its target box → the last element of
+ *   `points` is adjusted so the endpoint moves to the nearest point on the
+ *   target-box perimeter.
+ *
+ * **Unfixable issues** (returned in `remainingErrors`)
+ * - Missing `startBinding` or `endBinding`
+ * - Binding that references an element ID not present in the array
+ * - Two arrows that visually intersect (crossing edges) — these require
+ *   reordering node declarations in the source data file so the Sugiyama
+ *   barycentric heuristic produces a crossing-free layout.
+ *
+ * The input array is not mutated; a new array is returned.
+ *
+ * @param elements  The raw Excalidraw element array (any level file export).
+ * @returns         A `DiagramFixResult` containing the patched element array
+ *                  and any errors that still need manual attention.
+ */
+export function fixExcalidrawDiagram(elements: readonly unknown[]): DiagramFixResult {
+  const els = elements as readonly RawEl[];
+  const knownIds = new Set(els.map((el) => el.id));
+  const elMap = new Map<string, RawEl>(els.map((el) => [el.id, el]));
+  /** Tolerance for floating-point equality when comparing coordinates. */
+  const COORDINATE_TOLERANCE = 0.5;
+
+  const remainingErrors: DiagramLintError[] = [];
+  const fixed: unknown[] = els.map((el) => {
+    if (el.type !== 'arrow') return el;
+
+    const fromId = el.startBinding?.elementId;
+    const toId = el.endBinding?.elementId;
+
+    // Collect unfixable errors and return the element unchanged.
+    if (!fromId) {
+      remainingErrors.push({ elementId: el.id, message: 'Arrow is missing startBinding' });
+      return el;
+    }
+    if (!knownIds.has(fromId)) {
+      remainingErrors.push({
+        elementId: el.id,
+        message: `Arrow startBinding references unknown element "${fromId}"`,
+      });
+      return el;
+    }
+    if (!toId) {
+      remainingErrors.push({ elementId: el.id, message: 'Arrow is missing endBinding' });
+      return el;
+    }
+    if (!knownIds.has(toId)) {
+      remainingErrors.push({
+        elementId: el.id,
+        message: `Arrow endBinding references unknown element "${toId}"`,
+      });
+      return el;
+    }
+
+    let patched = { ...el, points: el.points ? [...el.points] : undefined };
+
+    // Fix: arrow originates from the center of its source box.
+    const fromEl = elMap.get(fromId)!;
+    if (fromEl.width !== undefined && fromEl.height !== undefined) {
+      const boxCx = fromEl.x + fromEl.width / 2;
+      const boxCy = fromEl.y + fromEl.height / 2;
+      if (
+        Math.abs(patched.x - boxCx) < COORDINATE_TOLERANCE &&
+        Math.abs(patched.y - boxCy) < COORDINATE_TOLERANCE &&
+        patched.points && patched.points.length >= 2
+      ) {
+        // Compute the absolute endpoint of the arrow (unchanged).
+        const lastPt = patched.points[patched.points.length - 1];
+        const absEndX = patched.x + lastPt[0];
+        const absEndY = patched.y + lastPt[1];
+
+        // Direction from source center toward target (use absolute endpoint).
+        const dx = absEndX - boxCx;
+        const dy = absEndY - boxCy;
+        const [newStartX, newStartY] = boxBoundaryPoint(boxCx, boxCy, fromEl.width, fromEl.height, dx, dy);
+
+        // Adjust points[0] to remain at [0, 0] (relative to new origin).
+        // Each intermediate point is stored relative to the old arrow origin; convert
+        // it to be relative to the new origin by computing its absolute position and
+        // subtracting the new start coordinates.
+        const newPoints: [number, number][] = [
+          [0, 0],
+          ...patched.points.slice(1).map((pt): [number, number] => {
+            const absPtX = patched.x + pt[0];
+            const absPtY = patched.y + pt[1];
+            return [absPtX - newStartX, absPtY - newStartY];
+          }),
+        ];
+        // Recompute the last point to keep the absolute end correct.
+        newPoints[newPoints.length - 1] = [absEndX - newStartX, absEndY - newStartY];
+
+        patched = { ...patched, x: newStartX, y: newStartY, points: newPoints };
+      }
+    }
+
+    // Fix: arrow terminates at the center of its target box.
+    const toEl = elMap.get(toId)!;
+    if (
+      toEl.width !== undefined && toEl.height !== undefined &&
+      patched.points && patched.points.length >= 2
+    ) {
+      const lastPt = patched.points[patched.points.length - 1];
+      const endX = patched.x + lastPt[0];
+      const endY = patched.y + lastPt[1];
+      const boxCx = toEl.x + toEl.width / 2;
+      const boxCy = toEl.y + toEl.height / 2;
+      if (
+        Math.abs(endX - boxCx) < COORDINATE_TOLERANCE &&
+        Math.abs(endY - boxCy) < COORDINATE_TOLERANCE
+      ) {
+        // Direction from target center toward arrow origin (reverse direction).
+        const dx = patched.x - boxCx;
+        const dy = patched.y - boxCy;
+        const [newEndX, newEndY] = boxBoundaryPoint(boxCx, boxCy, toEl.width, toEl.height, dx, dy);
+
+        const newPoints: [number, number][] = [
+          ...patched.points.slice(0, -1),
+          [newEndX - patched.x, newEndY - patched.y],
+        ];
+        patched = { ...patched, points: newPoints };
+      }
+    }
+
+    return patched;
+  });
+
+  // ── Intersection check (unfixable) ───────────────────────────────────────
+  // After all per-arrow fixes, run a pairwise intersection test on the fixed
+  // elements.  Crossing arrows require manual node reordering and cannot be
+  // resolved by coordinate patching, so any crossing pairs are appended to
+  // remainingErrors.
+  interface ArrowSeg {
+    id: string;
+    x1: number; y1: number;
+    x2: number; y2: number;
+    startId: string | undefined;
+    endId: string | undefined;
+  }
+  const fixedEls = fixed as readonly RawEl[];
+  const arrowSegs: ArrowSeg[] = [];
+  for (const el of fixedEls) {
+    if (el.type !== 'arrow' || !el.points?.length) continue;
+    const last = el.points[el.points.length - 1];
+    arrowSegs.push({
+      id: el.id,
+      x1: el.x,           y1: el.y,
+      x2: el.x + last[0], y2: el.y + last[1],
+      startId: el.startBinding?.elementId,
+      endId:   el.endBinding?.elementId,
+    });
+  }
+  const reported = new Set<string>();
+  for (let i = 0; i < arrowSegs.length; i++) {
+    for (let j = i + 1; j < arrowSegs.length; j++) {
+      const a = arrowSegs[i];
+      const b = arrowSegs[j];
+      const sharedEndpoint =
+        a.startId === b.startId || a.startId === b.endId ||
+        a.endId   === b.startId || a.endId   === b.endId;
+      if (sharedEndpoint) continue;
+      if (segmentsProperlyIntersect(a.x1, a.y1, a.x2, a.y2, b.x1, b.y1, b.x2, b.y2)) {
+        if (!reported.has(a.id)) {
+          remainingErrors.push({
+            elementId: a.id,
+            message: `Arrow intersects with arrow "${b.id}"; reorder node declarations to fix the layout`,
+          });
+          reported.add(a.id);
+        }
+      }
+    }
+  }
+
+  return { elements: fixed, remainingErrors };
+}
+
 /**
  * Convert an array of Excalidraw elements into a Mermaid diagram string.
  *

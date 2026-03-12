@@ -159,4 +159,26 @@ describe('lintExcalidrawDiagram – arrow intersection rule', () => {
     const errors = lintExcalidrawDiagram([boxA, boxB, boxC, boxD, arrAC, arrBD]);
     expect(errors).toEqual([]);
   });
+
+  it('reports an arrow only once even when it intersects multiple other arrows', () => {
+    // arr-af crosses both arr-bd and arr-ce.  The reported set must ensure
+    // arr-af appears in errors exactly once.
+    // Layer 0 (y=100): boxA (left), boxB (center), boxC (right)
+    // Layer 1 (y=260): boxD (left), boxE (center), boxF (right)
+    const boxA = makeBox('box-a', 40,  100);
+    const boxB = makeBox('box-b', 280, 100);
+    const boxC = makeBox('box-c', 520, 100);
+    const boxD = makeBox('box-d', 40,  260);
+    const boxE = makeBox('box-e', 280, 260);
+    const boxF = makeBox('box-f', 520, 260);
+    // arr-af: left-to-right diagonal (crosses arr-bd and arr-ce)
+    const arrAf = makeArrow('arr-af', 'box-a', 'box-f', 140, 160, 620, 260);
+    // arr-bd: center-to-left crossing arr-af
+    const arrBd = makeArrow('arr-bd', 'box-b', 'box-d', 380, 160, 140, 260);
+    // arr-ce: right-to-center crossing arr-af (parallel to arr-bd)
+    const arrCe = makeArrow('arr-ce', 'box-c', 'box-e', 620, 160, 380, 260);
+    const errors = lintExcalidrawDiagram([boxA, boxB, boxC, boxD, boxE, boxF, arrAf, arrBd, arrCe]);
+    const afErrors = errors.filter(e => e.elementId === 'arr-af');
+    expect(afErrors).toHaveLength(1);
+  });
 });
