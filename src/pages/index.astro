@@ -82,9 +82,39 @@
         animation: float 4s ease-in-out infinite;
       }
 
+      /* ── Feature card scroll-reveal entrance ── */
+      @keyframes card-enter {
+        from { opacity: 0; transform: translateY(18px); }
+        to   { opacity: 1; transform: translateY(0);    }
+      }
+
+      /* Cards start hidden; JS adds .is-visible when they scroll into view */
+      .feature-card {
+        opacity: 0;
+      }
+
+      .feature-card.is-visible {
+        animation: card-enter 0.5s cubic-bezier(0.25,0.46,0.45,0.94) forwards;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .feature-card {
+          opacity: 1;
+        }
+        .feature-card.is-visible {
+          animation: none;
+        }
+      }
+
       /* CTA card styles */
       .feature-card {
         @apply relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white/70 p-6 text-left backdrop-blur-sm transition-all duration-300 dark:border-slate-700/60 dark:bg-slate-800/60;
+      }
+
+      /* card icon (first div) – gentle scale on hover */
+      .feature-card > div:first-child {
+        display: inline-block;
+        transition: transform 0.25s ease;
       }
 
       /* Hover effects are gated on (hover: hover) so that iOS Safari's
@@ -92,11 +122,21 @@
          which would move elements mid-gesture and prevent navigation. */
       @media (hover: hover) {
         .feature-card:hover {
-          @apply -translate-y-1 border-teal-400/50 shadow-lg shadow-teal-500/10 dark:border-teal-500/50;
+          border-color: rgba(20,184,166,0.45);
+          transform: translateY(-6px);
+          box-shadow:
+            0 0 0 1px rgba(20,184,166,0.2),
+            0 8px 32px rgba(20,184,166,0.12),
+            0 16px 40px rgba(0,0,0,0.08);
         }
 
         .feature-card:hover::before {
           opacity: 1;
+        }
+
+        /* icon lift on hover */
+        .feature-card:hover > div:first-child {
+          transform: scale(1.1) translateY(-2px);
         }
       }
 
@@ -104,31 +144,60 @@
         content: '';
         position: absolute;
         inset: 0;
-        background: linear-gradient(135deg, rgba(20,184,166,0.07) 0%, transparent 60%);
+        background: linear-gradient(135deg, rgba(20,184,166,0.06) 0%, rgba(6,182,212,0.03) 50%, transparent 70%);
         opacity: 0;
         transition: opacity 0.3s;
         pointer-events: none;
+        z-index: 0;
       }
 
-      /* Primary CTA button */
+      /* ── Primary CTA button ── */
       .cta-primary {
-        @apply inline-flex items-center gap-2 rounded-xl bg-gradient-to-br from-teal-500 to-cyan-500 px-6 py-3 text-sm font-semibold text-white no-underline shadow-lg shadow-teal-500/25 transition-all duration-200 active:scale-95 active:shadow-md active:shadow-teal-500/15 active:duration-75;
+        @apply relative inline-flex items-center gap-2 overflow-hidden rounded-full px-6 py-3 text-sm font-semibold text-white no-underline transition-all duration-200 active:scale-95 active:duration-75;
+        background: linear-gradient(135deg, #14b8a6 0%, #06b6d4 55%, #10b981 100%);
+        box-shadow: 0 2px 10px rgba(20,184,166,0.3);
       }
 
       @media (hover: hover) {
         .cta-primary:hover {
-          @apply -translate-y-0.5 shadow-xl shadow-teal-500/35;
+          transform: translateY(-2px);
+          box-shadow:
+            0 4px 18px rgba(20,184,166,0.45),
+            0 2px 8px rgba(6,182,212,0.2);
         }
       }
 
       /* GitHub link */
       .github-link {
-        @apply inline-flex items-center gap-2 rounded-lg border border-slate-300 px-4 py-2 text-sm text-slate-600 no-underline transition-all duration-200 active:scale-95 active:duration-75 hover:border-slate-400 hover:text-slate-800 dark:border-slate-700 dark:text-slate-400 dark:hover:border-slate-500 dark:hover:text-slate-200;
+        @apply inline-flex items-center gap-2 rounded-full border border-slate-300 px-5 py-2.5 text-sm text-slate-600 no-underline transition-all duration-200 active:scale-95 active:duration-75 dark:border-slate-700 dark:text-slate-400;
+        background: rgba(255,255,255,0.5);
+        backdrop-filter: blur(8px);
+      }
+
+      @media (hover: hover) {
+        .github-link:hover {
+          border-color: rgba(20,184,166,0.5);
+          color: #0f766e;
+          box-shadow: 0 0 12px rgba(20,184,166,0.2), 0 2px 8px rgba(0,0,0,0.06);
+          transform: translateY(-1px);
+        }
+
+        :root.dark .github-link:hover {
+          color: #5eead4;
+        }
       }
 
       /* Theme toggle button */
       .theme-toggle-btn {
-        @apply fixed right-4 top-4 z-50 flex h-10 w-10 items-center justify-center rounded-full border border-slate-300 bg-white/80 text-slate-600 shadow-md backdrop-blur-sm transition-all duration-200 hover:border-teal-400 hover:text-slate-900 dark:border-slate-700 dark:bg-slate-800/80 dark:text-slate-300 dark:hover:border-teal-500/50 dark:hover:text-slate-50;
+        @apply fixed right-4 top-4 z-50 flex h-10 w-10 items-center justify-center rounded-full border border-slate-300 bg-white/80 text-slate-600 shadow-md backdrop-blur-sm transition-all duration-200 dark:border-slate-700 dark:bg-slate-800/80 dark:text-slate-300;
+      }
+
+      @media (hover: hover) {
+        .theme-toggle-btn:hover {
+          border-color: rgba(20,184,166,0.6);
+          box-shadow: 0 0 12px rgba(20,184,166,0.3), 0 2px 8px rgba(0,0,0,0.1);
+          transform: rotate(10deg) scale(1.05);
+        }
       }
     </style>
   </head>
@@ -176,16 +245,13 @@
         <div class="feature-card sm:col-span-2 lg:col-span-1">
           <div class="mb-3 text-3xl">🏗️</div>
           <h2 class="mb-1 text-lg font-bold text-slate-800 dark:text-slate-100">C4 Diagrams</h2>
-          <p class="mb-4 text-sm leading-relaxed text-slate-600 dark:text-slate-400">Interactive C4 architecture diagrams powered by Mermaid. Explore real-world system designs.</p>
-          <div class="flex flex-wrap gap-2">
-            <a href="/Tooda/c4?example=banking" class="cta-primary">🏦 Online Banking →</a>
-          </div>
-          <div class="mt-2 flex flex-wrap gap-2">
-            <a href="/Tooda/c4?example=ecommerce" class="cta-primary">🛒 E-Commerce →</a>
-            <a href="/Tooda/c4?example=ridesharing" class="cta-primary">🚗 Ride-Sharing →</a>
-          </div>
-          <div class="mt-2 flex flex-wrap gap-2">
-            <a href="/Tooda/c4?example=tooda" class="cta-primary">🗂️ Tooda →</a>
+          <p class="mb-4 text-sm leading-relaxed text-slate-600 dark:text-slate-400">Interactive C4 architecture diagrams powered by Mermaid. Explore real-world system designs across all 4 levels.</p>
+          <a href="/Tooda/c4" class="cta-primary mb-3">🏗️ Explore C4 Diagrams →</a>
+          <div class="mt-1 flex flex-wrap gap-x-3 gap-y-1">
+            <a href="/Tooda/c4?example=banking" class="text-xs font-medium text-teal-600 no-underline transition-colors duration-150 hover:underline dark:text-teal-400">🏦 Banking</a>
+            <a href="/Tooda/c4?example=ecommerce" class="text-xs font-medium text-teal-600 no-underline transition-colors duration-150 hover:underline dark:text-teal-400">🛒 E-Commerce</a>
+            <a href="/Tooda/c4?example=ridesharing" class="text-xs font-medium text-teal-600 no-underline transition-colors duration-150 hover:underline dark:text-teal-400">🚗 Ride-Sharing</a>
+            <a href="/Tooda/c4?example=tooda" class="text-xs font-medium text-teal-600 no-underline transition-colors duration-150 hover:underline dark:text-teal-400">🗂️ Tooda</a>
           </div>
         </div>
 
@@ -244,6 +310,38 @@
           const isDark = document.documentElement.classList.toggle('dark');
           localStorage.setItem('theme', isDark ? 'dark' : 'light');
           btn.setAttribute('aria-label', isDark ? 'Switch to light mode' : 'Switch to dark mode');
+        });
+      }
+
+      // Scroll-triggered card reveal – fire once per card as it enters the viewport
+      if ('IntersectionObserver' in window && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        // Pre-compute stagger index once during setup
+        document.querySelectorAll('.feature-card').forEach(function (card, index) {
+          card.dataset.cardIndex = String(index);
+        });
+
+        const observer = new IntersectionObserver(
+          function (entries) {
+            entries.forEach(function (entry) {
+              if (entry.isIntersecting) {
+                const delay = Number(entry.target.dataset.cardIndex) * 80;
+                setTimeout(function () {
+                  entry.target.classList.add('is-visible');
+                }, delay);
+                observer.unobserve(entry.target);
+              }
+            });
+          },
+          { threshold: 0.12 }
+        );
+
+        document.querySelectorAll('.feature-card').forEach(function (card) {
+          observer.observe(card);
+        });
+      } else {
+        // Reduced motion or no IntersectionObserver – show all cards immediately
+        document.querySelectorAll('.feature-card').forEach(function (card) {
+          card.classList.add('is-visible');
         });
       }
     </script>

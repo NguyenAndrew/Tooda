@@ -109,6 +109,7 @@ import { LEVEL_NODES } from '../data/healthcare/nodes';
       /* ── Controls panel: visually groups Renderer / Level rows ── */
       .controls-panel {
         @apply mx-auto mb-8 max-w-[960px] overflow-hidden rounded-2xl border border-slate-200/70 bg-white/40 backdrop-blur-sm dark:border-slate-700/50 dark:bg-slate-800/30;
+        box-shadow: 0 4px 24px rgba(20,184,166,0.06), 0 1px 4px rgba(0,0,0,0.04);
       }
 
       .controls-section {
@@ -131,32 +132,60 @@ import { LEVEL_NODES } from '../data/healthcare/nodes';
         @apply flex flex-wrap justify-center gap-2;
       }
 
-      .renderer-btn {
-        @apply inline-block cursor-pointer rounded-lg border border-slate-300 bg-slate-100 px-5 py-2 text-[0.95rem] text-slate-600 no-underline transition-all duration-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400;
+      /* ── Shared pill button base (renderer / tab) ── */
+      .renderer-btn,
+      .tab-btn,
+      .export-png-btn {
+        position: relative;
+        overflow: hidden;
+        @apply inline-block cursor-pointer rounded-full border border-slate-300/80 bg-white/60 px-5 py-2 text-[0.9rem] font-medium text-slate-600 no-underline backdrop-blur-sm transition-all duration-200 dark:border-slate-700/80 dark:bg-slate-800/60 dark:text-slate-400;
       }
 
-      .renderer-btn:hover {
-        @apply bg-slate-200 text-slate-900 dark:bg-slate-700 dark:text-slate-50;
+      .renderer-btn:hover,
+      .tab-btn:hover,
+      .export-png-btn:hover {
+        @apply border-teal-400/60 text-slate-900 dark:border-teal-500/60 dark:text-slate-50;
+        transform: translateY(-1px);
+        box-shadow: 0 3px 10px rgba(20,184,166,0.12), 0 1px 3px rgba(0,0,0,0.05);
       }
 
-      .renderer-btn.active {
-        @apply border-transparent bg-gradient-to-br from-teal-500 to-cyan-500 text-white;
+      /* ── Active state: gradient pill with subtle glow ── */
+      @keyframes active-glow-pulse {
+        0%, 100% {
+          box-shadow:
+            0 0 6px  rgba(20,184,166,0.4),
+            0 0 14px rgba(20,184,166,0.2),
+            inset 0 1px 0 rgba(255,255,255,0.2);
+        }
+        50% {
+          box-shadow:
+            0 0 10px rgba(20,184,166,0.55),
+            0 0 22px rgba(6,182,212,0.25),
+            inset 0 1px 0 rgba(255,255,255,0.2);
+        }
+      }
+
+      .renderer-btn.active,
+      .tab-btn.active {
+        border-color: transparent;
+        background: linear-gradient(135deg, #14b8a6, #06b6d4, #10b981);
+        color: #fff;
+        font-weight: 600;
+        box-shadow:
+          0 0 6px  rgba(20,184,166,0.4),
+          0 0 14px rgba(20,184,166,0.2),
+          inset 0 1px 0 rgba(255,255,255,0.2);
+      }
+
+      @media (prefers-reduced-motion: no-preference) {
+        .renderer-btn.active,
+        .tab-btn.active {
+          animation: active-glow-pulse 3s ease-in-out infinite;
+        }
       }
 
       .tabs {
         @apply flex flex-wrap justify-center gap-2;
-      }
-
-      .tab-btn {
-        @apply inline-block cursor-pointer rounded-lg border border-slate-300 bg-slate-100 px-5 py-2 text-[0.95rem] text-slate-600 no-underline transition-all duration-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400;
-      }
-
-      .tab-btn:hover {
-        @apply bg-slate-200 text-slate-900 dark:bg-slate-700 dark:text-slate-50;
-      }
-
-      .tab-btn.active {
-        @apply border-transparent bg-gradient-to-br from-teal-500 to-cyan-500 text-white;
       }
 
       .tab-panel {
@@ -165,6 +194,18 @@ import { LEVEL_NODES } from '../data/healthcare/nodes';
 
       .tab-panel.active {
         @apply block;
+        animation: panel-enter 0.25s ease forwards;
+      }
+
+      @keyframes panel-enter {
+        from { opacity: 0; transform: translateY(6px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .tab-panel.active {
+          animation: none;
+        }
       }
 
       .tab-panel h2 {
@@ -195,17 +236,17 @@ import { LEVEL_NODES } from '../data/healthcare/nodes';
         @apply hidden overflow-hidden rounded-xl bg-slate-900;
       }
 
-      .export-png-btn {
-        @apply inline-block cursor-pointer rounded-lg border border-slate-300 bg-slate-100 px-5 py-2 text-[0.95rem] text-slate-600 no-underline transition-all duration-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400;
-      }
-
-      .export-png-btn:hover {
-        @apply bg-slate-200 text-slate-900 dark:bg-slate-700 dark:text-slate-50;
-      }
-
       /* Theme toggle button */
       .theme-toggle-btn {
-        @apply fixed right-4 top-4 z-50 flex h-10 w-10 items-center justify-center rounded-full border border-slate-300 bg-white/80 text-slate-600 shadow-md backdrop-blur-sm transition-all duration-200 hover:border-teal-400 hover:text-slate-900 dark:border-slate-700 dark:bg-slate-800/80 dark:text-slate-300 dark:hover:border-teal-500/50 dark:hover:text-slate-50;
+        @apply fixed right-4 top-4 z-50 flex h-10 w-10 items-center justify-center rounded-full border border-slate-300 bg-white/80 text-slate-600 shadow-md backdrop-blur-sm transition-all duration-200 dark:border-slate-700 dark:bg-slate-800/80 dark:text-slate-300;
+      }
+
+      @media (hover: hover) {
+        .theme-toggle-btn:hover {
+          border-color: rgba(20,184,166,0.6);
+          box-shadow: 0 0 12px rgba(20,184,166,0.3), 0 2px 8px rgba(0,0,0,0.1);
+          transform: rotate(10deg) scale(1.05);
+        }
       }
     </style>
   </head>
