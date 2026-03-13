@@ -178,8 +178,8 @@ test.describe('Excalidraw example page', () => {
   test('3D canvas renders in Level 1 after switching to 3D renderer', async ({ page }) => {
     await page.goto('/Tooda/excalidraw');
     await page.locator('.renderer-btn[data-renderer="3d"]').click();
-    await page.waitForSelector('#level1 [data-testid="three-canvas-container-level1"] canvas', { state: 'visible', timeout: 15000 });
-    await expect(page.locator('#level1 [data-testid="three-canvas-container-level1"] canvas')).toBeVisible();
+    await page.waitForSelector('#level1 [data-testid="three-canvas-container"] canvas', { state: 'visible', timeout: 15000 });
+    await expect(page.locator('#level1 [data-testid="three-canvas-container"] canvas')).toBeVisible();
   });
 
   test('3D renderer is activated when ?renderer=3d is in the URL', async ({ page }) => {
@@ -217,8 +217,8 @@ test.describe('Excalidraw example page', () => {
   test('2D diagram SVG renders in Level 1 after switching to 2D renderer', async ({ page }) => {
     await page.goto('/Tooda/excalidraw');
     await page.locator('.renderer-btn[data-renderer="2d"]').click();
-    await page.waitForSelector('#level1 [data-testid="two-d-diagram-level1"]', { state: 'visible', timeout: 15000 });
-    await expect(page.locator('#level1 [data-testid="two-d-diagram-level1"]')).toBeVisible();
+    await page.waitForSelector('#level1 [data-testid="two-d-diagram"]', { state: 'visible', timeout: 15000 });
+    await expect(page.locator('#level1 [data-testid="two-d-diagram"]')).toBeVisible();
   });
 
   test('2D renderer is activated when ?renderer=2d is in the URL', async ({ page }) => {
@@ -240,8 +240,8 @@ test.describe('Excalidraw example page', () => {
 
   test('2D diagram in Level 1 contains node labels from Excalidraw', async ({ page }) => {
     await page.goto('/Tooda/excalidraw?renderer=2d');
-    await page.waitForSelector('#level1 [data-testid="two-d-diagram-level1"]', { state: 'visible', timeout: 15000 });
-    const svgText = await page.locator('#level1 [data-testid="two-d-diagram-level1"]').textContent();
+    await page.waitForSelector('#level1 [data-testid="two-d-diagram"]', { state: 'visible', timeout: 15000 });
+    const svgText = await page.locator('#level1 [data-testid="two-d-diagram"]').textContent();
     expect(svgText).toContain('Patient');
     expect(svgText).toContain('Doctor');
   });
