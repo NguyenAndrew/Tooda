@@ -391,22 +391,22 @@ export const openapiSpec = {
               'An Online Banking System illustrated across all 4 levels of the C4 model.',
           },
           level1: {
-            $ref: '#/components/schemas/ExcalidrawElementArray',
+            allOf: [{ $ref: '#/components/schemas/ExcalidrawElementArray' }],
             description:
               'Excalidraw elements for the System Context level.',
           },
           level2: {
-            $ref: '#/components/schemas/ExcalidrawElementArray',
+            allOf: [{ $ref: '#/components/schemas/ExcalidrawElementArray' }],
             description:
               'Excalidraw elements for the Container level.',
           },
           level3: {
-            $ref: '#/components/schemas/ExcalidrawElementArray',
+            allOf: [{ $ref: '#/components/schemas/ExcalidrawElementArray' }],
             description:
               'Excalidraw elements for the Component level.',
           },
           level4: {
-            $ref: '#/components/schemas/ExcalidrawElementArray',
+            allOf: [{ $ref: '#/components/schemas/ExcalidrawElementArray' }],
             description:
               'Excalidraw elements for the Code level.',
           },

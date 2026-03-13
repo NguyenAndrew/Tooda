@@ -33,6 +33,7 @@ export default [
           'diagram-wrapper',
           'dot',
           'example-btn',
+          'example-content',
           'examples',
           'excalidraw-view',
           'excalidraw-wrapper',

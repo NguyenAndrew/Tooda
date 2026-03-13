@@ -535,7 +535,7 @@ import { LEVEL_NODES as toodaNodes } from '../data/excalidraw/tooda/nodes';
 
       // ---- Mermaid rendering helper ----
       function renderMermaidInContent(content) {
-        var unrendered = Array.from(content.querySelectorAll('.mermaid')).filter(
+        const unrendered = Array.from(content.querySelectorAll('.mermaid')).filter(
           function (el) { return !el.querySelector('svg'); }
         );
         if (unrendered.length > 0) {
@@ -552,7 +552,7 @@ import { LEVEL_NODES as toodaNodes } from '../data/excalidraw/tooda/nodes';
         currentRenderer = renderer;
 
         rendererBtns.forEach(function (b) { b.classList.remove('active'); });
-        var activeBtn = document.querySelector('.renderer-btn[data-renderer="' + renderer + '"]');
+        const activeBtn = document.querySelector('.renderer-btn[data-renderer="' + renderer + '"]');
         if (activeBtn) activeBtn.classList.add('active');
 
         document.querySelectorAll('.excalidraw-view').forEach(function (el) { el.style.display = 'none'; });
@@ -566,9 +566,9 @@ import { LEVEL_NODES as toodaNodes } from '../data/excalidraw/tooda/nodes';
           document.querySelectorAll('.mermaid-view').forEach(function (el) { el.style.display = 'block'; });
 
           // Render any un-rendered Mermaid diagrams in the active panel / example
-          var activePanel = document.querySelector('.tab-panel.active');
+          const activePanel = document.querySelector('.tab-panel.active');
           if (activePanel) {
-            var activeContent = activePanel.querySelector('.example-content[data-example="' + currentExample + '"]');
+            const activeContent = activePanel.querySelector('.example-content[data-example="' + currentExample + '"]');
             if (activeContent) renderMermaidInContent(activeContent);
           }
         } else if (renderer === '2d') {
@@ -583,8 +583,8 @@ import { LEVEL_NODES as toodaNodes } from '../data/excalidraw/tooda/nodes';
       rendererBtns.forEach(function (btn) {
         btn.addEventListener('click', function (e) {
           e.preventDefault();
-          var renderer = btn.dataset.renderer;
-          var url = new URL(window.location.href);
+          const renderer = btn.dataset.renderer;
+          const url = new URL(window.location.href);
           url.searchParams.set('renderer', renderer);
           history.pushState(null, '', url.toString());
           activateRenderer(renderer);
@@ -623,17 +623,17 @@ import { LEVEL_NODES as toodaNodes } from '../data/excalidraw/tooda/nodes';
         tabButtons.forEach(function (b) { b.classList.remove('active'); });
         tabPanels.forEach(function (p) { p.classList.remove('active'); });
 
-        var activeBtn = document.querySelector('.tab-btn[data-tab="' + target + '"]');
+        const activeBtn = document.querySelector('.tab-btn[data-tab="' + target + '"]');
         if (activeBtn) activeBtn.classList.add('active');
 
-        var panel = document.getElementById(target);
+        const panel = document.getElementById(target);
         if (panel) {
           panel.classList.add('active');
           updateExampleVisibility(panel);
 
           // Render Mermaid diagrams when switching tabs in Mermaid mode
           if (currentRenderer === 'mermaid') {
-            var activeContent = panel.querySelector('.example-content[data-example="' + currentExample + '"]');
+            const activeContent = panel.querySelector('.example-content[data-example="' + currentExample + '"]');
             if (activeContent) renderMermaidInContent(activeContent);
           }
         }
@@ -643,28 +643,28 @@ import { LEVEL_NODES as toodaNodes } from '../data/excalidraw/tooda/nodes';
       tabButtons.forEach(function (btn) {
         btn.addEventListener('click', function (e) {
           e.preventDefault();
-          var target = btn.dataset.tab;
+          const target = btn.dataset.tab;
           history.pushState(null, '', '#' + target);
           activateTab(target);
         });
       });
 
       function activateFromHash() {
-        var hash = window.location.hash.slice(1) || 'level1';
+        const hash = window.location.hash.slice(1) || 'level1';
         activateTab(hash);
       }
 
       window.addEventListener('hashchange', activateFromHash);
 
       // ---- Example switching ----
-      var exampleBtns = document.querySelectorAll('.example-btn');
+      const exampleBtns = document.querySelectorAll('.example-btn');
 
       function activateExample(key) {
         if (!validExamples.includes(key)) key = 'banking';
         currentExample = key;
 
         exampleBtns.forEach(function (b) { b.classList.remove('active'); });
-        var activeBtn = document.querySelector('.example-btn[data-example="' + key + '"]');
+        const activeBtn = document.querySelector('.example-btn[data-example="' + key + '"]');
         if (activeBtn) activeBtn.classList.add('active');
 
         document.querySelectorAll('.tab-panel').forEach(function (panel) {
@@ -673,9 +673,9 @@ import { LEVEL_NODES as toodaNodes } from '../data/excalidraw/tooda/nodes';
 
         // Render Mermaid diagrams for the newly selected example if in Mermaid mode
         if (currentRenderer === 'mermaid') {
-          var activePanel = document.querySelector('.tab-panel.active');
+          const activePanel = document.querySelector('.tab-panel.active');
           if (activePanel) {
-            var activeContent = activePanel.querySelector('.example-content[data-example="' + key + '"]');
+            const activeContent = activePanel.querySelector('.example-content[data-example="' + key + '"]');
             if (activeContent) renderMermaidInContent(activeContent);
           }
         }
@@ -685,8 +685,8 @@ import { LEVEL_NODES as toodaNodes } from '../data/excalidraw/tooda/nodes';
       exampleBtns.forEach(function (btn) {
         btn.addEventListener('click', function (e) {
           e.preventDefault();
-          var key = btn.dataset.example;
-          var url = new URL(window.location.href);
+          const key = btn.dataset.example;
+          const url = new URL(window.location.href);
           url.searchParams.set('example', key);
           history.pushState(null, '', url.toString());
           activateExample(key);
@@ -695,9 +695,9 @@ import { LEVEL_NODES as toodaNodes } from '../data/excalidraw/tooda/nodes';
 
       // ---- Initialize from URL params ----
       function init() {
-        var params = new URLSearchParams(window.location.search);
-        var example = params.get('example') || 'banking';
-        var renderer = params.get('renderer') || 'excalidraw';
+        const params = new URLSearchParams(window.location.search);
+        const example = params.get('example') || 'banking';
+        const renderer = params.get('renderer') || 'excalidraw';
         activateExample(example);
         activateRenderer(renderer);
         activateFromHash();
