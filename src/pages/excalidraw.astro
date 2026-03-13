@@ -40,18 +40,18 @@ import { LEVEL_NODES } from '../data/healthcare/nodes';
 
       :root {
         --bg-color: #f8fafc;
-        --grad1: rgba(99,102,241,0.12);
-        --grad2: rgba(139,92,246,0.08);
-        --grad3: rgba(56,189,248,0.06);
-        --grid-line: rgba(99,102,241,0.03);
+        --grad1: rgba(20,184,166,0.15);
+        --grad2: rgba(6,182,212,0.10);
+        --grad3: rgba(16,185,129,0.07);
+        --grid-line: rgba(20,184,166,0.04);
       }
 
       :root.dark {
         --bg-color: #0f172a;
-        --grad1: rgba(99,102,241,0.25);
-        --grad2: rgba(139,92,246,0.15);
-        --grad3: rgba(56,189,248,0.12);
-        --grid-line: rgba(99,102,241,0.06);
+        --grad1: rgba(20,184,166,0.28);
+        --grad2: rgba(6,182,212,0.18);
+        --grad3: rgba(16,185,129,0.14);
+        --grid-line: rgba(20,184,166,0.08);
       }
 
       body {
@@ -81,8 +81,8 @@ import { LEVEL_NODES } from '../data/healthcare/nodes';
       }
 
       @keyframes glow-pulse {
-        0%, 100% { filter: drop-shadow(0 0 16px rgba(139,92,246,0.5)); }
-        50%       { filter: drop-shadow(0 0 36px rgba(99,102,241,0.8)); }
+        0%, 100% { filter: drop-shadow(0 0 16px rgba(20,184,166,0.5)); }
+        50%       { filter: drop-shadow(0 0 36px rgba(6,182,212,0.8)); }
       }
 
       header {
@@ -91,7 +91,7 @@ import { LEVEL_NODES } from '../data/healthcare/nodes';
 
       header h1 {
         animation: glow-pulse 3s ease-in-out infinite;
-        @apply mb-2 bg-gradient-to-br from-indigo-500 via-violet-400 to-sky-400 bg-clip-text text-[clamp(2rem,6vw,3.5rem)] font-extrabold text-transparent;
+        @apply mb-2 bg-gradient-to-br from-teal-500 via-cyan-400 to-emerald-400 bg-clip-text text-[clamp(2rem,6vw,3.5rem)] font-extrabold text-transparent;
       }
 
       header p {
@@ -103,7 +103,7 @@ import { LEVEL_NODES } from '../data/healthcare/nodes';
       }
 
       nav.back a {
-        @apply text-[0.9rem] text-violet-600 no-underline dark:text-violet-400;
+        @apply text-[0.9rem] text-teal-600 no-underline dark:text-teal-400;
       }
 
       nav.back a:hover {
@@ -123,7 +123,7 @@ import { LEVEL_NODES } from '../data/healthcare/nodes';
       }
 
       .renderer-btn.active {
-        @apply border-transparent bg-gradient-to-br from-violet-500 to-sky-400 text-white;
+        @apply border-transparent bg-gradient-to-br from-cyan-500 to-teal-400 text-white;
       }
 
       .tabs {
@@ -139,7 +139,7 @@ import { LEVEL_NODES } from '../data/healthcare/nodes';
       }
 
       .tab-btn.active {
-        @apply border-transparent bg-gradient-to-br from-indigo-500 to-violet-400 text-white;
+        @apply border-transparent bg-gradient-to-br from-teal-500 to-cyan-500 text-white;
       }
 
       .tab-panel {
@@ -188,7 +188,7 @@ import { LEVEL_NODES } from '../data/healthcare/nodes';
 
       /* Theme toggle button */
       .theme-toggle-btn {
-        @apply fixed right-4 top-4 z-50 flex h-10 w-10 items-center justify-center rounded-full border border-slate-300 bg-white/80 text-slate-600 shadow-md backdrop-blur-sm transition-all duration-200 hover:border-indigo-400 hover:text-slate-900 dark:border-slate-700 dark:bg-slate-800/80 dark:text-slate-300 dark:hover:border-indigo-500/50 dark:hover:text-slate-50;
+        @apply fixed right-4 top-4 z-50 flex h-10 w-10 items-center justify-center rounded-full border border-slate-300 bg-white/80 text-slate-600 shadow-md backdrop-blur-sm transition-all duration-200 hover:border-teal-400 hover:text-slate-900 dark:border-slate-700 dark:bg-slate-800/80 dark:text-slate-300 dark:hover:border-teal-500/50 dark:hover:text-slate-50;
       }
     </style>
   </head>

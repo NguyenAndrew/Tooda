@@ -25,18 +25,18 @@
 
       :root {
         --bg-color: #f8fafc;
-        --grad1: rgba(99,102,241,0.12);
-        --grad2: rgba(139,92,246,0.08);
-        --grad3: rgba(56,189,248,0.06);
-        --grid-line: rgba(99,102,241,0.03);
+        --grad1: rgba(20,184,166,0.15);
+        --grad2: rgba(6,182,212,0.10);
+        --grad3: rgba(16,185,129,0.07);
+        --grid-line: rgba(20,184,166,0.04);
       }
 
       :root.dark {
         --bg-color: #0f172a;
-        --grad1: rgba(99,102,241,0.25);
-        --grad2: rgba(139,92,246,0.15);
-        --grad3: rgba(56,189,248,0.12);
-        --grid-line: rgba(99,102,241,0.06);
+        --grad1: rgba(20,184,166,0.28);
+        --grad2: rgba(6,182,212,0.18);
+        --grad3: rgba(16,185,129,0.14);
+        --grid-line: rgba(20,184,166,0.08);
       }
 
       body {
@@ -66,8 +66,8 @@
       }
 
       @keyframes glow-pulse {
-        0%, 100% { filter: drop-shadow(0 0 16px rgba(139,92,246,0.5)); }
-        50%       { filter: drop-shadow(0 0 36px rgba(99,102,241,0.8)); }
+        0%, 100% { filter: drop-shadow(0 0 16px rgba(20,184,166,0.5)); }
+        50%       { filter: drop-shadow(0 0 36px rgba(6,182,212,0.8)); }
       }
 
       @keyframes float {
@@ -95,12 +95,12 @@
       /* ── Slide elements ── */
       .slide-badge {
         animation: float 4s ease-in-out infinite;
-        @apply mb-6 inline-flex items-center gap-2 self-start rounded-full border border-indigo-500/40 bg-indigo-500/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-indigo-600 dark:text-indigo-300;
+        @apply mb-6 inline-flex items-center gap-2 self-start rounded-full border border-teal-500/40 bg-teal-500/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-teal-700 dark:text-teal-300;
       }
 
       .slide-title {
         animation: glow-pulse 3s ease-in-out infinite;
-        @apply mb-6 bg-gradient-to-br from-indigo-400 via-violet-400 to-sky-400 bg-clip-text text-[clamp(2.2rem,6vw,4rem)] font-extrabold leading-none tracking-tight text-transparent;
+        @apply mb-6 bg-gradient-to-br from-teal-400 via-cyan-400 to-emerald-400 bg-clip-text text-[clamp(2.2rem,6vw,4rem)] font-extrabold leading-none tracking-tight text-transparent;
       }
 
       .slide-subtitle {
@@ -134,12 +134,12 @@
 
       /* ── CTA links ── */
       .cta-primary {
-        @apply inline-flex items-center gap-2 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-500 px-6 py-3 text-sm font-semibold text-white no-underline shadow-lg shadow-indigo-500/25 transition-all duration-200 active:scale-95 active:shadow-md active:shadow-indigo-500/15 active:duration-75;
+        @apply inline-flex items-center gap-2 rounded-xl bg-gradient-to-br from-teal-500 to-cyan-500 px-6 py-3 text-sm font-semibold text-white no-underline shadow-lg shadow-teal-500/25 transition-all duration-200 active:scale-95 active:shadow-md active:shadow-teal-500/15 active:duration-75;
       }
 
       @media (hover: hover) {
         .cta-primary:hover {
-          @apply -translate-y-0.5 shadow-xl shadow-indigo-500/35;
+          @apply -translate-y-0.5 shadow-xl shadow-teal-500/35;
         }
       }
 
@@ -174,7 +174,7 @@
 
       @media (hover: hover) {
         .nav-btn:hover:not(:disabled) {
-          @apply border-indigo-400/50 bg-slate-200 text-slate-900 dark:border-indigo-500/50 dark:bg-slate-700 dark:text-slate-50;
+          @apply border-teal-400/50 bg-slate-200 text-slate-900 dark:border-teal-500/50 dark:bg-slate-700 dark:text-slate-50;
         }
       }
 
@@ -197,7 +197,7 @@
       }
 
       .dot.active {
-        @apply w-5 bg-indigo-500;
+        @apply w-5 bg-teal-500;
       }
 
       /* ── Back link ── */
@@ -206,7 +206,7 @@
       }
 
       nav.back a {
-        @apply text-[0.9rem] text-violet-600 no-underline dark:text-violet-400;
+        @apply text-[0.9rem] text-teal-600 no-underline dark:text-teal-400;
       }
 
       nav.back a:hover {
@@ -220,7 +220,7 @@
 
       /* ── Theme toggle button ── */
       .theme-toggle-btn {
-        @apply fixed right-4 top-4 z-50 flex h-10 w-10 items-center justify-center rounded-full border border-slate-300 bg-white/80 text-slate-600 shadow-md backdrop-blur-sm transition-all duration-200 hover:border-indigo-400 hover:text-slate-900 dark:border-slate-700 dark:bg-slate-800/80 dark:text-slate-300 dark:hover:border-indigo-500/50 dark:hover:text-slate-50;
+        @apply fixed right-4 top-4 z-50 flex h-10 w-10 items-center justify-center rounded-full border border-slate-300 bg-white/80 text-slate-600 shadow-md backdrop-blur-sm transition-all duration-200 hover:border-teal-400 hover:text-slate-900 dark:border-slate-700 dark:bg-slate-800/80 dark:text-slate-300 dark:hover:border-teal-500/50 dark:hover:text-slate-50;
       }
 
       /* ── Mobile landscape: flex column so the deck fills every pixel ── */
