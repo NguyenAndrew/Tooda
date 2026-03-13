@@ -1,8 +1,5 @@
 import type { APIRoute } from 'astro';
 import { diagrams } from '../../../data/c4/diagrams';
+import { createJsonResponse } from '../../../utils/apiResponse';
 
-export const GET: APIRoute = () => {
-  return new Response(JSON.stringify(diagrams.ridesharing), {
-    headers: { 'Content-Type': 'application/json' },
-  });
-};
+export const GET: APIRoute = () => createJsonResponse(diagrams.ridesharing);

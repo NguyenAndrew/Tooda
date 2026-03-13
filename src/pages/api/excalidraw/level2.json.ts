@@ -1,8 +1,5 @@
 import type { APIRoute } from 'astro';
 import { level2Elements } from '../../../data/excalidraw/level2Elements';
+import { createJsonResponse } from '../../../utils/apiResponse';
 
-export const GET: APIRoute = () => {
-  return new Response(JSON.stringify(level2Elements), {
-    headers: { 'Content-Type': 'application/json' },
-  });
-};
+export const GET: APIRoute = () => createJsonResponse(level2Elements);
