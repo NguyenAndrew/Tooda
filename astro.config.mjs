@@ -10,6 +10,6 @@ export default defineConfig({
   integrations: [react(), tailwind()],
   prefetch: {
     prefetchAll: true,
-    defaultStrategy: 'viewport',
+    defaultStrategy: 'hover',
   },
 });
