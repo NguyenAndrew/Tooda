@@ -11,7 +11,8 @@
  *
  *   docs/gifs/c4-tabs.gif      — switching between C4 levels 1 → 2 → 3 → 4
  *   docs/gifs/c4-examples.gif  — switching between diagram examples
- *   docs/gifs/c4-toggle.gif    — toggling between Diagram and Code views
+ *   docs/gifs/c4-toggle.gif    — toggling between the Excalidraw and Mermaid renderers
+ *   docs/gifs/3d-features.gif  — auto-rotating 3D features visualization
  */
 
 import { chromium } from '@playwright/test';
@@ -214,11 +215,13 @@ function saveGif(frames, filename, frameDelay = FRAME_DELAY_MS) {
 
 /**
  * C4 tab switching — Level 1 → 2 → 3 → 4.
+ * Navigates with ?renderer=mermaid so Mermaid SVGs are rendered instead of
+ * the Excalidraw views that are shown by default.
  * @param {import('@playwright/test').Page} page
  */
 async function makeC4TabsGif(page) {
   const frames = [];
-  await page.goto(`${BASE_URL}${BASE_PATH}/c4`, { waitUntil: 'networkidle' });
+  await page.goto(`${BASE_URL}${BASE_PATH}/c4?renderer=mermaid`, { waitUntil: 'networkidle' });
   await page.waitForSelector('#level1 .mermaid svg', { state: 'visible' });
   await addScrollAndHoldFrames(page, frames);
 
@@ -237,11 +240,13 @@ async function makeC4TabsGif(page) {
 
 /**
  * Example switching — Online Banking → E-Commerce → Ride-Sharing → back.
+ * Uses ?renderer=mermaid so Mermaid SVGs are rendered instead of the default
+ * Excalidraw views.
  * @param {import('@playwright/test').Page} page
  */
 async function makeC4ExamplesGif(page) {
   const frames = [];
-  await page.goto(`${BASE_URL}${BASE_PATH}/c4`, { waitUntil: 'networkidle' });
+  await page.goto(`${BASE_URL}${BASE_PATH}/c4?renderer=mermaid`, { waitUntil: 'networkidle' });
   await page.waitForSelector('#level1 .mermaid svg', { state: 'visible' });
   await addScrollAndHoldFrames(page, frames);
 
@@ -255,23 +260,55 @@ async function makeC4ExamplesGif(page) {
 }
 
 /**
- * Diagram / Code view toggle.
+ * Renderer toggle — switches from the default Excalidraw view to the Mermaid
+ * view and back, showing that multiple renderers are available for each diagram.
  * @param {import('@playwright/test').Page} page
  */
 async function makeC4ToggleGif(page) {
   const frames = [];
   await page.goto(`${BASE_URL}${BASE_PATH}/c4`, { waitUntil: 'networkidle' });
+  // Start with the default Excalidraw renderer
+  await page.waitForSelector('#level1 .excalidraw-wrapper', { state: 'visible' });
+  await addHoldFrames(page, frames);
+
+  // Switch to Mermaid renderer
+  await clickWithIndicator(page, frames, page.getByRole('link', { name: /Mermaid/, exact: false }));
   await page.waitForSelector('#level1 .mermaid svg', { state: 'visible' });
   await addHoldFrames(page, frames);
 
-  await clickWithIndicator(page, frames, page.getByRole('link', { name: 'Code', exact: true }));
-  await addHoldFrames(page, frames);
-
-  await clickWithIndicator(page, frames, page.getByRole('link', { name: 'Diagram', exact: true }));
-  await page.waitForSelector('#level1 .mermaid svg', { state: 'visible' });
+  // Switch back to Excalidraw renderer
+  await clickWithIndicator(page, frames, page.getByRole('link', { name: /Excalidraw/, exact: false }));
+  await page.waitForSelector('#level1 .excalidraw-wrapper', { state: 'visible' });
   await addHoldFrames(page, frames);
 
   await saveGif(frames, 'c4-toggle.gif');
+}
+
+/**
+ * 3D features visualization — captures the auto-rotating orbit of feature nodes.
+ * @param {import('@playwright/test').Page} page
+ */
+async function make3dFeaturesGif(page) {
+  const frames = [];
+  await page.goto(`${BASE_URL}${BASE_PATH}/features`, { waitUntil: 'networkidle' });
+
+  // Wait for Three.js to mount the WebGL canvas and begin rendering
+  await page.waitForSelector('[data-testid="three-canvas-container"] canvas', { state: 'visible' });
+
+  // Allow the 3D scene to fully initialise and render several animation frames
+  await sleep(1500);
+
+  // Sample the rotation over ~3.6 seconds (24 frames × 150 ms) — enough to
+  // show roughly 40° of auto-rotation without making the GIF too large.
+  const ROTATION_FRAMES = 24;
+  const FRAME_INTERVAL_MS = 150;
+  for (let i = 0; i < ROTATION_FRAMES; i++) {
+    await sleep(FRAME_INTERVAL_MS);
+    const frame = await captureFrame(page);
+    frames.push({ ...frame, delay: FRAME_INTERVAL_MS });
+  }
+
+  await saveGif(frames, '3d-features.gif');
 }
 
 // ---------------------------------------------------------------------------
@@ -315,7 +352,7 @@ async function main() {
     await waitForServer(`${BASE_URL}${BASE_PATH}/`);
     console.log('Server ready. Generating GIFs...\n');
 
-    const browser = await chromium.launch();
+    const browser = await chromium.launch({ args: ['--no-sandbox', '--disable-dev-shm-usage'] });
     try {
       const page = await browser.newPage();
       await page.setViewportSize(VIEWPORT);
@@ -323,6 +360,7 @@ async function main() {
       await makeC4TabsGif(page);
       await makeC4ExamplesGif(page);
       await makeC4ToggleGif(page);
+      await make3dFeaturesGif(page);
 
       await page.close();
     } finally {
