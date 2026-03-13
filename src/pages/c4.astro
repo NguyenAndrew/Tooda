@@ -43,18 +43,18 @@ import { LEVEL_NODES as toodaNodes } from '../data/excalidraw/tooda/nodes';
 
       :root {
         --bg-color: #f8fafc;
-        --grad1: rgba(99,102,241,0.12);
-        --grad2: rgba(139,92,246,0.08);
-        --grad3: rgba(56,189,248,0.06);
-        --grid-line: rgba(99,102,241,0.03);
+        --grad1: rgba(20,184,166,0.15);
+        --grad2: rgba(6,182,212,0.10);
+        --grad3: rgba(16,185,129,0.07);
+        --grid-line: rgba(20,184,166,0.04);
       }
 
       :root.dark {
         --bg-color: #0f172a;
-        --grad1: rgba(99,102,241,0.25);
-        --grad2: rgba(139,92,246,0.15);
-        --grad3: rgba(56,189,248,0.12);
-        --grid-line: rgba(99,102,241,0.06);
+        --grad1: rgba(20,184,166,0.28);
+        --grad2: rgba(6,182,212,0.18);
+        --grad3: rgba(16,185,129,0.14);
+        --grid-line: rgba(20,184,166,0.08);
       }
 
       body {
@@ -84,8 +84,8 @@ import { LEVEL_NODES as toodaNodes } from '../data/excalidraw/tooda/nodes';
       }
 
       @keyframes glow-pulse {
-        0%, 100% { filter: drop-shadow(0 0 16px rgba(139,92,246,0.5)); }
-        50%       { filter: drop-shadow(0 0 36px rgba(99,102,241,0.8)); }
+        0%, 100% { filter: drop-shadow(0 0 16px rgba(20,184,166,0.5)); }
+        50%       { filter: drop-shadow(0 0 36px rgba(6,182,212,0.8)); }
       }
 
       header {
@@ -94,7 +94,7 @@ import { LEVEL_NODES as toodaNodes } from '../data/excalidraw/tooda/nodes';
 
       header h1 {
         animation: glow-pulse 3s ease-in-out infinite;
-        @apply mb-2 bg-gradient-to-br from-indigo-500 via-violet-400 to-sky-400 bg-clip-text text-[clamp(2rem,6vw,3.5rem)] font-extrabold text-transparent;
+        @apply mb-2 bg-gradient-to-br from-teal-500 via-cyan-400 to-emerald-400 bg-clip-text text-[clamp(2rem,6vw,3.5rem)] font-extrabold text-transparent;
       }
 
       header p {
@@ -102,15 +102,36 @@ import { LEVEL_NODES as toodaNodes } from '../data/excalidraw/tooda/nodes';
       }
 
       header .back-link {
-        @apply inline-block text-[0.9rem] text-violet-600 no-underline dark:text-violet-400;
+        @apply inline-block text-[0.9rem] text-teal-600 no-underline dark:text-teal-400;
       }
 
       header .back-link:hover {
         @apply underline;
       }
 
+      /* ── Controls panel: visually groups Example / Renderer / Level rows ── */
+      .controls-panel {
+        @apply mx-auto mb-8 max-w-[900px] overflow-hidden rounded-2xl border border-slate-200/70 bg-white/40 backdrop-blur-sm dark:border-slate-700/50 dark:bg-slate-800/30;
+      }
+
+      .controls-section {
+        @apply px-4 py-4;
+      }
+
+      .controls-section + .controls-section {
+        @apply border-t border-slate-200/60 dark:border-slate-700/40;
+      }
+
+      .controls-label {
+        @apply mb-2 block text-center text-[0.65rem] font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-500;
+      }
+
+      .export-area {
+        @apply mt-3 flex justify-center;
+      }
+
       .examples {
-        @apply mb-6 flex flex-wrap justify-center gap-2 px-4;
+        @apply flex flex-wrap justify-center gap-2;
       }
 
       .example-btn {
@@ -122,11 +143,11 @@ import { LEVEL_NODES as toodaNodes } from '../data/excalidraw/tooda/nodes';
       }
 
       .example-btn.active {
-        @apply border-transparent bg-gradient-to-br from-sky-400 to-indigo-500 text-white;
+        @apply border-transparent bg-gradient-to-br from-teal-500 to-cyan-500 text-white;
       }
 
       .tabs {
-        @apply mb-8 flex flex-wrap justify-center gap-2 px-4;
+        @apply flex flex-wrap justify-center gap-2;
       }
 
       .tab-btn {
@@ -138,7 +159,7 @@ import { LEVEL_NODES as toodaNodes } from '../data/excalidraw/tooda/nodes';
       }
 
       .tab-btn.active {
-        @apply border-transparent bg-gradient-to-br from-indigo-500 to-violet-400 text-white;
+        @apply border-transparent bg-gradient-to-br from-teal-500 to-cyan-500 text-white;
       }
 
       .tab-panel {
@@ -179,7 +200,7 @@ import { LEVEL_NODES as toodaNodes } from '../data/excalidraw/tooda/nodes';
       }
 
       .renderer-toggle {
-        @apply mb-4 flex flex-wrap justify-center gap-2 px-4;
+        @apply flex flex-wrap justify-center gap-2;
       }
 
       .renderer-btn {
@@ -191,7 +212,7 @@ import { LEVEL_NODES as toodaNodes } from '../data/excalidraw/tooda/nodes';
       }
 
       .renderer-btn.active {
-        @apply border-transparent bg-gradient-to-br from-violet-500 to-sky-400 text-white;
+        @apply border-transparent bg-gradient-to-br from-teal-500 to-cyan-500 text-white;
       }
 
       .export-png-btn {
@@ -204,7 +225,7 @@ import { LEVEL_NODES as toodaNodes } from '../data/excalidraw/tooda/nodes';
 
       /* Theme toggle button */
       .theme-toggle-btn {
-        @apply fixed right-4 top-4 z-50 flex h-10 w-10 items-center justify-center rounded-full border border-slate-300 bg-white/80 text-slate-600 shadow-md backdrop-blur-sm transition-all duration-200 hover:border-indigo-400 hover:text-slate-900 dark:border-slate-700 dark:bg-slate-800/80 dark:text-slate-300 dark:hover:border-indigo-500/50 dark:hover:text-slate-50;
+        @apply fixed right-4 top-4 z-50 flex h-10 w-10 items-center justify-center rounded-full border border-slate-300 bg-white/80 text-slate-600 shadow-md backdrop-blur-sm transition-all duration-200 hover:border-teal-400 hover:text-slate-900 dark:border-slate-700 dark:bg-slate-800/80 dark:text-slate-300 dark:hover:border-teal-500/50 dark:hover:text-slate-50;
       }
     </style>
   </head>
@@ -228,35 +249,45 @@ import { LEVEL_NODES as toodaNodes } from '../data/excalidraw/tooda/nodes';
       <a href="/Tooda/" class="back-link">← Back to Home</a>
     </header>
 
-    <div class="examples">
-      <a href="/Tooda/c4?example=banking" class="example-btn active" data-example="banking">Online Banking</a>
-      <a href="/Tooda/c4?example=ecommerce" class="example-btn" data-example="ecommerce">E-Commerce</a>
-      <a href="/Tooda/c4?example=ridesharing" class="example-btn" data-example="ridesharing">Ride-Sharing</a>
-      <a href="/Tooda/c4?example=tooda" class="example-btn" data-example="tooda">Tooda</a>
-    </div>
+    <div class="controls-panel">
+      <div class="controls-section">
+        <span class="controls-label">Example</span>
+        <div class="examples">
+          <a href="/Tooda/c4?example=banking" class="example-btn active" data-example="banking">Online Banking</a>
+          <a href="/Tooda/c4?example=ecommerce" class="example-btn" data-example="ecommerce">E-Commerce</a>
+          <a href="/Tooda/c4?example=ridesharing" class="example-btn" data-example="ridesharing">Ride-Sharing</a>
+          <a href="/Tooda/c4?example=tooda" class="example-btn" data-example="tooda">Tooda</a>
+        </div>
+      </div>
 
-    <div class="renderer-toggle">
-      <a href="?renderer=excalidraw" class="renderer-btn active" data-renderer="excalidraw">&#9999;&#65039; Excalidraw</a>
-      <a href="?renderer=mermaid" class="renderer-btn" data-renderer="mermaid">&#128202; Mermaid</a>
-      <a href="?renderer=2d" class="renderer-btn" data-renderer="2d">&#128506;&#65039; 2D</a>
-      <a href="?renderer=3d" class="renderer-btn" data-renderer="3d">&#127922; 3D</a>
-    </div>
+      <div class="controls-section">
+        <span class="controls-label">Renderer</span>
+        <div class="renderer-toggle">
+          <a href="?renderer=excalidraw" class="renderer-btn active" data-renderer="excalidraw">&#9999;&#65039; Excalidraw</a>
+          <a href="?renderer=mermaid" class="renderer-btn" data-renderer="mermaid">&#128202; Mermaid</a>
+          <a href="?renderer=2d" class="renderer-btn" data-renderer="2d">&#128506;&#65039; 2D</a>
+          <a href="?renderer=3d" class="renderer-btn" data-renderer="3d">&#127922; 3D</a>
+        </div>
+      </div>
 
-    <div class="tabs">
-      <a href="#level1" class="tab-btn active" data-tab="level1">Level 1 – Context</a>
-      <a href="#level2" class="tab-btn" data-tab="level2">Level 2 – Container</a>
-      <a href="#level3" class="tab-btn" data-tab="level3">Level 3 – Component</a>
-      <a href="#level4" class="tab-btn" data-tab="level4">Level 4 – Code</a>
-    </div>
-
-    <div id="export-png-container" class="mb-6 flex justify-center px-4">
-      <a
-        id="export-png-btn"
-        href="/Tooda/api/c4/banking/level1.png"
-        download="c4-banking-level1.png"
-        class="export-png-btn"
-        data-testid="export-png-btn"
-      >&#128247; Export PNG</a>
+      <div class="controls-section">
+        <span class="controls-label">Level</span>
+        <div class="tabs">
+          <a href="#level1" class="tab-btn active" data-tab="level1">Level 1 – Context</a>
+          <a href="#level2" class="tab-btn" data-tab="level2">Level 2 – Container</a>
+          <a href="#level3" class="tab-btn" data-tab="level3">Level 3 – Component</a>
+          <a href="#level4" class="tab-btn" data-tab="level4">Level 4 – Code</a>
+        </div>
+        <div class="export-area">
+          <a
+            id="export-png-btn"
+            href="/Tooda/api/c4/banking/level1.png"
+            download="c4-banking-level1.png"
+            class="export-png-btn"
+            data-testid="export-png-btn"
+          >&#128247; Export PNG</a>
+        </div>
+      </div>
     </div>
 
     <!-- Level 1: System Context -->
