@@ -1,6 +1,7 @@
 import { useState, useId } from 'react';
 import type { Connection } from '../utils/excalidrawToMermaid';
 import type { DiagramNode } from '../data/healthcare/nodes';
+import { TOOLTIP_BASE_STYLE } from './diagramStyles';
 
 /** Box dimensions (SVG units). */
 const BOX_W = 140;
@@ -318,19 +319,9 @@ export default function HealthcarePlatform2D({ nodes, connections }: Props) {
       {hoveredIdx !== null && (
         <div
           style={{
-            position: 'absolute',
+            ...TOOLTIP_BASE_STYLE,
             bottom: 8,
             right: 8,
-            background: 'rgba(15,23,42,0.92)',
-            border: '1px solid rgba(99,102,241,0.4)',
-            borderRadius: '0.75rem',
-            padding: '10px 14px',
-            maxWidth: '220px',
-            backdropFilter: 'blur(8px)',
-            lineHeight: 1.4,
-            textAlign: 'center',
-            pointerEvents: 'none',
-            zIndex: 10,
           }}
         >
           <span style={{ fontSize: '1.4rem' }}>{nodes[hoveredIdx].icon}</span>

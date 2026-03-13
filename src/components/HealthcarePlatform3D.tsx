@@ -3,21 +3,15 @@ import * as THREE from 'three';
 import { createLogger } from '../utils/logger';
 import type { Connection } from '../utils/excalidrawToMermaid';
 import type { DiagramNode } from '../data/healthcare/nodes';
+import {
+  LABEL_CONTAINER_STYLE,
+  LABEL_ICON_STYLE,
+  LABEL_TEXT_STYLE,
+  LABEL_VERTICAL_OFFSET,
+  TOOLTIP_BASE_STYLE,
+} from './diagramStyles';
 
 const logger = createLogger('HealthcarePlatform3D');
-
-/** Pixels the label floats above the node's screen-space centre */
-const LABEL_VERTICAL_OFFSET = 68;
-
-/** Shared styles for always-visible node labels */
-const LABEL_ICON_STYLE: React.CSSProperties = { fontSize: '1.1rem', lineHeight: 1 };
-const LABEL_TEXT_STYLE: React.CSSProperties = {
-  fontSize: '0.65rem',
-  color: '#cbd5e1',
-  fontWeight: 600,
-  whiteSpace: 'nowrap',
-  marginTop: '2px',
-};
 
 interface Props {
   /** Nodes to render, derived from the diagram's node data. */
@@ -330,13 +324,7 @@ export default function HealthcarePlatform3D({ nodes, connections }: Props) {
         <div
           key={node.label}
           ref={(el) => { labelRefs.current[i] = el; }}
-          style={{
-            position: 'absolute',
-            transform: 'translateX(-50%)',
-            pointerEvents: 'none',
-            textAlign: 'center',
-            visibility: 'hidden',
-          }}
+          style={LABEL_CONTAINER_STYLE}
         >
           <div style={LABEL_ICON_STYLE}>{node.icon}</div>
           <div style={LABEL_TEXT_STYLE}>{node.label}</div>
@@ -346,18 +334,8 @@ export default function HealthcarePlatform3D({ nodes, connections }: Props) {
       <div
         ref={tooltipRef}
         style={{
+          ...TOOLTIP_BASE_STYLE,
           display: 'none',
-          position: 'absolute',
-          pointerEvents: 'none',
-          background: 'rgba(15,23,42,0.92)',
-          border: '1px solid rgba(99,102,241,0.4)',
-          borderRadius: '0.75rem',
-          padding: '10px 14px',
-          maxWidth: '220px',
-          backdropFilter: 'blur(8px)',
-          zIndex: 10,
-          lineHeight: '1.4',
-          textAlign: 'center',
         }}
       />
     </div>
