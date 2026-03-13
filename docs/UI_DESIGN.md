@@ -52,7 +52,7 @@ The palette uses **Teal → Cyan → Emerald** as the primary spectrum — a pro
 Hero heading gradient:   from-teal-400 via-cyan-400 to-emerald-400
 Primary CTA gradient:    from-teal-500 to-cyan-500
 Active tab gradient:     from-teal-500 to-cyan-500
-Renderer btn gradient:   from-cyan-500 to-teal-400
+Renderer btn gradient:   from-teal-500 to-cyan-500
 ```
 
 ### Glow Animations
@@ -137,15 +137,36 @@ Text:       text-slate-600 dark:text-slate-400
 Hover:      bg-slate-200 text-slate-900 dark:bg-slate-700 dark:text-slate-50
 ```
 
-**Active state (tab/example)**
+**Active state (all button types: tab, example, renderer)**
 ```
 Gradient: from-teal-500 to-cyan-500, text-white
 ```
 
-**Active state (renderer)**
+### Controls Panel
+
+Wraps all button rows (Example / Renderer / Level) on diagram pages into a single visually coherent container. Each row is a `controls-section` separated by a thin divider. The Export PNG button lives at the bottom of the Level section.
+
 ```
-Gradient: from-cyan-500 to-teal-400, text-white
+Rounded:    rounded-2xl
+Border:     border border-slate-200/70 dark:border-slate-700/50
+Background: bg-white/40 dark:bg-slate-800/30
+Backdrop:   backdrop-blur-sm
+Max-width:  max-w-[900px] (c4) / max-w-[960px] (excalidraw)
 ```
+
+**controls-section** — each button row inside the panel:
+```
+Padding:    px-4 py-4
+Divider:    border-t border-slate-200/60 dark:border-slate-700/40 (between sections)
+```
+
+**controls-label** — small heading above each button row:
+```
+Font:       text-[0.65rem] font-semibold uppercase tracking-widest
+Color:      text-slate-400 dark:text-slate-500
+```
+
+**Back link placement** — always inside `<header>`, below the subtitle `<p>`, on all inner pages.
 
 ### Theme Toggle Button
 

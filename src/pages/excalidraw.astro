@@ -95,23 +95,40 @@ import { LEVEL_NODES } from '../data/healthcare/nodes';
       }
 
       header p {
-        @apply text-base text-slate-500 dark:text-slate-400;
+        @apply mb-3 text-base text-slate-500 dark:text-slate-400;
       }
 
-      nav.back {
-        @apply px-4 pb-6 pt-2 text-center;
+      header .back-link {
+        @apply inline-block text-[0.9rem] text-teal-600 no-underline dark:text-teal-400;
       }
 
-      nav.back a {
-        @apply text-[0.9rem] text-teal-600 no-underline dark:text-teal-400;
-      }
-
-      nav.back a:hover {
+      header .back-link:hover {
         @apply underline;
       }
 
+      /* ── Controls panel: visually groups Renderer / Level rows ── */
+      .controls-panel {
+        @apply mx-auto mb-8 max-w-[960px] overflow-hidden rounded-2xl border border-slate-200/70 bg-white/40 backdrop-blur-sm dark:border-slate-700/50 dark:bg-slate-800/30;
+      }
+
+      .controls-section {
+        @apply px-4 py-4;
+      }
+
+      .controls-section + .controls-section {
+        @apply border-t border-slate-200/60 dark:border-slate-700/40;
+      }
+
+      .controls-label {
+        @apply mb-2 block text-center text-[0.65rem] font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-500;
+      }
+
+      .export-area {
+        @apply mt-3 flex justify-center;
+      }
+
       .renderer-toggle {
-        @apply mb-4 flex flex-wrap justify-center gap-2 px-4;
+        @apply flex flex-wrap justify-center gap-2;
       }
 
       .renderer-btn {
@@ -123,11 +140,11 @@ import { LEVEL_NODES } from '../data/healthcare/nodes';
       }
 
       .renderer-btn.active {
-        @apply border-transparent bg-gradient-to-br from-cyan-500 to-teal-400 text-white;
+        @apply border-transparent bg-gradient-to-br from-teal-500 to-cyan-500 text-white;
       }
 
       .tabs {
-        @apply mb-8 flex flex-wrap justify-center gap-2 px-4;
+        @apply flex flex-wrap justify-center gap-2;
       }
 
       .tab-btn {
@@ -209,34 +226,38 @@ import { LEVEL_NODES } from '../data/healthcare/nodes';
     <header>
       <h1>Healthcare Platform</h1>
       <p>An architecture example illustrated using Excalidraw and Mermaid across all 4 levels of the C4 model</p>
+      <a href="/Tooda/" class="back-link">← Back to Home</a>
     </header>
 
-    <nav class="back">
-      <a href="/Tooda/">← Back to Home</a>
-    </nav>
+    <div class="controls-panel">
+      <div class="controls-section">
+        <span class="controls-label">Renderer</span>
+        <div class="renderer-toggle">
+          <a href="?renderer=excalidraw" class="renderer-btn active" data-renderer="excalidraw">&#9999;&#65039; Excalidraw</a>
+          <a href="?renderer=mermaid" class="renderer-btn" data-renderer="mermaid">&#128202; Mermaid</a>
+          <a href="?renderer=2d" class="renderer-btn" data-renderer="2d">&#128506;&#65039; 2D</a>
+          <a href="?renderer=3d" class="renderer-btn" data-renderer="3d">&#127922; 3D</a>
+        </div>
+      </div>
 
-    <div class="renderer-toggle">
-      <a href="?renderer=excalidraw" class="renderer-btn active" data-renderer="excalidraw">&#9999;&#65039; Excalidraw</a>
-      <a href="?renderer=mermaid" class="renderer-btn" data-renderer="mermaid">&#128202; Mermaid</a>
-      <a href="?renderer=2d" class="renderer-btn" data-renderer="2d">&#128506;&#65039; 2D</a>
-      <a href="?renderer=3d" class="renderer-btn" data-renderer="3d">&#127922; 3D</a>
-    </div>
-
-    <div class="tabs">
-      <a href="#level1" class="tab-btn active" data-tab="level1">Level 1 – Context</a>
-      <a href="#level2" class="tab-btn" data-tab="level2">Level 2 – Container</a>
-      <a href="#level3" class="tab-btn" data-tab="level3">Level 3 – Component</a>
-      <a href="#level4" class="tab-btn" data-tab="level4">Level 4 – Code</a>
-    </div>
-
-    <div id="export-png-container" class="mb-6 flex justify-center px-4">
-      <a
-        id="export-png-btn"
-        href="/Tooda/api/healthcare/excalidraw/level1.png"
-        download="healthcare-excalidraw-level1.png"
-        class="export-png-btn"
-        data-testid="export-png-btn"
-      >&#128247; Export PNG</a>
+      <div class="controls-section">
+        <span class="controls-label">Level</span>
+        <div class="tabs">
+          <a href="#level1" class="tab-btn active" data-tab="level1">Level 1 – Context</a>
+          <a href="#level2" class="tab-btn" data-tab="level2">Level 2 – Container</a>
+          <a href="#level3" class="tab-btn" data-tab="level3">Level 3 – Component</a>
+          <a href="#level4" class="tab-btn" data-tab="level4">Level 4 – Code</a>
+        </div>
+        <div class="export-area">
+          <a
+            id="export-png-btn"
+            href="/Tooda/api/healthcare/excalidraw/level1.png"
+            download="healthcare-excalidraw-level1.png"
+            class="export-png-btn"
+            data-testid="export-png-btn"
+          >&#128247; Export PNG</a>
+        </div>
+      </div>
     </div>
 
     <!-- Level 1: System Context -->
