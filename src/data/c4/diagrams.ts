@@ -30,12 +30,17 @@ import { toodaLevel1Elements } from '../excalidraw/tooda/level1Elements';
 import { toodaLevel2Elements } from '../excalidraw/tooda/level2Elements';
 import { toodaLevel3Elements } from '../excalidraw/tooda/level3Elements';
 import { toodaLevel4Elements } from '../excalidraw/tooda/level4Elements';
+import { healthcareLevel1Elements } from '../excalidraw/healthcare/level1Elements';
+import { healthcareLevel2Elements } from '../excalidraw/healthcare/level2Elements';
+import { healthcareLevel3Elements } from '../excalidraw/healthcare/level3Elements';
+import { healthcareLevel4Elements } from '../excalidraw/healthcare/level4Elements';
 
 export {
   bankingLevel1Elements, bankingLevel2Elements, bankingLevel3Elements, bankingLevel4Elements,
   ecommerceLevel1Elements, ecommerceLevel2Elements, ecommerceLevel3Elements, ecommerceLevel4Elements,
   ridesharingLevel1Elements, ridesharingLevel2Elements, ridesharingLevel3Elements, ridesharingLevel4Elements,
   toodaLevel1Elements, toodaLevel2Elements, toodaLevel3Elements, toodaLevel4Elements,
+  healthcareLevel1Elements, healthcareLevel2Elements, healthcareLevel3Elements, healthcareLevel4Elements,
 };
 
 // ── Level metadata ────────────────────────────────────────────────────────────
@@ -79,6 +84,14 @@ export const diagrams = {
     level3: toodaLevel3Elements,
     level4: toodaLevel4Elements,
   },
+  healthcare: {
+    title: 'Healthcare Platform',
+    description: 'A Healthcare Platform illustrated across all 4 levels of the C4 model.',
+    level1: healthcareLevel1Elements,
+    level2: healthcareLevel2Elements,
+    level3: healthcareLevel3Elements,
+    level4: healthcareLevel4Elements,
+  },
 };
 
 // ── Derived Mermaid diagrams ───────────────────────────────────────────────────
@@ -108,6 +121,12 @@ export const mermaidDiagrams = {
     level2: excalidrawToMermaid(toodaLevel2Elements, levelMeta),
     level3: excalidrawToMermaid(toodaLevel3Elements, levelMeta),
     level4: excalidrawToMermaid(toodaLevel4Elements, levelMeta),
+  },
+  healthcare: {
+    level1: excalidrawToMermaid(healthcareLevel1Elements, levelMeta),
+    level2: excalidrawToMermaid(healthcareLevel2Elements, levelMeta),
+    level3: excalidrawToMermaid(healthcareLevel3Elements, levelMeta),
+    level4: excalidrawToMermaid(healthcareLevel4Elements, levelMeta),
   },
 };
 
@@ -139,5 +158,11 @@ export const levelConnections = {
     level2: extractConnections(toodaLevel2Elements),
     level3: extractConnections(toodaLevel3Elements),
     level4: extractConnections(toodaLevel4Elements),
+  },
+  healthcare: {
+    level1: extractConnections(healthcareLevel1Elements),
+    level2: extractConnections(healthcareLevel2Elements),
+    level3: extractConnections(healthcareLevel3Elements),
+    level4: extractConnections(healthcareLevel4Elements),
   },
 };
