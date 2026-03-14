@@ -7,6 +7,7 @@ import {
   ecommerceLevel1Elements, ecommerceLevel2Elements, ecommerceLevel3Elements, ecommerceLevel4Elements,
   ridesharingLevel1Elements, ridesharingLevel2Elements, ridesharingLevel3Elements, ridesharingLevel4Elements,
   toodaLevel1Elements, toodaLevel2Elements, toodaLevel3Elements, toodaLevel4Elements,
+  healthcareLevel1Elements, healthcareLevel2Elements, healthcareLevel3Elements, healthcareLevel4Elements,
   mermaidDiagrams,
   levelConnections,
 } from '../data/c4/diagrams';
@@ -14,6 +15,7 @@ import { LEVEL_NODES as bankingNodes } from '../data/excalidraw/banking/nodes';
 import { LEVEL_NODES as ecommerceNodes } from '../data/excalidraw/ecommerce/nodes';
 import { LEVEL_NODES as ridesharingNodes } from '../data/excalidraw/ridesharing/nodes';
 import { LEVEL_NODES as toodaNodes } from '../data/excalidraw/tooda/nodes';
+import { LEVEL_NODES as healthcareNodes } from '../data/excalidraw/healthcare/nodes';
 ---
 <!doctype html>
 <html lang="en">
@@ -278,7 +280,7 @@ import { LEVEL_NODES as toodaNodes } from '../data/excalidraw/tooda/nodes';
     <div class="page-content">
     <header>
       <h1>C4 Diagram Examples</h1>
-      <p>Four systems illustrated across all 4 levels of the C4 model</p>
+      <p>Five systems illustrated across all 4 levels of the C4 model</p>
       <a href="/Tooda/" class="back-link">← Back to Home</a>
     </header>
 
@@ -290,6 +292,7 @@ import { LEVEL_NODES as toodaNodes } from '../data/excalidraw/tooda/nodes';
           <a href="/Tooda/c4?example=ecommerce" class="example-btn" data-example="ecommerce">E-Commerce</a>
           <a href="/Tooda/c4?example=ridesharing" class="example-btn" data-example="ridesharing">Ride-Sharing</a>
           <a href="/Tooda/c4?example=tooda" class="example-btn" data-example="tooda">Tooda</a>
+          <a href="/Tooda/c4?example=healthcare" class="example-btn" data-example="healthcare">Healthcare</a>
         </div>
       </div>
 
@@ -385,6 +388,20 @@ import { LEVEL_NODES as toodaNodes } from '../data/excalidraw/tooda/nodes';
           <HealthcarePlatform3D client:only="react" nodes={toodaNodes[1]} connections={levelConnections.tooda.level1} />
         </div>
       </div>
+      <div class="example-content" data-example="healthcare" style="display:none">
+        <div class="excalidraw-view excalidraw-wrapper" data-example="healthcare">
+          <ExcalidrawViewer client:only="react" elements={healthcareLevel1Elements} />
+        </div>
+        <div class="mermaid-view mermaid-wrapper">
+          <div class="mermaid" set:text={mermaidDiagrams.healthcare.level1}></div>
+        </div>
+        <div class="twoD-view twoD-wrapper">
+          <HealthcarePlatform2D client:only="react" nodes={healthcareNodes[1]} connections={levelConnections.healthcare.level1} />
+        </div>
+        <div class="threeD-view threeD-wrapper">
+          <HealthcarePlatform3D client:only="react" nodes={healthcareNodes[1]} connections={levelConnections.healthcare.level1} />
+        </div>
+      </div>
     </section>
 
     <!-- Level 2: Container -->
@@ -447,6 +464,20 @@ import { LEVEL_NODES as toodaNodes } from '../data/excalidraw/tooda/nodes';
         </div>
         <div class="threeD-view threeD-wrapper">
           <HealthcarePlatform3D client:only="react" nodes={toodaNodes[2]} connections={levelConnections.tooda.level2} />
+        </div>
+      </div>
+      <div class="example-content" data-example="healthcare" style="display:none">
+        <div class="excalidraw-view excalidraw-wrapper" data-example="healthcare">
+          <ExcalidrawViewer client:only="react" elements={healthcareLevel2Elements} />
+        </div>
+        <div class="mermaid-view mermaid-wrapper">
+          <div class="mermaid" set:text={mermaidDiagrams.healthcare.level2}></div>
+        </div>
+        <div class="twoD-view twoD-wrapper">
+          <HealthcarePlatform2D client:only="react" nodes={healthcareNodes[2]} connections={levelConnections.healthcare.level2} />
+        </div>
+        <div class="threeD-view threeD-wrapper">
+          <HealthcarePlatform3D client:only="react" nodes={healthcareNodes[2]} connections={levelConnections.healthcare.level2} />
         </div>
       </div>
     </section>
@@ -513,6 +544,20 @@ import { LEVEL_NODES as toodaNodes } from '../data/excalidraw/tooda/nodes';
           <HealthcarePlatform3D client:only="react" nodes={toodaNodes[3]} connections={levelConnections.tooda.level3} />
         </div>
       </div>
+      <div class="example-content" data-example="healthcare" style="display:none">
+        <div class="excalidraw-view excalidraw-wrapper" data-example="healthcare">
+          <ExcalidrawViewer client:only="react" elements={healthcareLevel3Elements} />
+        </div>
+        <div class="mermaid-view mermaid-wrapper">
+          <div class="mermaid" set:text={mermaidDiagrams.healthcare.level3}></div>
+        </div>
+        <div class="twoD-view twoD-wrapper">
+          <HealthcarePlatform2D client:only="react" nodes={healthcareNodes[3]} connections={levelConnections.healthcare.level3} />
+        </div>
+        <div class="threeD-view threeD-wrapper">
+          <HealthcarePlatform3D client:only="react" nodes={healthcareNodes[3]} connections={levelConnections.healthcare.level3} />
+        </div>
+      </div>
     </section>
 
     <!-- Level 4: Code -->
@@ -577,6 +622,20 @@ import { LEVEL_NODES as toodaNodes } from '../data/excalidraw/tooda/nodes';
           <HealthcarePlatform3D client:only="react" nodes={toodaNodes[4]} connections={levelConnections.tooda.level4} />
         </div>
       </div>
+      <div class="example-content" data-example="healthcare" style="display:none">
+        <div class="excalidraw-view excalidraw-wrapper" data-example="healthcare">
+          <ExcalidrawViewer client:only="react" elements={healthcareLevel4Elements} />
+        </div>
+        <div class="mermaid-view mermaid-wrapper">
+          <div class="mermaid" set:text={mermaidDiagrams.healthcare.level4}></div>
+        </div>
+        <div class="twoD-view twoD-wrapper">
+          <HealthcarePlatform2D client:only="react" nodes={healthcareNodes[4]} connections={levelConnections.healthcare.level4} />
+        </div>
+        <div class="threeD-view threeD-wrapper">
+          <HealthcarePlatform3D client:only="react" nodes={healthcareNodes[4]} connections={levelConnections.healthcare.level4} />
+        </div>
+      </div>
     </section>
     <script src="/Tooda/mermaid.min.js" is:inline></script>
     <script type="module">
@@ -595,7 +654,7 @@ import { LEVEL_NODES as toodaNodes } from '../data/excalidraw/tooda/nodes';
       let currentRenderer = 'excalidraw';
 
       const validTabs = ['level1', 'level2', 'level3', 'level4'];
-      const validExamples = ['banking', 'ecommerce', 'ridesharing', 'tooda'];
+      const validExamples = ['banking', 'ecommerce', 'ridesharing', 'tooda', 'healthcare'];
 
       // ---- Mermaid rendering helper ----
       function renderMermaidInContent(content) {

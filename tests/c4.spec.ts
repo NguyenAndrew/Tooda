@@ -46,12 +46,13 @@ test.describe('C4 diagram page', () => {
     await expect(back).toHaveAttribute('href', '/Tooda/');
   });
 
-  test('displays all four example selector links', async ({ page }) => {
+  test('displays all five example selector links', async ({ page }) => {
     await page.goto('/Tooda/c4');
     await expect(page.getByRole('link', { name: 'Online Banking' })).toBeVisible();
     await expect(page.getByRole('link', { name: 'E-Commerce' })).toBeVisible();
     await expect(page.getByRole('link', { name: 'Ride-Sharing' })).toBeVisible();
     await expect(page.getByRole('link', { name: 'Tooda' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Healthcare' })).toBeVisible();
   });
 
   test('Online Banking example is active by default', async ({ page }) => {
@@ -131,6 +132,27 @@ test.describe('C4 diagram page', () => {
     await expect(page.locator('#level1 .excalidraw-wrapper[data-example="ecommerce"]')).toBeHidden();
     await expect(page.locator('#level1 .excalidraw-wrapper[data-example="ridesharing"]')).toBeHidden();
     await expect(page.locator('#level1 .excalidraw-wrapper[data-example="tooda"]')).toBeHidden();
+    await expect(page.locator('#level1 .excalidraw-wrapper[data-example="healthcare"]')).toBeHidden();
+  });
+
+  test('clicking Healthcare example activates its link', async ({ page }) => {
+    await page.goto('/Tooda/c4');
+    await page.getByRole('link', { name: 'Healthcare' }).click();
+    await expect(page.getByRole('link', { name: 'Healthcare' })).toHaveClass(/active/);
+    await expect(page.getByRole('link', { name: 'Online Banking' })).not.toHaveClass(/active/);
+  });
+
+  test('switching to Healthcare example shows its Level 1 excalidraw wrapper', async ({ page }) => {
+    await page.goto('/Tooda/c4');
+    await page.getByRole('link', { name: 'Healthcare' }).click();
+    await expect(page.locator('#level1 .excalidraw-wrapper[data-example="healthcare"]')).toBeVisible();
+    await expect(page.locator('#level1 .excalidraw-wrapper[data-example="banking"]')).toBeHidden();
+  });
+
+  test('navigating to ?example=healthcare activates Healthcare example', async ({ page }) => {
+    await page.goto('/Tooda/c4?example=healthcare');
+    await expect(page.getByRole('link', { name: 'Healthcare' })).toHaveClass(/active/);
+    await expect(page.getByRole('link', { name: 'Online Banking' })).not.toHaveClass(/active/);
   });
 
 });
