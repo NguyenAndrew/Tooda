@@ -25,9 +25,20 @@ const HOME_NAV_LINKS = [
 ];
 
 async function getNavigationLoadTime(page: Page): Promise<number | null> {
+  // loadEventEnd may be 0 immediately after the load event fires because the
+  // Performance API updates it asynchronously. Wait until it is populated before
+  // reading the measurement to prevent false-zero results.
+  try {
+    await page.waitForFunction(() => {
+      const [entry] = performance.getEntriesByType('navigation') as PerformanceNavigationTiming[];
+      return entry != null && entry.loadEventEnd > 0;
+    });
+  } catch {
+    return null;
+  }
   return page.evaluate(() => {
     const [entry] = performance.getEntriesByType('navigation') as PerformanceNavigationTiming[];
-    return entry ? entry.loadEventEnd - entry.startTime : null;
+    return entry && entry.loadEventEnd > 0 ? entry.loadEventEnd - entry.startTime : null;
   });
 }
 
@@ -52,8 +63,12 @@ test.describe('Performance – navigation from Home', () => {
       // Wait for the network to settle so viewport-based prefetch can complete.
       await page.waitForLoadState('networkidle');
 
+      // Capture the home URL before clicking so we can detect when navigation away
+      // has completed. Using waitForURL with a predicate avoids the race where
+      // waitForLoadState('load') resolves immediately (page is already loaded).
+      const homeUrl = page.url();
       await Promise.all([
-        page.waitForLoadState('load'),
+        page.waitForURL(url => url.href !== homeUrl, { waitUntil: 'load' }),
         page.getByRole('link', { name: label }).click(),
       ]);
 
