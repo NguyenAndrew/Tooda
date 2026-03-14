@@ -1,16 +1,26 @@
-import { Excalidraw, type ExcalidrawImperativeAPI } from '@excalidraw/excalidraw';
+import { Excalidraw, exportToBlob, type ExcalidrawImperativeAPI } from '@excalidraw/excalidraw';
 import '@excalidraw/excalidraw/index.css';
 import type { ExcalidrawElement } from '@excalidraw/excalidraw/types/element/types';
 import { useEffect, useRef, useState } from 'react';
 import { createLogger } from '../utils/logger';
 
+declare global {
+  interface Window {
+    _excalidrawApis?: Record<string, () => Promise<Blob>>;
+  }
+}
+
 const logger = createLogger('ExcalidrawViewer');
 
 interface Props {
   elements: readonly ExcalidrawElement[];
+  /** Optional key used to register this instance's export function on
+   *  `window._excalidrawApis[registrationKey]` so that the page-level JS
+   *  can trigger a PNG export without going through React. */
+  registrationKey?: string;
 }
 
-export default function ExcalidrawViewer({ elements }: Props) {
+export default function ExcalidrawViewer({ elements, registrationKey }: Props) {
   const apiRef = useRef<ExcalidrawImperativeAPI | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [editMode, setEditMode] = useState(false);
@@ -86,6 +96,18 @@ export default function ExcalidrawViewer({ elements }: Props) {
         <Excalidraw
           excalidrawAPI={(api: ExcalidrawImperativeAPI) => {
             apiRef.current = api;
+            if (registrationKey) {
+              window._excalidrawApis = window._excalidrawApis ?? {};
+              window._excalidrawApis[registrationKey] = () =>
+                exportToBlob({
+                  elements: api.getSceneElements(),
+                  appState: {
+                    exportBackground: true,
+                    viewBackgroundColor: '#ffffff',
+                  },
+                  files: api.getFiles(),
+                });
+            }
           }}
           initialData={{ elements, appState: { viewBackgroundColor: '#ffffff' } }}
           viewModeEnabled={!editMode}

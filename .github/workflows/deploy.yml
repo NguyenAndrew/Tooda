@@ -38,9 +38,6 @@ jobs:
       - name: Disable Astro Telemetry
         run: npx astro telemetry disable
 
-      - name: Generate Healthcare PNGs
-        run: npm run generate-healthcare-pngs
-
       - name: Build with Astro
         run: npm run build
 
