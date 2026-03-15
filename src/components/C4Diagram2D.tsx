@@ -1,6 +1,6 @@
 import { useState, useId } from 'react';
 import type { Connection } from '../utils/excalidrawToMermaid';
-import type { DiagramNode } from '../data/healthcare/nodes';
+import type { DiagramNode } from '../data/excalidraw/healthcare/nodes';
 import { TOOLTIP_BASE_STYLE } from './diagramStyles';
 
 /** Box dimensions (SVG units). */
@@ -24,7 +24,7 @@ interface Props {
 }
 
 /**
- * Custom 2-D SVG diagram for the Healthcare Platform.
+ * Custom 2-D SVG diagram for a C4 architecture diagram.
  *
  * Nodes are positioned using a Sugiyama-style layered layout:
  *   1. Longest-path layering assigns every node to a layer (top-to-bottom
@@ -41,7 +41,7 @@ interface Props {
  * `connections` prop, keeping Excalidraw as the single source of truth for
  * which boxes are connected.
  */
-export default function HealthcarePlatform2D({ nodes, connections }: Props) {
+export default function C4Diagram2D({ nodes, connections }: Props) {
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
   const uid = useId();
 

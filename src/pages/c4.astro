@@ -1,7 +1,7 @@
 ---
 import ExcalidrawViewer from '../components/ExcalidrawViewer';
-import HealthcarePlatform2D from '../components/HealthcarePlatform2D';
-import HealthcarePlatform3D from '../components/HealthcarePlatform3D';
+import C4Diagram2D from '../components/C4Diagram2D';
+import C4Diagram3D from '../components/C4Diagram3D';
 import { diagrams } from '../data/c4/diagrams';
 
 // All data needed for rendering is derived from the diagrams catalog.
@@ -337,10 +337,10 @@ const exampleKeys = Object.keys(diagrams);
               <div class="mermaid" set:text={diagram.mermaid[level.id]}></div>
             </div>
             <div class="twoD-view twoD-wrapper">
-              <HealthcarePlatform2D client:only="react" nodes={diagram.nodes[level.num]} connections={diagram.connections[level.id]} />
+              <C4Diagram2D client:only="react" nodes={diagram.nodes[level.num]} connections={diagram.connections[level.id]} />
             </div>
             <div class="threeD-view threeD-wrapper">
-              <HealthcarePlatform3D client:only="react" nodes={diagram.nodes[level.num]} connections={diagram.connections[level.id]} />
+              <C4Diagram3D client:only="react" nodes={diagram.nodes[level.num]} connections={diagram.connections[level.id]} />
             </div>
           </div>
         ))}

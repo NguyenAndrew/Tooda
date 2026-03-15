@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { createLogger } from '../utils/logger';
 import type { Connection } from '../utils/excalidrawToMermaid';
-import type { DiagramNode } from '../data/healthcare/nodes';
+import type { DiagramNode } from '../data/excalidraw/healthcare/nodes';
 import {
   LABEL_CONTAINER_STYLE,
   LABEL_ICON_STYLE,
@@ -11,7 +11,7 @@ import {
   TOOLTIP_BASE_STYLE,
 } from './diagramStyles';
 
-const logger = createLogger('HealthcarePlatform3D');
+const logger = createLogger('C4Diagram3D');
 
 interface Props {
   /** Nodes to render, derived from the diagram's node data. */
@@ -20,7 +20,7 @@ interface Props {
   connections: Connection[];
 }
 
-export default function HealthcarePlatform3D({ nodes, connections }: Props) {
+export default function C4Diagram3D({ nodes, connections }: Props) {
   const mountRef = useRef<HTMLDivElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
   const labelRefs = useRef<(HTMLDivElement | null)[]>([]);
