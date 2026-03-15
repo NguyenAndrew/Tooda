@@ -315,13 +315,11 @@ import { LEVEL_NODES as healthcareNodes } from '../data/excalidraw/healthcare/no
           <a href="#level4" class="tab-btn" data-tab="level4">Level 4 – Code</a>
         </div>
         <div class="export-area">
-          <a
+          <button
             id="export-png-btn"
-            href="/Tooda/api/c4/banking/level1.png"
-            download="c4-banking-level1.png"
             class="export-png-btn"
             data-testid="export-png-btn"
-          >&#128247; Export PNG</a>
+          >&#128247; Export PNG</button>
         </div>
       </div>
     </div>
@@ -334,7 +332,7 @@ import { LEVEL_NODES as healthcareNodes } from '../data/excalidraw/healthcare/no
       </p>
       <div class="example-content" data-example="banking">
         <div class="excalidraw-view excalidraw-wrapper" data-example="banking">
-          <ExcalidrawViewer client:only="react" elements={bankingLevel1Elements} />
+          <ExcalidrawViewer client:only="react" elements={bankingLevel1Elements} registrationKey="banking-level1" />
         </div>
         <div class="mermaid-view mermaid-wrapper">
           <div class="mermaid" set:text={mermaidDiagrams.banking.level1}></div>
@@ -348,7 +346,7 @@ import { LEVEL_NODES as healthcareNodes } from '../data/excalidraw/healthcare/no
       </div>
       <div class="example-content" data-example="ecommerce" style="display:none">
         <div class="excalidraw-view excalidraw-wrapper" data-example="ecommerce">
-          <ExcalidrawViewer client:only="react" elements={ecommerceLevel1Elements} />
+          <ExcalidrawViewer client:only="react" elements={ecommerceLevel1Elements} registrationKey="ecommerce-level1" />
         </div>
         <div class="mermaid-view mermaid-wrapper">
           <div class="mermaid" set:text={mermaidDiagrams.ecommerce.level1}></div>
@@ -362,7 +360,7 @@ import { LEVEL_NODES as healthcareNodes } from '../data/excalidraw/healthcare/no
       </div>
       <div class="example-content" data-example="ridesharing" style="display:none">
         <div class="excalidraw-view excalidraw-wrapper" data-example="ridesharing">
-          <ExcalidrawViewer client:only="react" elements={ridesharingLevel1Elements} />
+          <ExcalidrawViewer client:only="react" elements={ridesharingLevel1Elements} registrationKey="ridesharing-level1" />
         </div>
         <div class="mermaid-view mermaid-wrapper">
           <div class="mermaid" set:text={mermaidDiagrams.ridesharing.level1}></div>
@@ -376,7 +374,7 @@ import { LEVEL_NODES as healthcareNodes } from '../data/excalidraw/healthcare/no
       </div>
       <div class="example-content" data-example="tooda" style="display:none">
         <div class="excalidraw-view excalidraw-wrapper" data-example="tooda">
-          <ExcalidrawViewer client:only="react" elements={toodaLevel1Elements} />
+          <ExcalidrawViewer client:only="react" elements={toodaLevel1Elements} registrationKey="tooda-level1" />
         </div>
         <div class="mermaid-view mermaid-wrapper">
           <div class="mermaid" set:text={mermaidDiagrams.tooda.level1}></div>
@@ -390,7 +388,7 @@ import { LEVEL_NODES as healthcareNodes } from '../data/excalidraw/healthcare/no
       </div>
       <div class="example-content" data-example="healthcare" style="display:none">
         <div class="excalidraw-view excalidraw-wrapper" data-example="healthcare">
-          <ExcalidrawViewer client:only="react" elements={healthcareLevel1Elements} />
+          <ExcalidrawViewer client:only="react" elements={healthcareLevel1Elements} registrationKey="healthcare-level1" />
         </div>
         <div class="mermaid-view mermaid-wrapper">
           <div class="mermaid" set:text={mermaidDiagrams.healthcare.level1}></div>
@@ -412,7 +410,7 @@ import { LEVEL_NODES as healthcareNodes } from '../data/excalidraw/healthcare/no
       </p>
       <div class="example-content" data-example="banking">
         <div class="excalidraw-view excalidraw-wrapper" data-example="banking">
-          <ExcalidrawViewer client:only="react" elements={bankingLevel2Elements} />
+          <ExcalidrawViewer client:only="react" elements={bankingLevel2Elements} registrationKey="banking-level2" />
         </div>
         <div class="mermaid-view mermaid-wrapper">
           <div class="mermaid" set:text={mermaidDiagrams.banking.level2}></div>
@@ -426,7 +424,7 @@ import { LEVEL_NODES as healthcareNodes } from '../data/excalidraw/healthcare/no
       </div>
       <div class="example-content" data-example="ecommerce" style="display:none">
         <div class="excalidraw-view excalidraw-wrapper" data-example="ecommerce">
-          <ExcalidrawViewer client:only="react" elements={ecommerceLevel2Elements} />
+          <ExcalidrawViewer client:only="react" elements={ecommerceLevel2Elements} registrationKey="ecommerce-level2" />
         </div>
         <div class="mermaid-view mermaid-wrapper">
           <div class="mermaid" set:text={mermaidDiagrams.ecommerce.level2}></div>
@@ -440,7 +438,7 @@ import { LEVEL_NODES as healthcareNodes } from '../data/excalidraw/healthcare/no
       </div>
       <div class="example-content" data-example="ridesharing" style="display:none">
         <div class="excalidraw-view excalidraw-wrapper" data-example="ridesharing">
-          <ExcalidrawViewer client:only="react" elements={ridesharingLevel2Elements} />
+          <ExcalidrawViewer client:only="react" elements={ridesharingLevel2Elements} registrationKey="ridesharing-level2" />
         </div>
         <div class="mermaid-view mermaid-wrapper">
           <div class="mermaid" set:text={mermaidDiagrams.ridesharing.level2}></div>
@@ -454,7 +452,7 @@ import { LEVEL_NODES as healthcareNodes } from '../data/excalidraw/healthcare/no
       </div>
       <div class="example-content" data-example="tooda" style="display:none">
         <div class="excalidraw-view excalidraw-wrapper" data-example="tooda">
-          <ExcalidrawViewer client:only="react" elements={toodaLevel2Elements} />
+          <ExcalidrawViewer client:only="react" elements={toodaLevel2Elements} registrationKey="tooda-level2" />
         </div>
         <div class="mermaid-view mermaid-wrapper">
           <div class="mermaid" set:text={mermaidDiagrams.tooda.level2}></div>
@@ -468,7 +466,7 @@ import { LEVEL_NODES as healthcareNodes } from '../data/excalidraw/healthcare/no
       </div>
       <div class="example-content" data-example="healthcare" style="display:none">
         <div class="excalidraw-view excalidraw-wrapper" data-example="healthcare">
-          <ExcalidrawViewer client:only="react" elements={healthcareLevel2Elements} />
+          <ExcalidrawViewer client:only="react" elements={healthcareLevel2Elements} registrationKey="healthcare-level2" />
         </div>
         <div class="mermaid-view mermaid-wrapper">
           <div class="mermaid" set:text={mermaidDiagrams.healthcare.level2}></div>
@@ -490,7 +488,7 @@ import { LEVEL_NODES as healthcareNodes } from '../data/excalidraw/healthcare/no
       </p>
       <div class="example-content" data-example="banking">
         <div class="excalidraw-view excalidraw-wrapper" data-example="banking">
-          <ExcalidrawViewer client:only="react" elements={bankingLevel3Elements} />
+          <ExcalidrawViewer client:only="react" elements={bankingLevel3Elements} registrationKey="banking-level3" />
         </div>
         <div class="mermaid-view mermaid-wrapper">
           <div class="mermaid" set:text={mermaidDiagrams.banking.level3}></div>
@@ -504,7 +502,7 @@ import { LEVEL_NODES as healthcareNodes } from '../data/excalidraw/healthcare/no
       </div>
       <div class="example-content" data-example="ecommerce" style="display:none">
         <div class="excalidraw-view excalidraw-wrapper" data-example="ecommerce">
-          <ExcalidrawViewer client:only="react" elements={ecommerceLevel3Elements} />
+          <ExcalidrawViewer client:only="react" elements={ecommerceLevel3Elements} registrationKey="ecommerce-level3" />
         </div>
         <div class="mermaid-view mermaid-wrapper">
           <div class="mermaid" set:text={mermaidDiagrams.ecommerce.level3}></div>
@@ -518,7 +516,7 @@ import { LEVEL_NODES as healthcareNodes } from '../data/excalidraw/healthcare/no
       </div>
       <div class="example-content" data-example="ridesharing" style="display:none">
         <div class="excalidraw-view excalidraw-wrapper" data-example="ridesharing">
-          <ExcalidrawViewer client:only="react" elements={ridesharingLevel3Elements} />
+          <ExcalidrawViewer client:only="react" elements={ridesharingLevel3Elements} registrationKey="ridesharing-level3" />
         </div>
         <div class="mermaid-view mermaid-wrapper">
           <div class="mermaid" set:text={mermaidDiagrams.ridesharing.level3}></div>
@@ -532,7 +530,7 @@ import { LEVEL_NODES as healthcareNodes } from '../data/excalidraw/healthcare/no
       </div>
       <div class="example-content" data-example="tooda" style="display:none">
         <div class="excalidraw-view excalidraw-wrapper" data-example="tooda">
-          <ExcalidrawViewer client:only="react" elements={toodaLevel3Elements} />
+          <ExcalidrawViewer client:only="react" elements={toodaLevel3Elements} registrationKey="tooda-level3" />
         </div>
         <div class="mermaid-view mermaid-wrapper">
           <div class="mermaid" set:text={mermaidDiagrams.tooda.level3}></div>
@@ -546,7 +544,7 @@ import { LEVEL_NODES as healthcareNodes } from '../data/excalidraw/healthcare/no
       </div>
       <div class="example-content" data-example="healthcare" style="display:none">
         <div class="excalidraw-view excalidraw-wrapper" data-example="healthcare">
-          <ExcalidrawViewer client:only="react" elements={healthcareLevel3Elements} />
+          <ExcalidrawViewer client:only="react" elements={healthcareLevel3Elements} registrationKey="healthcare-level3" />
         </div>
         <div class="mermaid-view mermaid-wrapper">
           <div class="mermaid" set:text={mermaidDiagrams.healthcare.level3}></div>
@@ -568,7 +566,7 @@ import { LEVEL_NODES as healthcareNodes } from '../data/excalidraw/healthcare/no
       </p>
       <div class="example-content" data-example="banking">
         <div class="excalidraw-view excalidraw-wrapper" data-example="banking">
-          <ExcalidrawViewer client:only="react" elements={bankingLevel4Elements} />
+          <ExcalidrawViewer client:only="react" elements={bankingLevel4Elements} registrationKey="banking-level4" />
         </div>
         <div class="mermaid-view mermaid-wrapper">
           <div class="mermaid" set:text={mermaidDiagrams.banking.level4}></div>
@@ -582,7 +580,7 @@ import { LEVEL_NODES as healthcareNodes } from '../data/excalidraw/healthcare/no
       </div>
       <div class="example-content" data-example="ecommerce" style="display:none">
         <div class="excalidraw-view excalidraw-wrapper" data-example="ecommerce">
-          <ExcalidrawViewer client:only="react" elements={ecommerceLevel4Elements} />
+          <ExcalidrawViewer client:only="react" elements={ecommerceLevel4Elements} registrationKey="ecommerce-level4" />
         </div>
         <div class="mermaid-view mermaid-wrapper">
           <div class="mermaid" set:text={mermaidDiagrams.ecommerce.level4}></div>
@@ -596,7 +594,7 @@ import { LEVEL_NODES as healthcareNodes } from '../data/excalidraw/healthcare/no
       </div>
       <div class="example-content" data-example="ridesharing" style="display:none">
         <div class="excalidraw-view excalidraw-wrapper" data-example="ridesharing">
-          <ExcalidrawViewer client:only="react" elements={ridesharingLevel4Elements} />
+          <ExcalidrawViewer client:only="react" elements={ridesharingLevel4Elements} registrationKey="ridesharing-level4" />
         </div>
         <div class="mermaid-view mermaid-wrapper">
           <div class="mermaid" set:text={mermaidDiagrams.ridesharing.level4}></div>
@@ -610,7 +608,7 @@ import { LEVEL_NODES as healthcareNodes } from '../data/excalidraw/healthcare/no
       </div>
       <div class="example-content" data-example="tooda" style="display:none">
         <div class="excalidraw-view excalidraw-wrapper" data-example="tooda">
-          <ExcalidrawViewer client:only="react" elements={toodaLevel4Elements} />
+          <ExcalidrawViewer client:only="react" elements={toodaLevel4Elements} registrationKey="tooda-level4" />
         </div>
         <div class="mermaid-view mermaid-wrapper">
           <div class="mermaid" set:text={mermaidDiagrams.tooda.level4}></div>
@@ -624,7 +622,7 @@ import { LEVEL_NODES as healthcareNodes } from '../data/excalidraw/healthcare/no
       </div>
       <div class="example-content" data-example="healthcare" style="display:none">
         <div class="excalidraw-view excalidraw-wrapper" data-example="healthcare">
-          <ExcalidrawViewer client:only="react" elements={healthcareLevel4Elements} />
+          <ExcalidrawViewer client:only="react" elements={healthcareLevel4Elements} registrationKey="healthcare-level4" />
         </div>
         <div class="mermaid-view mermaid-wrapper">
           <div class="mermaid" set:text={mermaidDiagrams.healthcare.level4}></div>
@@ -732,12 +730,121 @@ import { LEVEL_NODES as healthcareNodes } from '../data/excalidraw/healthcare/no
           return;
         }
         container.style.display = '';
-        const btn = document.getElementById('export-png-btn');
-        if (!btn) return;
-        const href = `/Tooda/api/c4/${currentExample}/${currentTab}.png`;
-        btn.setAttribute('href', href);
-        btn.setAttribute('download', `c4-${currentExample}-${currentTab}.png`);
       }
+
+      async function svgToPngBlobUrl(svgEl) {
+        const svgRect = svgEl.getBoundingClientRect();
+        const svgW = svgRect.width || 800;
+        const svgH = svgRect.height || 600;
+
+        const vb = svgEl.getAttribute('viewBox');
+        let vbW = svgW, vbH = svgH;
+        if (vb) {
+          const parts = vb.trim().split(/[\s,]+/).map(Number);
+          if (parts.length === 4) { vbW = parts[2]; vbH = parts[3]; }
+        }
+        const scaleX = svgW > 0 ? vbW / svgW : 1;
+        const scaleY = svgH > 0 ? vbH / svgH : 1;
+
+        const liveFos = Array.from(svgEl.querySelectorAll('foreignObject'));
+        const foData = liveFos.map(fo => {
+          const r = fo.getBoundingClientRect();
+          return {
+            x: (r.left - svgRect.left) * scaleX,
+            y: (r.top - svgRect.top) * scaleY,
+            w: r.width * scaleX,
+            h: r.height * scaleY,
+            text: fo.textContent.trim(),
+          };
+        });
+
+        const clone = svgEl.cloneNode(true);
+        clone.setAttribute('width', String(Math.ceil(svgW)));
+        clone.setAttribute('height', String(Math.ceil(svgH)));
+
+        Array.from(clone.querySelectorAll('foreignObject')).forEach((fo, i) => {
+          const d = foData[i];
+          if (d && d.text) {
+            const t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            t.setAttribute('x', String(d.x + d.w / 2));
+            t.setAttribute('y', String(d.y + d.h / 2));
+            t.setAttribute('text-anchor', 'middle');
+            t.setAttribute('dominant-baseline', 'middle');
+            t.setAttribute('fill', '#333');
+            t.setAttribute('font-family', '"trebuchet ms",verdana,arial,sans-serif');
+            t.setAttribute('font-size', '14');
+            t.textContent = d.text;
+            fo.parentNode.replaceChild(t, fo);
+          } else {
+            fo.remove();
+          }
+        });
+
+        const svgData = new XMLSerializer().serializeToString(clone);
+        const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+        const svgBlobUrl = URL.createObjectURL(svgBlob);
+        return new Promise((resolve, reject) => {
+          const img = new Image();
+          img.onload = () => {
+            URL.revokeObjectURL(svgBlobUrl);
+            const canvas = document.createElement('canvas');
+            canvas.width = img.naturalWidth || Math.ceil(svgW);
+            canvas.height = img.naturalHeight || Math.ceil(svgH);
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(img, 0, 0);
+            canvas.toBlob(pngBlob => {
+              if (!pngBlob) { reject(new Error('canvas.toBlob returned null')); return; }
+              resolve(URL.createObjectURL(pngBlob));
+            }, 'image/png');
+          };
+          img.onerror = (e) => { URL.revokeObjectURL(svgBlobUrl); reject(e); };
+          img.src = svgBlobUrl;
+        });
+      }
+
+      function triggerDownload(blobUrl, filename) {
+        const a = document.createElement('a');
+        a.href = blobUrl;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      }
+
+      async function exportCurrentDiagramAsPng() {
+        const filename = 'c4-' + currentExample + '-' + currentTab + '.png';
+        const panel = document.getElementById(currentTab);
+        if (!panel) return;
+        const content = panel.querySelector('.example-content[data-example="' + currentExample + '"]');
+        if (!content) return;
+        if (currentRenderer === 'mermaid') {
+          const svg = content.querySelector('.mermaid-view svg');
+          if (!svg) return;
+          const blobUrl = await svgToPngBlobUrl(svg);
+          triggerDownload(blobUrl, filename);
+          URL.revokeObjectURL(blobUrl);
+        } else if (currentRenderer === '2d') {
+          const svg = content.querySelector('.twoD-view svg');
+          if (!svg) return;
+          const blobUrl = await svgToPngBlobUrl(svg);
+          triggerDownload(blobUrl, filename);
+          URL.revokeObjectURL(blobUrl);
+        } else if (currentRenderer === 'excalidraw') {
+          const key = currentExample + '-' + currentTab;
+          const exportFn = window._excalidrawApis?.[key];
+          if (!exportFn) return;
+          const blob = await exportFn();
+          const url = URL.createObjectURL(blob);
+          triggerDownload(url, filename);
+          URL.revokeObjectURL(url);
+        }
+      }
+
+      document.getElementById('export-png-btn')?.addEventListener('click', () => {
+        exportCurrentDiagramAsPng();
+      });
 
       function activateTab(target) {
         if (!validTabs.includes(target)) target = 'level1';

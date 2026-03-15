@@ -7,6 +7,7 @@ public/chunks/
 public/swagger-ui.css
 public/swagger-ui-bundle.js
 public/swagger-ui-standalone-preset.js
+public/api/healthcare/
 playwright-report/
 test-results/
 dev-detach.log

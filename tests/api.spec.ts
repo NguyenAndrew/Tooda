@@ -1,7 +1,6 @@
 import { test, expect } from '@playwright/test';
 
 const excalidrawLevels = ['level1', 'level2', 'level3', 'level4'];
-const healthcareLevels = ['level1', 'level2', 'level3', 'level4'];
 
 test.describe('Static JSON API – Excalidraw endpoints', () => {
   for (const level of excalidrawLevels) {
@@ -90,14 +89,6 @@ test.describe('Static JSON API – OpenAPI spec endpoint', () => {
     expect(paths).toContain('/api/excalidraw/level2.json');
     expect(paths).toContain('/api/excalidraw/level3.json');
     expect(paths).toContain('/api/excalidraw/level4.json');
-    expect(paths).toContain('/api/healthcare/excalidraw/level1.png');
-    expect(paths).toContain('/api/healthcare/excalidraw/level2.png');
-    expect(paths).toContain('/api/healthcare/excalidraw/level3.png');
-    expect(paths).toContain('/api/healthcare/excalidraw/level4.png');
-    expect(paths).toContain('/api/healthcare/mermaid/level1.png');
-    expect(paths).toContain('/api/healthcare/mermaid/level2.png');
-    expect(paths).toContain('/api/healthcare/mermaid/level3.png');
-    expect(paths).toContain('/api/healthcare/mermaid/level4.png');
     expect(paths).toContain('/api/openapi.json');
   });
 
@@ -109,29 +100,5 @@ test.describe('Static JSON API – OpenAPI spec endpoint', () => {
     expect(schemas).toHaveProperty('ExcalidrawElement');
     expect(schemas).toHaveProperty('ExcalidrawElementArray');
   });
-});
-
-test.describe('Static PNG API – Healthcare Excalidraw endpoints', () => {
-  for (const level of healthcareLevels) {
-    test(`GET /Tooda/api/healthcare/excalidraw/${level}.png returns a PNG image`, async ({ request }) => {
-      const response = await request.get(`/Tooda/api/healthcare/excalidraw/${level}.png`);
-      expect(response.ok()).toBe(true);
-      expect(response.headers()['content-type']).toContain('image/png');
-      const body = await response.body();
-      expect(body.length).toBeGreaterThan(0);
-    });
-  }
-});
-
-test.describe('Static PNG API – Healthcare Mermaid endpoints', () => {
-  for (const level of healthcareLevels) {
-    test(`GET /Tooda/api/healthcare/mermaid/${level}.png returns a PNG image`, async ({ request }) => {
-      const response = await request.get(`/Tooda/api/healthcare/mermaid/${level}.png`);
-      expect(response.ok()).toBe(true);
-      expect(response.headers()['content-type']).toContain('image/png');
-      const body = await response.body();
-      expect(body.length).toBeGreaterThan(0);
-    });
-  }
 });
 

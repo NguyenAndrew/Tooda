@@ -290,13 +290,11 @@ import { LEVEL_NODES } from '../data/healthcare/nodes';
           <a href="#level4" class="tab-btn" data-tab="level4">Level 4 – Code</a>
         </div>
         <div class="export-area" id="export-png-container">
-          <a
+          <button
             id="export-png-btn"
-            href="/Tooda/api/healthcare/excalidraw/level1.png"
-            download="healthcare-excalidraw-level1.png"
             class="export-png-btn"
             data-testid="export-png-btn"
-          >&#128247; Export PNG</a>
+          >&#128247; Export PNG</button>
         </div>
       </div>
     </div>
@@ -309,7 +307,7 @@ import { LEVEL_NODES } from '../data/healthcare/nodes';
         interacts with.
       </p>
       <div class="diagram-wrapper excalidraw-view">
-        <ExcalidrawViewer client:only="react" elements={level1Elements} />
+        <ExcalidrawViewer client:only="react" elements={level1Elements} registrationKey="level1" />
       </div>
       <div class="mermaid-wrapper mermaid-view">
         <div class="mermaid" set:text={mermaidDiagrams.level1}></div>
@@ -330,7 +328,7 @@ import { LEVEL_NODES } from '../data/healthcare/nodes';
         stores) that make it up.
       </p>
       <div class="diagram-wrapper excalidraw-view">
-        <ExcalidrawViewer client:only="react" elements={level2Elements} />
+        <ExcalidrawViewer client:only="react" elements={level2Elements} registrationKey="level2" />
       </div>
       <div class="mermaid-wrapper mermaid-view">
         <div class="mermaid" set:text={mermaidDiagrams.level2}></div>
@@ -351,7 +349,7 @@ import { LEVEL_NODES } from '../data/healthcare/nodes';
         repositories) inside it.
       </p>
       <div class="diagram-wrapper excalidraw-view">
-        <ExcalidrawViewer client:only="react" elements={level3Elements} />
+        <ExcalidrawViewer client:only="react" elements={level3Elements} registrationKey="level3" />
       </div>
       <div class="mermaid-wrapper mermaid-view">
         <div class="mermaid" set:text={mermaidDiagrams.level3}></div>
@@ -371,7 +369,7 @@ import { LEVEL_NODES } from '../data/healthcare/nodes';
         Zooms in on the Record Service to show the classes and interfaces that implement it.
       </p>
       <div class="diagram-wrapper excalidraw-view">
-        <ExcalidrawViewer client:only="react" elements={level4Elements} />
+        <ExcalidrawViewer client:only="react" elements={level4Elements} registrationKey="level4" />
       </div>
       <div class="mermaid-wrapper mermaid-view">
         <div class="mermaid" set:text={mermaidDiagrams.level4}></div>
@@ -414,12 +412,124 @@ import { LEVEL_NODES } from '../data/healthcare/nodes';
           return;
         }
         container.style.display = '';
-        const btn = document.getElementById('export-png-btn');
-        if (!btn) return;
-        const href = '/Tooda/api/healthcare/' + currentRenderer + '/' + currentLevel + '.png';
-        btn.setAttribute('href', href);
-        btn.setAttribute('download', 'healthcare-' + currentRenderer + '-' + currentLevel + '.png');
       }
+
+      async function svgToPngBlobUrl(svgEl) {
+        const svgRect = svgEl.getBoundingClientRect();
+        const svgW = svgRect.width || 800;
+        const svgH = svgRect.height || 600;
+
+        // Compute viewBox-to-viewport scale so replacement <text> elements are
+        // positioned correctly in the SVG coordinate space.
+        const vb = svgEl.getAttribute('viewBox');
+        let vbW = svgW, vbH = svgH;
+        if (vb) {
+          const parts = vb.trim().split(/[\s,]+/).map(Number);
+          if (parts.length === 4) { vbW = parts[2]; vbH = parts[3]; }
+        }
+        const scaleX = svgW > 0 ? vbW / svgW : 1;
+        const scaleY = svgH > 0 ? vbH / svgH : 1;
+
+        // Record foreignObject info from live DOM before cloning so we can use
+        // getBoundingClientRect() which accounts for all ancestor transforms.
+        const liveFos = Array.from(svgEl.querySelectorAll('foreignObject'));
+        const foData = liveFos.map(fo => {
+          const r = fo.getBoundingClientRect();
+          return {
+            x: (r.left - svgRect.left) * scaleX,
+            y: (r.top - svgRect.top) * scaleY,
+            w: r.width * scaleX,
+            h: r.height * scaleY,
+            text: fo.textContent.trim(),
+          };
+        });
+
+        const clone = svgEl.cloneNode(true);
+        clone.setAttribute('width', String(Math.ceil(svgW)));
+        clone.setAttribute('height', String(Math.ceil(svgH)));
+
+        // Replace <foreignObject> elements with plain SVG <text> to prevent
+        // browsers from tainting the canvas (which blocks canvas.toBlob).
+        Array.from(clone.querySelectorAll('foreignObject')).forEach((fo, i) => {
+          const d = foData[i];
+          if (d && d.text) {
+            const t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            t.setAttribute('x', String(d.x + d.w / 2));
+            t.setAttribute('y', String(d.y + d.h / 2));
+            t.setAttribute('text-anchor', 'middle');
+            t.setAttribute('dominant-baseline', 'middle');
+            t.setAttribute('fill', '#333');
+            t.setAttribute('font-family', '"trebuchet ms",verdana,arial,sans-serif');
+            t.setAttribute('font-size', '14');
+            t.textContent = d.text;
+            fo.parentNode.replaceChild(t, fo);
+          } else {
+            fo.remove();
+          }
+        });
+
+        const svgData = new XMLSerializer().serializeToString(clone);
+        const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+        const svgBlobUrl = URL.createObjectURL(svgBlob);
+        return new Promise((resolve, reject) => {
+          const img = new Image();
+          img.onload = () => {
+            URL.revokeObjectURL(svgBlobUrl);
+            const canvas = document.createElement('canvas');
+            canvas.width = img.naturalWidth || Math.ceil(svgW);
+            canvas.height = img.naturalHeight || Math.ceil(svgH);
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(img, 0, 0);
+            canvas.toBlob(pngBlob => {
+              if (!pngBlob) { reject(new Error('canvas.toBlob returned null')); return; }
+              resolve(URL.createObjectURL(pngBlob));
+            }, 'image/png');
+          };
+          img.onerror = (e) => { URL.revokeObjectURL(svgBlobUrl); reject(e); };
+          img.src = svgBlobUrl;
+        });
+      }
+
+      function triggerDownload(blobUrl, filename) {
+        const a = document.createElement('a');
+        a.href = blobUrl;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      }
+
+      async function exportCurrentDiagramAsPng() {
+        const filename = 'healthcare-' + currentRenderer + '-' + currentLevel + '.png';
+        const panel = document.getElementById(currentLevel);
+        if (!panel) return;
+        if (currentRenderer === 'mermaid') {
+          const svg = panel.querySelector('.mermaid-view svg');
+          if (!svg) return;
+          const blobUrl = await svgToPngBlobUrl(svg);
+          triggerDownload(blobUrl, filename);
+          URL.revokeObjectURL(blobUrl);
+        } else if (currentRenderer === '2d') {
+          const svg = panel.querySelector('.twoD-view svg');
+          if (!svg) return;
+          const blobUrl = await svgToPngBlobUrl(svg);
+          triggerDownload(blobUrl, filename);
+          URL.revokeObjectURL(blobUrl);
+        } else if (currentRenderer === 'excalidraw') {
+          const exportFn = window._excalidrawApis?.[currentLevel];
+          if (!exportFn) return;
+          const blob = await exportFn();
+          const url = URL.createObjectURL(blob);
+          triggerDownload(url, filename);
+          URL.revokeObjectURL(url);
+        }
+      }
+
+      document.getElementById('export-png-btn')?.addEventListener('click', () => {
+        exportCurrentDiagramAsPng();
+      });
 
       // ── Renderer toggle ──────────────────────────────────────────────────────
 
