@@ -1,5 +1,20 @@
 import { test, expect } from '@playwright/test';
 
+test.describe('C4 export PNG – Mermaid renderer', () => {
+  test('Export PNG button triggers a PNG download for Mermaid renderer', async ({ page }) => {
+    await page.goto('/Tooda/c4?renderer=mermaid');
+
+    // Wait until Mermaid has rendered an SVG into the active panel
+    await page.waitForSelector('#level1 .mermaid-view svg', { timeout: 15000 });
+
+    const downloadPromise = page.waitForEvent('download');
+    await page.getByTestId('export-png-btn').click();
+    const download = await downloadPromise;
+
+    expect(download.suggestedFilename()).toMatch(/\.png$/);
+  });
+});
+
 test.describe('C4 diagram page', () => {
   test('has correct title', async ({ page }) => {
     await page.goto('/Tooda/c4');
