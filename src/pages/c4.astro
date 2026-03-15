@@ -2,20 +2,21 @@
 import ExcalidrawViewer from '../components/ExcalidrawViewer';
 import HealthcarePlatform2D from '../components/HealthcarePlatform2D';
 import HealthcarePlatform3D from '../components/HealthcarePlatform3D';
-import {
-  bankingLevel1Elements, bankingLevel2Elements, bankingLevel3Elements, bankingLevel4Elements,
-  ecommerceLevel1Elements, ecommerceLevel2Elements, ecommerceLevel3Elements, ecommerceLevel4Elements,
-  ridesharingLevel1Elements, ridesharingLevel2Elements, ridesharingLevel3Elements, ridesharingLevel4Elements,
-  toodaLevel1Elements, toodaLevel2Elements, toodaLevel3Elements, toodaLevel4Elements,
-  healthcareLevel1Elements, healthcareLevel2Elements, healthcareLevel3Elements, healthcareLevel4Elements,
-  mermaidDiagrams,
-  levelConnections,
-} from '../data/c4/diagrams';
-import { LEVEL_NODES as bankingNodes } from '../data/excalidraw/banking/nodes';
-import { LEVEL_NODES as ecommerceNodes } from '../data/excalidraw/ecommerce/nodes';
-import { LEVEL_NODES as ridesharingNodes } from '../data/excalidraw/ridesharing/nodes';
-import { LEVEL_NODES as toodaNodes } from '../data/excalidraw/tooda/nodes';
-import { LEVEL_NODES as healthcareNodes } from '../data/excalidraw/healthcare/nodes';
+import { diagrams } from '../data/c4/diagrams';
+
+// All data needed for rendering is derived from the diagrams catalog.
+// To add a new diagram, add an entry to src/data/c4/diagrams.ts – no
+// changes to this page are required.
+
+const levels = [
+  { id: 'level1', label: 'Level 1 – Context',   num: 1, description: 'Shows the system in context: who uses it and which external systems it interacts with.' },
+  { id: 'level2', label: 'Level 2 – Container', num: 2, description: 'Zooms in on the system to show the containers (applications and data stores) that make it up.' },
+  { id: 'level3', label: 'Level 3 – Component', num: 3, description: 'Zooms in on a key container to show the components (services and controllers) inside it.' },
+  { id: 'level4', label: 'Level 4 – Code',      num: 4, description: 'Zooms in on a key component to show the classes and interfaces that implement it.' },
+] as const;
+
+const exampleEntries = Object.entries(diagrams);
+const exampleKeys = Object.keys(diagrams);
 ---
 <!doctype html>
 <html lang="en">
@@ -278,9 +279,11 @@ import { LEVEL_NODES as healthcareNodes } from '../data/excalidraw/healthcare/no
       </svg>
     </button>
     <div class="page-content">
+    <!-- Catalog metadata used by the inline script to build validExamples -->
+    <div id="examples-catalog" data-keys={JSON.stringify(exampleKeys)} style="display:none" aria-hidden="true"></div>
     <header>
       <h1>C4 Diagram Examples</h1>
-      <p>Five systems illustrated across all 4 levels of the C4 model</p>
+      <p>{exampleKeys.length} {exampleKeys.length === 1 ? 'system' : 'systems'} illustrated across all 4 levels of the C4 model</p>
       <a href="/Tooda/" class="back-link">← Back to Home</a>
     </header>
 
@@ -288,11 +291,9 @@ import { LEVEL_NODES as healthcareNodes } from '../data/excalidraw/healthcare/no
       <div class="controls-section">
         <span class="controls-label">Example</span>
         <div class="examples">
-          <a href="/Tooda/c4?example=banking" class="example-btn active" data-example="banking">Online Banking</a>
-          <a href="/Tooda/c4?example=ecommerce" class="example-btn" data-example="ecommerce">E-Commerce</a>
-          <a href="/Tooda/c4?example=ridesharing" class="example-btn" data-example="ridesharing">Ride-Sharing</a>
-          <a href="/Tooda/c4?example=tooda" class="example-btn" data-example="tooda">Tooda</a>
-          <a href="/Tooda/c4?example=healthcare" class="example-btn" data-example="healthcare">Healthcare</a>
+          {exampleEntries.map(([key, diagram], i) => (
+            <a href={`/Tooda/c4?example=${key}`} class={`example-btn${i === 0 ? ' active' : ''}`} data-example={key}>{diagram.shortTitle}</a>
+          ))}
         </div>
       </div>
 
@@ -309,10 +310,9 @@ import { LEVEL_NODES as healthcareNodes } from '../data/excalidraw/healthcare/no
       <div class="controls-section">
         <span class="controls-label">Level</span>
         <div class="tabs">
-          <a href="#level1" class="tab-btn active" data-tab="level1">Level 1 – Context</a>
-          <a href="#level2" class="tab-btn" data-tab="level2">Level 2 – Container</a>
-          <a href="#level3" class="tab-btn" data-tab="level3">Level 3 – Component</a>
-          <a href="#level4" class="tab-btn" data-tab="level4">Level 4 – Code</a>
+          {levels.map((level, i) => (
+            <a href={`#${level.id}`} class={`tab-btn${i === 0 ? ' active' : ''}`} data-tab={level.id}>{level.label}</a>
+          ))}
         </div>
         <div class="export-area">
           <button
@@ -324,317 +324,28 @@ import { LEVEL_NODES as healthcareNodes } from '../data/excalidraw/healthcare/no
       </div>
     </div>
 
-    <!-- Level 1: System Context -->
-    <section id="level1" class="tab-panel active">
-      <p class="description">
-        Shows the system in context: who uses it and which external systems it
-        interacts with.
-      </p>
-      <div class="example-content" data-example="banking">
-        <div class="excalidraw-view excalidraw-wrapper" data-example="banking">
-          <ExcalidrawViewer client:only="react" elements={bankingLevel1Elements} registrationKey="banking-level1" />
-        </div>
-        <div class="mermaid-view mermaid-wrapper">
-          <div class="mermaid" set:text={mermaidDiagrams.banking.level1}></div>
-        </div>
-        <div class="twoD-view twoD-wrapper">
-          <HealthcarePlatform2D client:only="react" nodes={bankingNodes[1]} connections={levelConnections.banking.level1} />
-        </div>
-        <div class="threeD-view threeD-wrapper">
-          <HealthcarePlatform3D client:only="react" nodes={bankingNodes[1]} connections={levelConnections.banking.level1} />
-        </div>
-      </div>
-      <div class="example-content" data-example="ecommerce" style="display:none">
-        <div class="excalidraw-view excalidraw-wrapper" data-example="ecommerce">
-          <ExcalidrawViewer client:only="react" elements={ecommerceLevel1Elements} registrationKey="ecommerce-level1" />
-        </div>
-        <div class="mermaid-view mermaid-wrapper">
-          <div class="mermaid" set:text={mermaidDiagrams.ecommerce.level1}></div>
-        </div>
-        <div class="twoD-view twoD-wrapper">
-          <HealthcarePlatform2D client:only="react" nodes={ecommerceNodes[1]} connections={levelConnections.ecommerce.level1} />
-        </div>
-        <div class="threeD-view threeD-wrapper">
-          <HealthcarePlatform3D client:only="react" nodes={ecommerceNodes[1]} connections={levelConnections.ecommerce.level1} />
-        </div>
-      </div>
-      <div class="example-content" data-example="ridesharing" style="display:none">
-        <div class="excalidraw-view excalidraw-wrapper" data-example="ridesharing">
-          <ExcalidrawViewer client:only="react" elements={ridesharingLevel1Elements} registrationKey="ridesharing-level1" />
-        </div>
-        <div class="mermaid-view mermaid-wrapper">
-          <div class="mermaid" set:text={mermaidDiagrams.ridesharing.level1}></div>
-        </div>
-        <div class="twoD-view twoD-wrapper">
-          <HealthcarePlatform2D client:only="react" nodes={ridesharingNodes[1]} connections={levelConnections.ridesharing.level1} />
-        </div>
-        <div class="threeD-view threeD-wrapper">
-          <HealthcarePlatform3D client:only="react" nodes={ridesharingNodes[1]} connections={levelConnections.ridesharing.level1} />
-        </div>
-      </div>
-      <div class="example-content" data-example="tooda" style="display:none">
-        <div class="excalidraw-view excalidraw-wrapper" data-example="tooda">
-          <ExcalidrawViewer client:only="react" elements={toodaLevel1Elements} registrationKey="tooda-level1" />
-        </div>
-        <div class="mermaid-view mermaid-wrapper">
-          <div class="mermaid" set:text={mermaidDiagrams.tooda.level1}></div>
-        </div>
-        <div class="twoD-view twoD-wrapper">
-          <HealthcarePlatform2D client:only="react" nodes={toodaNodes[1]} connections={levelConnections.tooda.level1} />
-        </div>
-        <div class="threeD-view threeD-wrapper">
-          <HealthcarePlatform3D client:only="react" nodes={toodaNodes[1]} connections={levelConnections.tooda.level1} />
-        </div>
-      </div>
-      <div class="example-content" data-example="healthcare" style="display:none">
-        <div class="excalidraw-view excalidraw-wrapper" data-example="healthcare">
-          <ExcalidrawViewer client:only="react" elements={healthcareLevel1Elements} registrationKey="healthcare-level1" />
-        </div>
-        <div class="mermaid-view mermaid-wrapper">
-          <div class="mermaid" set:text={mermaidDiagrams.healthcare.level1}></div>
-        </div>
-        <div class="twoD-view twoD-wrapper">
-          <HealthcarePlatform2D client:only="react" nodes={healthcareNodes[1]} connections={levelConnections.healthcare.level1} />
-        </div>
-        <div class="threeD-view threeD-wrapper">
-          <HealthcarePlatform3D client:only="react" nodes={healthcareNodes[1]} connections={levelConnections.healthcare.level1} />
-        </div>
-      </div>
-    </section>
-
-    <!-- Level 2: Container -->
-    <section id="level2" class="tab-panel">
-      <p class="description">
-        Zooms in on the system to show the containers (applications and data
-        stores) that make it up.
-      </p>
-      <div class="example-content" data-example="banking">
-        <div class="excalidraw-view excalidraw-wrapper" data-example="banking">
-          <ExcalidrawViewer client:only="react" elements={bankingLevel2Elements} registrationKey="banking-level2" />
-        </div>
-        <div class="mermaid-view mermaid-wrapper">
-          <div class="mermaid" set:text={mermaidDiagrams.banking.level2}></div>
-        </div>
-        <div class="twoD-view twoD-wrapper">
-          <HealthcarePlatform2D client:only="react" nodes={bankingNodes[2]} connections={levelConnections.banking.level2} />
-        </div>
-        <div class="threeD-view threeD-wrapper">
-          <HealthcarePlatform3D client:only="react" nodes={bankingNodes[2]} connections={levelConnections.banking.level2} />
-        </div>
-      </div>
-      <div class="example-content" data-example="ecommerce" style="display:none">
-        <div class="excalidraw-view excalidraw-wrapper" data-example="ecommerce">
-          <ExcalidrawViewer client:only="react" elements={ecommerceLevel2Elements} registrationKey="ecommerce-level2" />
-        </div>
-        <div class="mermaid-view mermaid-wrapper">
-          <div class="mermaid" set:text={mermaidDiagrams.ecommerce.level2}></div>
-        </div>
-        <div class="twoD-view twoD-wrapper">
-          <HealthcarePlatform2D client:only="react" nodes={ecommerceNodes[2]} connections={levelConnections.ecommerce.level2} />
-        </div>
-        <div class="threeD-view threeD-wrapper">
-          <HealthcarePlatform3D client:only="react" nodes={ecommerceNodes[2]} connections={levelConnections.ecommerce.level2} />
-        </div>
-      </div>
-      <div class="example-content" data-example="ridesharing" style="display:none">
-        <div class="excalidraw-view excalidraw-wrapper" data-example="ridesharing">
-          <ExcalidrawViewer client:only="react" elements={ridesharingLevel2Elements} registrationKey="ridesharing-level2" />
-        </div>
-        <div class="mermaid-view mermaid-wrapper">
-          <div class="mermaid" set:text={mermaidDiagrams.ridesharing.level2}></div>
-        </div>
-        <div class="twoD-view twoD-wrapper">
-          <HealthcarePlatform2D client:only="react" nodes={ridesharingNodes[2]} connections={levelConnections.ridesharing.level2} />
-        </div>
-        <div class="threeD-view threeD-wrapper">
-          <HealthcarePlatform3D client:only="react" nodes={ridesharingNodes[2]} connections={levelConnections.ridesharing.level2} />
-        </div>
-      </div>
-      <div class="example-content" data-example="tooda" style="display:none">
-        <div class="excalidraw-view excalidraw-wrapper" data-example="tooda">
-          <ExcalidrawViewer client:only="react" elements={toodaLevel2Elements} registrationKey="tooda-level2" />
-        </div>
-        <div class="mermaid-view mermaid-wrapper">
-          <div class="mermaid" set:text={mermaidDiagrams.tooda.level2}></div>
-        </div>
-        <div class="twoD-view twoD-wrapper">
-          <HealthcarePlatform2D client:only="react" nodes={toodaNodes[2]} connections={levelConnections.tooda.level2} />
-        </div>
-        <div class="threeD-view threeD-wrapper">
-          <HealthcarePlatform3D client:only="react" nodes={toodaNodes[2]} connections={levelConnections.tooda.level2} />
-        </div>
-      </div>
-      <div class="example-content" data-example="healthcare" style="display:none">
-        <div class="excalidraw-view excalidraw-wrapper" data-example="healthcare">
-          <ExcalidrawViewer client:only="react" elements={healthcareLevel2Elements} registrationKey="healthcare-level2" />
-        </div>
-        <div class="mermaid-view mermaid-wrapper">
-          <div class="mermaid" set:text={mermaidDiagrams.healthcare.level2}></div>
-        </div>
-        <div class="twoD-view twoD-wrapper">
-          <HealthcarePlatform2D client:only="react" nodes={healthcareNodes[2]} connections={levelConnections.healthcare.level2} />
-        </div>
-        <div class="threeD-view threeD-wrapper">
-          <HealthcarePlatform3D client:only="react" nodes={healthcareNodes[2]} connections={levelConnections.healthcare.level2} />
-        </div>
-      </div>
-    </section>
-
-    <!-- Level 3: Component -->
-    <section id="level3" class="tab-panel">
-      <p class="description">
-        Zooms in on a key container to show the components (services and
-        controllers) inside it.
-      </p>
-      <div class="example-content" data-example="banking">
-        <div class="excalidraw-view excalidraw-wrapper" data-example="banking">
-          <ExcalidrawViewer client:only="react" elements={bankingLevel3Elements} registrationKey="banking-level3" />
-        </div>
-        <div class="mermaid-view mermaid-wrapper">
-          <div class="mermaid" set:text={mermaidDiagrams.banking.level3}></div>
-        </div>
-        <div class="twoD-view twoD-wrapper">
-          <HealthcarePlatform2D client:only="react" nodes={bankingNodes[3]} connections={levelConnections.banking.level3} />
-        </div>
-        <div class="threeD-view threeD-wrapper">
-          <HealthcarePlatform3D client:only="react" nodes={bankingNodes[3]} connections={levelConnections.banking.level3} />
-        </div>
-      </div>
-      <div class="example-content" data-example="ecommerce" style="display:none">
-        <div class="excalidraw-view excalidraw-wrapper" data-example="ecommerce">
-          <ExcalidrawViewer client:only="react" elements={ecommerceLevel3Elements} registrationKey="ecommerce-level3" />
-        </div>
-        <div class="mermaid-view mermaid-wrapper">
-          <div class="mermaid" set:text={mermaidDiagrams.ecommerce.level3}></div>
-        </div>
-        <div class="twoD-view twoD-wrapper">
-          <HealthcarePlatform2D client:only="react" nodes={ecommerceNodes[3]} connections={levelConnections.ecommerce.level3} />
-        </div>
-        <div class="threeD-view threeD-wrapper">
-          <HealthcarePlatform3D client:only="react" nodes={ecommerceNodes[3]} connections={levelConnections.ecommerce.level3} />
-        </div>
-      </div>
-      <div class="example-content" data-example="ridesharing" style="display:none">
-        <div class="excalidraw-view excalidraw-wrapper" data-example="ridesharing">
-          <ExcalidrawViewer client:only="react" elements={ridesharingLevel3Elements} registrationKey="ridesharing-level3" />
-        </div>
-        <div class="mermaid-view mermaid-wrapper">
-          <div class="mermaid" set:text={mermaidDiagrams.ridesharing.level3}></div>
-        </div>
-        <div class="twoD-view twoD-wrapper">
-          <HealthcarePlatform2D client:only="react" nodes={ridesharingNodes[3]} connections={levelConnections.ridesharing.level3} />
-        </div>
-        <div class="threeD-view threeD-wrapper">
-          <HealthcarePlatform3D client:only="react" nodes={ridesharingNodes[3]} connections={levelConnections.ridesharing.level3} />
-        </div>
-      </div>
-      <div class="example-content" data-example="tooda" style="display:none">
-        <div class="excalidraw-view excalidraw-wrapper" data-example="tooda">
-          <ExcalidrawViewer client:only="react" elements={toodaLevel3Elements} registrationKey="tooda-level3" />
-        </div>
-        <div class="mermaid-view mermaid-wrapper">
-          <div class="mermaid" set:text={mermaidDiagrams.tooda.level3}></div>
-        </div>
-        <div class="twoD-view twoD-wrapper">
-          <HealthcarePlatform2D client:only="react" nodes={toodaNodes[3]} connections={levelConnections.tooda.level3} />
-        </div>
-        <div class="threeD-view threeD-wrapper">
-          <HealthcarePlatform3D client:only="react" nodes={toodaNodes[3]} connections={levelConnections.tooda.level3} />
-        </div>
-      </div>
-      <div class="example-content" data-example="healthcare" style="display:none">
-        <div class="excalidraw-view excalidraw-wrapper" data-example="healthcare">
-          <ExcalidrawViewer client:only="react" elements={healthcareLevel3Elements} registrationKey="healthcare-level3" />
-        </div>
-        <div class="mermaid-view mermaid-wrapper">
-          <div class="mermaid" set:text={mermaidDiagrams.healthcare.level3}></div>
-        </div>
-        <div class="twoD-view twoD-wrapper">
-          <HealthcarePlatform2D client:only="react" nodes={healthcareNodes[3]} connections={levelConnections.healthcare.level3} />
-        </div>
-        <div class="threeD-view threeD-wrapper">
-          <HealthcarePlatform3D client:only="react" nodes={healthcareNodes[3]} connections={levelConnections.healthcare.level3} />
-        </div>
-      </div>
-    </section>
-
-    <!-- Level 4: Code -->
-    <section id="level4" class="tab-panel">
-      <p class="description">
-        Zooms in on a key component to show the classes and interfaces that
-        implement it.
-      </p>
-      <div class="example-content" data-example="banking">
-        <div class="excalidraw-view excalidraw-wrapper" data-example="banking">
-          <ExcalidrawViewer client:only="react" elements={bankingLevel4Elements} registrationKey="banking-level4" />
-        </div>
-        <div class="mermaid-view mermaid-wrapper">
-          <div class="mermaid" set:text={mermaidDiagrams.banking.level4}></div>
-        </div>
-        <div class="twoD-view twoD-wrapper">
-          <HealthcarePlatform2D client:only="react" nodes={bankingNodes[4]} connections={levelConnections.banking.level4} />
-        </div>
-        <div class="threeD-view threeD-wrapper">
-          <HealthcarePlatform3D client:only="react" nodes={bankingNodes[4]} connections={levelConnections.banking.level4} />
-        </div>
-      </div>
-      <div class="example-content" data-example="ecommerce" style="display:none">
-        <div class="excalidraw-view excalidraw-wrapper" data-example="ecommerce">
-          <ExcalidrawViewer client:only="react" elements={ecommerceLevel4Elements} registrationKey="ecommerce-level4" />
-        </div>
-        <div class="mermaid-view mermaid-wrapper">
-          <div class="mermaid" set:text={mermaidDiagrams.ecommerce.level4}></div>
-        </div>
-        <div class="twoD-view twoD-wrapper">
-          <HealthcarePlatform2D client:only="react" nodes={ecommerceNodes[4]} connections={levelConnections.ecommerce.level4} />
-        </div>
-        <div class="threeD-view threeD-wrapper">
-          <HealthcarePlatform3D client:only="react" nodes={ecommerceNodes[4]} connections={levelConnections.ecommerce.level4} />
-        </div>
-      </div>
-      <div class="example-content" data-example="ridesharing" style="display:none">
-        <div class="excalidraw-view excalidraw-wrapper" data-example="ridesharing">
-          <ExcalidrawViewer client:only="react" elements={ridesharingLevel4Elements} registrationKey="ridesharing-level4" />
-        </div>
-        <div class="mermaid-view mermaid-wrapper">
-          <div class="mermaid" set:text={mermaidDiagrams.ridesharing.level4}></div>
-        </div>
-        <div class="twoD-view twoD-wrapper">
-          <HealthcarePlatform2D client:only="react" nodes={ridesharingNodes[4]} connections={levelConnections.ridesharing.level4} />
-        </div>
-        <div class="threeD-view threeD-wrapper">
-          <HealthcarePlatform3D client:only="react" nodes={ridesharingNodes[4]} connections={levelConnections.ridesharing.level4} />
-        </div>
-      </div>
-      <div class="example-content" data-example="tooda" style="display:none">
-        <div class="excalidraw-view excalidraw-wrapper" data-example="tooda">
-          <ExcalidrawViewer client:only="react" elements={toodaLevel4Elements} registrationKey="tooda-level4" />
-        </div>
-        <div class="mermaid-view mermaid-wrapper">
-          <div class="mermaid" set:text={mermaidDiagrams.tooda.level4}></div>
-        </div>
-        <div class="twoD-view twoD-wrapper">
-          <HealthcarePlatform2D client:only="react" nodes={toodaNodes[4]} connections={levelConnections.tooda.level4} />
-        </div>
-        <div class="threeD-view threeD-wrapper">
-          <HealthcarePlatform3D client:only="react" nodes={toodaNodes[4]} connections={levelConnections.tooda.level4} />
-        </div>
-      </div>
-      <div class="example-content" data-example="healthcare" style="display:none">
-        <div class="excalidraw-view excalidraw-wrapper" data-example="healthcare">
-          <ExcalidrawViewer client:only="react" elements={healthcareLevel4Elements} registrationKey="healthcare-level4" />
-        </div>
-        <div class="mermaid-view mermaid-wrapper">
-          <div class="mermaid" set:text={mermaidDiagrams.healthcare.level4}></div>
-        </div>
-        <div class="twoD-view twoD-wrapper">
-          <HealthcarePlatform2D client:only="react" nodes={healthcareNodes[4]} connections={levelConnections.healthcare.level4} />
-        </div>
-        <div class="threeD-view threeD-wrapper">
-          <HealthcarePlatform3D client:only="react" nodes={healthcareNodes[4]} connections={levelConnections.healthcare.level4} />
-        </div>
-      </div>
-    </section>
+    <!-- Level sections (generated from catalog) -->
+    {levels.map((level, levelIdx) => (
+      <section id={level.id} class={`tab-panel${levelIdx === 0 ? ' active' : ''}`}>
+        <p class="description">{level.description}</p>
+        {exampleEntries.map(([key, diagram], i) => (
+          <div class="example-content" data-example={key} style={i > 0 ? "display:none" : ""}>
+            <div class="excalidraw-view excalidraw-wrapper" data-example={key}>
+              <ExcalidrawViewer client:only="react" elements={diagram[level.id]} registrationKey={`${key}-${level.id}`} />
+            </div>
+            <div class="mermaid-view mermaid-wrapper">
+              <div class="mermaid" set:text={diagram.mermaid[level.id]}></div>
+            </div>
+            <div class="twoD-view twoD-wrapper">
+              <HealthcarePlatform2D client:only="react" nodes={diagram.nodes[level.num]} connections={diagram.connections[level.id]} />
+            </div>
+            <div class="threeD-view threeD-wrapper">
+              <HealthcarePlatform3D client:only="react" nodes={diagram.nodes[level.num]} connections={diagram.connections[level.id]} />
+            </div>
+          </div>
+        ))}
+      </section>
+    ))}
     <script src="/Tooda/mermaid.min.js" is:inline></script>
     <script type="module">
       const { default: elkLayouts } = await import('/Tooda/mermaid-layout-elk.esm.min.mjs');
@@ -652,7 +363,7 @@ import { LEVEL_NODES as healthcareNodes } from '../data/excalidraw/healthcare/no
       let currentRenderer = 'excalidraw';
 
       const validTabs = ['level1', 'level2', 'level3', 'level4'];
-      const validExamples = ['banking', 'ecommerce', 'ridesharing', 'tooda', 'healthcare'];
+      const validExamples = JSON.parse(document.getElementById('examples-catalog').dataset.keys);
 
       // ---- Mermaid rendering helper ----
       function renderMermaidInContent(content) {
