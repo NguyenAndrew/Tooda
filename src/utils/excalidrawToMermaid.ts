@@ -67,7 +67,7 @@ export interface LevelMeta {
    * Mermaid string so Mermaid uses its ELK layout engine (a Sugiyama-style
    * layered algorithm) instead of the default C4 grid layout.  This produces
    * cleaner edge routing that avoids intersecting lines and boxes, similar to
-   * the 2D SVG Sugiyama layout used by HealthcarePlatform2D.
+   * the 2D SVG Sugiyama layout used by C4Diagram2D.
    */
   useElk?: boolean;
 }

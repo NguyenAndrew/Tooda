@@ -1,6 +1,6 @@
 /**
  * Shared visual constants and styles used across the 2-D and 3-D diagram
- * components (HealthcarePlatform2D, HealthcarePlatform3D, and
+ * components (C4Diagram2D, C4Diagram3D, and
  * FeaturesVisualization3D).
  *
  * Centralizing these prevents the same values from drifting out of sync
