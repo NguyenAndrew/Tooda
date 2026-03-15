@@ -169,9 +169,13 @@
 
       /* GitHub link */
       .github-link {
-        @apply inline-flex items-center gap-2 rounded-full border border-slate-300 px-5 py-2.5 text-sm text-slate-600 no-underline transition-all duration-200 active:scale-95 active:duration-75 dark:border-slate-700 dark:text-slate-400;
+        @apply inline-flex items-center gap-2 rounded-full border border-slate-300 px-5 py-2.5 text-sm text-slate-600 no-underline transition-all duration-200 active:scale-95 active:duration-75 dark:border-slate-600 dark:text-slate-200;
         background: rgba(255,255,255,0.5);
         backdrop-filter: blur(8px);
+      }
+
+      :root.dark .github-link {
+        background: rgba(15,23,42,0.5);
       }
 
       @media (hover: hover) {
