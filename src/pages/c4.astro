@@ -448,47 +448,78 @@ const exampleKeys = Object.keys(diagrams);
         const svgW = svgRect.width || 800;
         const svgH = svgRect.height || 600;
 
-        const vb = svgEl.getAttribute('viewBox');
-        let vbW = svgW, vbH = svgH;
-        if (vb) {
-          const parts = vb.trim().split(/[\s,]+/).map(Number);
-          if (parts.length === 4) { vbW = parts[2]; vbH = parts[3]; }
+        // Use getScreenCTM to accurately convert screen coordinates to SVG root
+        // coordinates, correctly handling viewBox offsets, CSS transforms, and zoom.
+        const screenCTM = svgEl.getScreenCTM();
+        const invCTM = screenCTM ? screenCTM.inverse() : null;
+
+        function screenToSvg(sx, sy) {
+          if (invCTM) {
+            const pt = new DOMPoint(sx, sy).matrixTransform(invCTM);
+            return { x: pt.x, y: pt.y };
+          }
+          // Fallback: manual scale using viewBox
+          const vb = svgEl.getAttribute('viewBox');
+          let vbW = svgW, vbH = svgH;
+          if (vb) {
+            const parts = vb.trim().split(/[\s,]+/).map(Number);
+            if (parts.length === 4) { vbW = parts[2]; vbH = parts[3]; }
+          }
+          const sx2 = svgW > 0 ? vbW / svgW : 1;
+          const sy2 = svgH > 0 ? vbH / svgH : 1;
+          return { x: (sx - svgRect.left) * sx2, y: (sy - svgRect.top) * sy2 };
         }
-        const scaleX = svgW > 0 ? vbW / svgW : 1;
-        const scaleY = svgH > 0 ? vbH / svgH : 1;
 
         const liveFos = Array.from(svgEl.querySelectorAll('foreignObject'));
         const foData = liveFos.map(fo => {
           const r = fo.getBoundingClientRect();
-          return {
-            x: (r.left - svgRect.left) * scaleX,
-            y: (r.top - svgRect.top) * scaleY,
-            w: r.width * scaleX,
-            h: r.height * scaleY,
-            text: fo.textContent.trim(),
-          };
+          const tl = screenToSvg(r.left, r.top);
+          const br = screenToSvg(r.right, r.bottom);
+          // Extract individual label lines from <p> tags; fall back to textContent
+          const pTags = Array.from(fo.querySelectorAll('p'));
+          const lines = pTags.length > 0
+            ? pTags.map(p => p.textContent.trim()).filter(Boolean)
+            : [fo.textContent.trim()].filter(Boolean);
+          return { x: tl.x, y: tl.y, w: br.x - tl.x, h: br.y - tl.y, lines };
         });
 
         const clone = svgEl.cloneNode(true);
         clone.setAttribute('width', String(Math.ceil(svgW)));
         clone.setAttribute('height', String(Math.ceil(svgH)));
 
-        Array.from(clone.querySelectorAll('foreignObject')).forEach((fo, i) => {
-          const d = foData[i];
-          if (d && d.text) {
-            const t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-            t.setAttribute('x', String(d.x + d.w / 2));
-            t.setAttribute('y', String(d.y + d.h / 2));
-            t.setAttribute('text-anchor', 'middle');
+        // Remove all foreignObject elements from the clone; replacement <text>
+        // elements will be appended directly to the root <svg> so that the
+        // SVG-root coordinates computed above are interpreted correctly (parent
+        // <g> elements often carry transforms that would misplace the labels).
+        Array.from(clone.querySelectorAll('foreignObject')).forEach(fo => fo.remove());
+
+        const FONT_SIZE = 14;
+        const LINE_HEIGHT = Math.round(FONT_SIZE * 1.2); // ~1.2× font-size
+        foData.forEach(d => {
+          if (!d.lines.length) return;
+          const cx = d.x + d.w / 2;
+          const cy = d.y + d.h / 2;
+          const t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+          t.setAttribute('x', String(cx));
+          t.setAttribute('text-anchor', 'middle');
+          t.setAttribute('fill', '#333');
+          t.setAttribute('font-family', '"trebuchet ms",verdana,arial,sans-serif');
+          t.setAttribute('font-size', String(FONT_SIZE));
+          if (d.lines.length === 1) {
+            t.setAttribute('y', String(cy));
             t.setAttribute('dominant-baseline', 'middle');
-            t.setAttribute('fill', '#333');
-            t.setAttribute('font-family', '"trebuchet ms",verdana,arial,sans-serif');
-            t.setAttribute('font-size', '14');
-            t.textContent = d.text;
-            fo.parentNode.replaceChild(t, fo);
+            t.textContent = d.lines[0];
           } else {
-            fo.remove();
+            const startY = cy - ((d.lines.length - 1) * LINE_HEIGHT) / 2;
+            d.lines.forEach((line, i) => {
+              const ts = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
+              ts.setAttribute('x', String(cx));
+              ts.setAttribute('y', String(startY + i * LINE_HEIGHT));
+              ts.textContent = line;
+              t.appendChild(ts);
+            });
           }
+          clone.appendChild(t);
         });
 
         const svgData = new XMLSerializer().serializeToString(clone);
