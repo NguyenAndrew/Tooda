@@ -28,12 +28,6 @@ export const openapiSpec = {
         'C4 model diagram data for architecture examples. Each endpoint returns ' +
         'an object containing diagram definitions for all four C4 levels.',
     },
-    {
-      name: 'Excalidraw',
-      description:
-        'Excalidraw element arrays for the Healthcare Platform example, ' +
-        'split across four C4 levels.',
-    },
   ],
   paths: {
     '/api/c4/banking.json': {
@@ -117,76 +111,27 @@ export const openapiSpec = {
         },
       },
     },
-    '/api/excalidraw/level1.json': {
+    '/api/c4/healthcare.json': {
       get: {
-        tags: ['Excalidraw'],
-        summary: 'Healthcare Platform – Level 1 (Context)',
-        description:
-          'Returns an array of Excalidraw elements representing the Level 1 (System Context) diagram for the Healthcare Platform.',
-        operationId: 'getExcalidrawLevel1',
+        tags: ['C4'],
+        summary: 'Healthcare Platform',
+        description: 'Returns C4 diagram data for the Healthcare Platform across all four C4 levels.',
+        operationId: 'getC4Healthcare',
         responses: {
           '200': {
             description: 'Successful response',
             content: {
               'application/json': {
-                schema: { $ref: '#/components/schemas/ExcalidrawElementArray' },
-              },
-            },
-          },
-        },
-      },
-    },
-    '/api/excalidraw/level2.json': {
-      get: {
-        tags: ['Excalidraw'],
-        summary: 'Healthcare Platform – Level 2 (Container)',
-        description:
-          'Returns an array of Excalidraw elements representing the Level 2 (Container) diagram for the Healthcare Platform.',
-        operationId: 'getExcalidrawLevel2',
-        responses: {
-          '200': {
-            description: 'Successful response',
-            content: {
-              'application/json': {
-                schema: { $ref: '#/components/schemas/ExcalidrawElementArray' },
-              },
-            },
-          },
-        },
-      },
-    },
-    '/api/excalidraw/level3.json': {
-      get: {
-        tags: ['Excalidraw'],
-        summary: 'Healthcare Platform – Level 3 (Component)',
-        description:
-          'Returns an array of Excalidraw elements representing the Level 3 (Component) diagram for the Healthcare Platform.',
-        operationId: 'getExcalidrawLevel3',
-        responses: {
-          '200': {
-            description: 'Successful response',
-            content: {
-              'application/json': {
-                schema: { $ref: '#/components/schemas/ExcalidrawElementArray' },
-              },
-            },
-          },
-        },
-      },
-    },
-    '/api/excalidraw/level4.json': {
-      get: {
-        tags: ['Excalidraw'],
-        summary: 'Healthcare Platform – Level 4 (Code)',
-        description:
-          'Returns an array of Excalidraw elements representing the Level 4 (Code) diagram for the Healthcare Platform.',
-        operationId: 'getExcalidrawLevel4',
-        responses: {
-          '200': {
-            description: 'Successful response',
-            content: {
-              'application/json': {
-                schema: { $ref: '#/components/schemas/ExcalidrawElementArray' },
+                schema: { $ref: '#/components/schemas/C4Diagram' },
+                example: {
+                  title: 'Healthcare Platform',
+                  description:
+                    'A Healthcare Platform illustrated across all 4 levels of the C4 model.',
+                  level1: [{ id: '...', type: 'rectangle', x: 0, y: 0, width: 200, height: 60 }],
+                  level2: [{ id: '...', type: 'rectangle', x: 0, y: 0, width: 200, height: 60 }],
+                  level3: [{ id: '...', type: 'rectangle', x: 0, y: 0, width: 200, height: 60 }],
+                  level4: [{ id: '...', type: 'rectangle', x: 0, y: 0, width: 200, height: 60 }],
+                },
               },
             },
           },
@@ -195,7 +140,7 @@ export const openapiSpec = {
     },
     '/api/openapi.json': {
       get: {
-        tags: ['C4', 'Excalidraw'],
+        tags: ['C4'],
         summary: 'OpenAPI specification',
         description: 'Returns this OpenAPI 3.0 specification document.',
         operationId: 'getOpenApiSpec',

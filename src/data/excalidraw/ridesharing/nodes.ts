@@ -1,4 +1,4 @@
-import type { DiagramNode } from '../../healthcare/nodes';
+import type { DiagramNode } from '../healthcare/nodes';
 
 export const LEVEL_NODES: Record<number, DiagramNode[]> = {
   1: [
