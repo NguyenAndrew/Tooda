@@ -251,6 +251,20 @@ test.describe('iPhone – C4 Diagrams page (portrait)', () => {
   test('Export PNG button is visible on mobile', async ({ page }) => {
     await expect(page.getByTestId('export-png-btn')).toBeVisible();
   });
+
+  test('Export PNG triggers a PNG download for Mermaid renderer on mobile', async ({ page }) => {
+    await page.goto('/Tooda/c4?renderer=mermaid');
+    await page.setViewportSize(IPHONE_PORTRAIT);
+
+    // Wait for Mermaid to render an SVG in the active panel.
+    await page.waitForSelector('#level1 .mermaid-view svg', { timeout: 15000 });
+
+    const downloadPromise = page.waitForEvent('download');
+    await page.getByTestId('export-png-btn').tap();
+    const download = await downloadPromise;
+
+    expect(download.suggestedFilename()).toMatch(/\.png$/);
+  });
 });
 
 // ---------------------------------------------------------------------------
