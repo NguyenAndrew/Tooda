@@ -453,9 +453,16 @@ const exampleKeys = Object.keys(diagrams);
         const screenCTM = svgEl.getScreenCTM();
         const invCTM = screenCTM ? screenCTM.inverse() : null;
 
+        // getScreenCTM() maps SVG user units to physical screen pixels (it includes
+        // devicePixelRatio). getBoundingClientRect() returns CSS pixels. On mobile
+        // devices where devicePixelRatio > 1 we must scale CSS pixel coordinates to
+        // physical pixels before applying the inverse CTM, otherwise label positions
+        // are off by a factor of devicePixelRatio.
+        const dpr = window.devicePixelRatio || 1;
+
         function screenToSvg(sx, sy) {
           if (invCTM) {
-            const pt = new DOMPoint(sx, sy).matrixTransform(invCTM);
+            const pt = new DOMPoint(sx * dpr, sy * dpr).matrixTransform(invCTM);
             return { x: pt.x, y: pt.y };
           }
           // Fallback: manual scale using viewBox
