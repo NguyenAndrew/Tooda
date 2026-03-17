@@ -18,12 +18,14 @@ interface Props {
    *  `window._excalidrawApis[registrationKey]` so that the page-level JS
    *  can trigger a PNG export without going through React. */
   registrationKey?: string;
+  /** When true the canvas starts in edit mode instead of view mode. */
+  defaultEditMode?: boolean;
 }
 
-export default function ExcalidrawViewer({ elements, registrationKey }: Props) {
+export default function ExcalidrawViewer({ elements, registrationKey, defaultEditMode = false }: Props) {
   const apiRef = useRef<ExcalidrawImperativeAPI | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const [editMode, setEditMode] = useState(false);
+  const [editMode, setEditMode] = useState(defaultEditMode);
 
   useEffect(() => {
     logger.info(`Mounted with ${elements.length} element(s)`);
