@@ -58,8 +58,9 @@ export default function C4Diagram3D({ nodes, connections }: Props) {
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.2;
     renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     // Prevent the browser from capturing touch events for page scroll/zoom so
     // that pointer events (drag-to-rotate) work on mobile.
     renderer.domElement.style.touchAction = 'none';
@@ -93,8 +94,8 @@ export default function C4Diagram3D({ nodes, connections }: Props) {
 
       const mat = new THREE.MeshStandardMaterial({
         color: node.color,
-        roughness: 0.15,
-        metalness: 0.3,
+        roughness: 0.5,
+        metalness: 0,
         transparent: true,
         opacity: 0.9,
       });
